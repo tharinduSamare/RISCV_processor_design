@@ -5,7 +5,7 @@ module pc(
     output logic    [31:0]      pcOut 
     );
 
-    always_ff @( clk ) begin : assignNextAddress
+    always_ff @(posedge clk ) begin : assignNextAddress
         pcOut   <= pcIn;
     end
 
