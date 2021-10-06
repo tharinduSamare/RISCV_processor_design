@@ -13,7 +13,7 @@ module alu_op #(
 typedef enum logic [1:0] { 
     i_type = 2'b11, 
     r_type = 2'b10, 
-    u_type = 2'b01,
+    ui_type= 2'b01,
     no_op  = 2'b00
 } ins_type;
 
@@ -70,7 +70,8 @@ always_comb begin : alu_op_sel
                 default: nextOpSel <= ADD;
             endcase
         end
-        default: nextOpSel <= ADD;
+        ui_type : nextOpSel <= LUI;
+        default : nextOpSel <= ADD;
     endcase
 end
 
