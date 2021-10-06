@@ -1,12 +1,11 @@
 package alu_definitions;
 
 typedef enum logic [3:0] { 
-    ADD,
-    SUB,
-    AND, OR , XOR,  
+    ADD, SUB,
+    SLT, SLTU,
     SLL, SRL, SRA,
-    SLT, SLTU,     //Less Than
-    LUI
+    AND, OR , XOR,  
+    LUI, AUIPC
 } alu_op;
 
 

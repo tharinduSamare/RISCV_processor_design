@@ -7,11 +7,11 @@ module alu #(
     input  [15:0] bus_a, bus_b,
     input logic [1:0] opSel, 
     output logic [DATA_WIDTH-1:0] out,
-    output logic error, Z
+    output logic overflow, Z
 )
 
 /*
-INS imm ---|\_ bus_b
+EXT imm ---|\_ bus_b
 REG rs1 ---|/
 */
 
@@ -23,19 +23,23 @@ always_comb begin : alu_operation
         //Arithmetic Operations
         ADD : {carry, nextOut} <= bus_a + bus_b;
         SUB : {carry, nextOut} <= bus_a - bus_b;
-        SLL : nextOut <= bus_a << 1;
-        SRL : nextOut <= bus_a >> 1;
+        //Comparison Operations
+        LTU : nextOut <= (unsigned(bus_a) < unsigned(bus_b)) ? 16'd0 : 16'd1;
+        //Shift Operations
+        SLL : nextOut <= bus_a <<   bus_b;
+        SRL : nextOut <= bus_a >>   bus_b;
+        SRA : nextOut <= bus_a >>>  bus_b;
         //Logical Operations
         AND : {carry, nextOut} <= bus_a & bus_b; 
         OR  : {carry, nextOut} <= bus_a | bus_b;
         XOR : {carry, nextOut} <= bus_a ^ bus_b;
-        //Comparison Operations
-        LTU : nextOut <= (unsigned(bus_a) < unsigned(bus_b)) ? 16'd0 : 16'd1;
         //Special Computation Operations
-        LUI : nextOut <= bus_b + 4'h0;
+        LUI : nextOut <= bus_b[19:0] + 4'h0;
+        // AUIPC
         default: nextOut <= bus_a;
     endcase
 end
 
 assign out = nextOut;
-assign error = (carry) ? 1'b1 : 1'b0;
+assign overflow = (carry) ? 1'b1 : 1'b0;
+assign Z = (nextOut==0) ? 1'b1 : 1'b0;
