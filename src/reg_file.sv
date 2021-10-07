@@ -12,41 +12,38 @@ module reg_file #(
     output logic [DATA_WIDTH-1:0] regA_out, regB_out 
 );
 
-logic [DATA_WIDTH-1:0] d_reg [0:REG_COUNT-1];
+logic [DATA_WIDTH-1:0] reg_x [REG_COUNT-1:0];
 
-logic [0:REG_COUNT-1] ren_sel1, ren_sel2, wen_sel;
+// logic [REG_COUNT-1:0] ren_sel1, ren_sel2; 
+logic [REG_COUNT-1:0] wen_sel;
 
 logic [DATA_WIDTH-1:0] data_to_A, data_to_B;
 logic [DATA_WIDTH-1:0] write_data;
 
 always_comb begin : write
-    if (wen_sel == 32'd1) d_reg [0] <= write_data;
-    else begin
+    reg_x [0] <= 16'h0;
     for (int i = 1; i<32; i=i+1) begin
-        if (i == wen_sel) begin
-            d_reg [rd] <= write_data;    
-        end
-    end
+        if (wen_sel[i]==1)  reg_x [rd] <= write_data;    
     end
 end
 
-always_comb begin : read
-    data_to_A       <= d_reg [ren_sel1];
-    data_to_B       <= d_reg [ren_sel2];    
-end
-
-always_ff @( posedge clk or negedge rstN) begin : synch_reg
+always_ff @( posedge clk or negedge rstN) begin : synch_reg_write
     if (~rstN) begin: reset
         write_data <= 16'h0; //DATA_WIDTH
         wen_sel    <= 32'h073fc00f; //write everything except pointers and saved registers 
     end
     else begin : sel_en
         write_data  <= data_in;
-        ren_sel1    <= rs1;
-        ren_sel2    <= rs2;
         wen_sel     <= (wen) ? (1 << rd) : 32'h0;
     end
 end
+
+always_comb begin : read
+    data_to_A <= reg_x [rs1];
+    data_to_B <= reg_x [rs2];
+end
+
+
 
 /* Using reg_d module
 always_ff @( posedge clk or negedge rstN ) begin : synch_reg
@@ -65,8 +62,8 @@ reg_d REG (
     .clk, .rstN,
     .ren(ren_sel[0]),
     .wen(wen_sel[0]),
-    .data_in(write_data),
-    .data_out(32'b0)
+    .data_in(16'b0),
+    .data_out(reg_x[i])
 )
 
 genvar i;
@@ -77,7 +74,7 @@ generate
             .ren(ren_sel[i]),
             .wen(wen_sel[i]),
             .data_in(write_data),
-            .data_out(d_reg[i])
+            .data_out(reg_x[i])
         );
     end
 endgenerate
