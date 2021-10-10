@@ -1,6 +1,6 @@
-`include "definitions.sv"
-import definitions::*;
-module L1_cache
+//`include "definitions.sv"
+//import definitions::*;
+module L1_cache import definitions::*;
 #(
     parameter WORD_LENGTH = 4,  // length of a register in bytes (32 bit -> 4  64 bit -> 8)
     parameter CACHE_WIDTH = 4,  // number of words in a row
