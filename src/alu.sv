@@ -1,45 +1,58 @@
-`include "alu_definitions.sv"
-import alu_definitions::*;
+//`include "alu_definitions.sv"
+//import alu_definitions::*;
 
 module alu #(
     parameter DATA_WIDTH = 32
 )(
-    input  [15:0] bus_a, bus_b,
-    input logic [1:0] opSel, 
+    input  [DATA_WIDTH-1:0] bus_a, bus_b,
+    input  logic [3:0] opSel, 
     output logic [DATA_WIDTH-1:0] out,
     output logic overflow, Z
-)
+);
 
 /*
 EXT imm ---|\_ bus_b
 REG rs1 ---|/
 */
+typedef enum logic [3:0] { 
+    ADD, SUB,
+    SLT, SLTU,
+    SLL, SRL, SRA,
+    AND, OR , XOR,  
+    LUI
+} alu_op;
 
-logic [15:0] nextOut;
-logic [11:0] carry;
+logic [DATA_WIDTH:0] result;
+wire  [DATA_WIDTH-1:0] sub_res = bus_a - bus_b;
+// logic [DATA_WIDTH-1:0] nextOut;
+// logic nextCarry;
 
 always_comb begin : alu_operation
     case (opSel)
         //Arithmetic Operations
-        ADD : {carry, nextOut} <= bus_a + bus_b;
-        SUB : {carry, nextOut} <= bus_a - bus_b;
+        ADD : result <= bus_a + bus_b;
+        SUB : result <= sub_res;
         //Comparison Operations
-        LTU : nextOut <= (unsigned(bus_a) < unsigned(bus_b)) ? 16'd0 : 16'd1;
+        SLTU: result <= (bus_a < bus_b) ? 32'd0 : 32'd1;
+        SLT : begin
+            if (bus_a[DATA_WIDTH-1] == bus_b[DATA_WIDTH-1])  result <= (bus_a < bus_b) ? 32'd0 : 32'd1;
+            else result <= (sub_res[DATA_WIDTH-1]) ? 32'd1 : 32'd0;
+        end
         //Shift Operations
-        SLL : nextOut <= bus_a <<   bus_b;
-        SRL : nextOut <= bus_a >>   bus_b;
-        SRA : nextOut <= bus_a >>>  bus_b;
+        SLL : result <= bus_a <<   bus_b;
+        SRL : result <= bus_a >>   bus_b;
+        SRA : result <= bus_a >>>  bus_b;
         //Logical Operations
-        AND : {carry, nextOut} <= bus_a & bus_b; 
-        OR  : {carry, nextOut} <= bus_a | bus_b;
-        XOR : {carry, nextOut} <= bus_a ^ bus_b;
+        AND : result <= bus_a & bus_b; 
+        OR  : result <= bus_a | bus_b;
+        XOR : result <= bus_a ^ bus_b;
         //Special Computation Operations
-        LUI : nextOut <= bus_b[19:0] + 4'h0;
-        // AUIPC
-        default: nextOut <= bus_a;
+        LUI : result <= bus_b << 20;
+        default: result <= bus_a;
     endcase
 end
 
-assign out = nextOut;
-assign overflow = (carry) ? 1'b1 : 1'b0;
-assign Z = (nextOut==0) ? 1'b1 : 1'b0;
+assign out = result[DATA_WIDTH-1:0];
+assign overflow = (result[DATA_WIDTH]) ? 1'b1 : 1'b0;
+assign Z = (result[DATA_WIDTH-1:0]==0) ? 1'b1 : 1'b0;
+endmodule: alu
