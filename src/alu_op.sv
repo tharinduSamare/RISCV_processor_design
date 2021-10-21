@@ -1,5 +1,5 @@
-//`include "alu_definitions.sv"
-//import alu_definitions::*;
+// `include "alu_definitions.sv"
+// import alu_definitions::*;
 
 module alu_op #(
     parameter DATA_WIDTH=32
@@ -15,7 +15,7 @@ typedef enum logic [3:0] {
     SLT, SLTU,
     SLL, SRL, SRA,
     AND, OR , XOR,  
-    LUI, AUIPC
+    LUI
 } alu_op;
 
     
@@ -33,10 +33,10 @@ typedef enum logic [2:0] { //12-14 in ISA
     sll     = 3'd1,
     slt     = 3'd2,
     sltu    = 3'd3,
-    lxor     = 3'd4,
+    lxor    = 3'd4,
     srl_sra = 3'd5,
-    lor      = 3'd6,
-    land     = 3'd7
+    lor     = 3'd6,
+    land    = 3'd7
 } funct3_op;
 
 typedef enum logic [6:0] { 
@@ -50,9 +50,9 @@ always_comb begin : alu_op_sel
             case (funct3)
                 add_sub : nextOpSel <= ADD;
                 slt     : nextOpSel <= SLT;
-                lxor     : nextOpSel <= XOR;
-                lor      : nextOpSel <= OR;
-                land     : nextOpSel <= AND;  
+                lxor    : nextOpSel <= XOR;
+                lor     : nextOpSel <= OR;
+                land    : nextOpSel <= AND;  
 
                 default : nextOpSel <= ADD;              
             endcase
