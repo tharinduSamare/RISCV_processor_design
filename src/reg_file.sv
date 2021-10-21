@@ -1,5 +1,5 @@
-//`include "reg_names.sv"
-//import reg_names::*;
+// `include "reg_names.sv"
+// import reg_names::*;
 
 module reg_file #(
     parameter DATA_WIDTH = 16,
