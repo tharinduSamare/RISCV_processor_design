@@ -1,6 +1,6 @@
-`include "definitions.sv"
+// `include "definitions.sv"
 
-import definitions::*;
+// import definitions::*;
 
 module control_unit(
     input logic [6:0] opCode,
@@ -8,17 +8,17 @@ module control_unit(
     output logic [1:0] aluSrc2, aluOp 
 );
 
-// localparam LTYPE = 7'b0000011;
-// localparam ITYPE = 7'b0010011;
-// localparam AUIPC = 7'b0010111;
-// localparam STYPE = 7'b0100011;
-// localparam RTYPE = 7'b0110011;
-// localparam LUI   = 7'b0110111;
-// localparam BTYPE = 7'b1100011;
-// localparam JALR  = 7'b1100111;
-// localparam JTYPE = 7'b1101111;
+localparam LTYPE = 7'b0000011;
+localparam ITYPE = 7'b0010011;
+localparam AUIPC = 7'b0010111;
+localparam STYPE = 7'b0100011;
+localparam RTYPE = 7'b0110011;
+localparam LUI   = 7'b0110111;
+localparam BTYPE = 7'b1100011;
+localparam JALR  = 7'b1100111;
+localparam JTYPE = 7'b1101111;
 
-assign opCode2 = opCode_t'(opCode);
+// assign opCode2 = opCode_t'(opCode);
 
 always_comb begin : signalGenerator
     jump = '0;
@@ -33,7 +33,7 @@ always_comb begin : signalGenerator
     regWrite = '0;
     aluOp = 2'b00;
 
-    unique case (opCode2)
+    unique case (opCode)
         LTYPE : begin
             aluSrc2 = 2'b01;
             memRead = '1;
