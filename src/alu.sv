@@ -45,9 +45,7 @@ always_comb begin : alu_operation
         //Logical Operations
         AND : result <= bus_a & bus_b; 
         OR  : result <= bus_a | bus_b;
-        XOR : result <= bus_a ^ bus_b;
-        //Special Computation Operations
-        LUI : result <= bus_b << 20;
+        XOR : result <= bus_a ^ bus_b;     
         default: result <= bus_a;
     endcase
 end
