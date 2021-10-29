@@ -8,6 +8,7 @@ module control_unit(
     output logic [1:0] aluSrc2, aluOp 
 );
 
+
 localparam LTYPE = 7'b0000011;
 localparam ITYPE = 7'b0010011;
 localparam AUIPC = 7'b0010111;
@@ -36,7 +37,7 @@ always_comb begin : signalGenerator
     unique case (opCode)
         LTYPE : begin
             aluSrc2 = 2'b01;
-            memRead = '1;
+            memRead  = '1;
             memtoReg = '1;
             regWrite = '1;
         end 
