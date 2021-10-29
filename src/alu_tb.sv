@@ -13,7 +13,7 @@ initial begin
     end
 end
 
-logic [DATA_WIDTH-1:0] read1, read2, write, imm, b_current;
+logic [DATA_WIDTH-1:0] read1, read2, write, imm, pc, a_current, b_current;
 
 logic aluSrc2;
 logic [1:0] aluOp;
@@ -23,6 +23,12 @@ logic [DATA_WIDTH-1:0] out;
 logic overflow, Z;
 logic [3:0] opSel_current;
 
+alu_mux1 mux (
+    .aluSrc1(aluSrc1),
+    .pc(pc),
+    .read1(read1),
+    .bus_a(a_current)
+);
 
 alu_mux2 mux (
     .aluSrc2(aluSrc2),

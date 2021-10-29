@@ -8,6 +8,7 @@ module alu_op #(
     input  logic [6:0] funct7, 
     input  logic [2:0] funct3,
     output logic [3:0] opSel
+    //load
 );
 
 typedef enum logic [3:0] { 
@@ -15,15 +16,15 @@ typedef enum logic [3:0] {
     SLT, SLTU,
     SLL, SRL, SRA,
     AND, OR , XOR,  
-    LUI
+    LUI //rs2 forward
 } alu_op;
 
     
 typedef enum logic [1:0] { 
-    i_type = 2'b11, 
-    r_type = 2'b10, 
-    u_type = 2'b01,
-    no_op  = 2'b00
+    i_type = 2'b11, //i type
+    r_type = 2'b10, //r type
+    u_type = 2'b01, //rs1 forward?
+    no_op  = 2'b00 //add
 } ins_type;
 
 logic [3:0] nextOpSel;
@@ -80,7 +81,7 @@ always_comb begin : alu_op_sel
                 default: nextOpSel <= ADD;
             endcase
         end
-        u_type : nextOpSel <= LUI;
+        u_type : nextOpSel <= ;
         default : nextOpSel <= ADD;
     endcase
 end
