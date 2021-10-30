@@ -1,11 +1,10 @@
 module branchType #(
-    parameter DATA_WIDTH    = 16,
     parameter REG_COUNT     = 32,
     parameter REG_SIZE      = $clog2(REG_COUNT)
 )
 (
-    input logic signed [REG_SIZE-1:0]   rs1,
-    input logic signed [REG_SIZE-1:0]   rs2,
+    input logic signed [REG_SIZE - 1 : 0]   rs1,
+    input logic signed [REG_SIZE - 1 : 0]   rs2,
     input logic [2:0]                   brachType,
 
     output logic                        branchN
@@ -22,6 +21,10 @@ typedef enum logic [ 2:0 ]{
 
     branch_ _;
     always_comb begin : check_branch
+    /*  
+        Depending on the type of branch 
+        required comparison is carried out
+    */
         if (branchType == BEQ && rs1 == rs2)begin
             branchN = '1;
         end

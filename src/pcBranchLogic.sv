@@ -16,6 +16,10 @@ module pcBranch(
 
     branch_ _;
     always_comb begin : branchLogic
+    /*  
+        Check the type of branching if its a branch
+        func3 define the type of branch
+    */
         if (branch) begin
             takeBranch <= '1;    
             if (funct3 == 3'b000) begin
