@@ -1,8 +1,10 @@
-module pcJump (
-    input [31:0] pcOld,
-    input [31:0] imme,
+module pcJump #(
+    parameter BITS          = 32
+)(
+    input logic [BITS:0] pcOld,
+    input logic [BITS:0] imme,
 
-    output [31:0] pcJumpNew
+    output logic [BITS:0] pcJumpNew
 );
 
     assign pcJumpNew <= pcOld + imme;    
