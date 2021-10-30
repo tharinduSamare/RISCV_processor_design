@@ -5,7 +5,7 @@ module mem_controller
     DATA_WIDTH = 32
 )
 (
-    input logic clk,write_En,read_En,
+    input logic clk,rstN,write_En,read_En,
     input logic [2:0]func3,
     input logic [ADDRESS_WIDTH-1:0]address,
     input logic [DATA_WIDTH-1:0]data_in,
@@ -76,15 +76,28 @@ always_ff @(posedge clk) begin
 end
 
 always_ff @(posedge clk) begin
-    current_state   <= next_state;
-    address_reg     <= address_next;
-    current_read_en <= next_read_en;
-    current_write_en <= next_write_en;
+    if (!rstN) begin
+        current_state <= idle;
+        address_reg  <= '0;
+        current_read_en <= 1'b0;
+        current_write_en <= 1'b0;
 
-    current_read_delay_count <= next_read_delay_count;
-    current_write_delay_count <= next_write_delay_count;
+        current_read_delay_count <= '0;
+        current_write_delay_count <= '0;
 
-    data_in_reg <= data_in_next;
+        data_in_reg <= '0;
+    end
+    else begin
+        current_state   <= next_state;
+        address_reg     <= address_next;
+        current_read_en <= next_read_en;
+        current_write_en <= next_write_en;
+
+        current_read_delay_count <= next_read_delay_count;
+        current_write_delay_count <= next_write_delay_count;
+
+        data_in_reg <= data_in_next;
+    end
 end
 
 always_comb begin
