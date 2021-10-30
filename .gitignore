@@ -1,2 +1,7 @@
 projects/RISC_V/*
+<<<<<<< HEAD
 *.bak
+=======
+# !projects/RISC_V/RISC_V.xpr
+*.bat
+>>>>>>> main
