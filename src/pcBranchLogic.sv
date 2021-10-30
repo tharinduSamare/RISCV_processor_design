@@ -1,18 +1,17 @@
 module pcBranch(
-    input   logic [2:0] funct3,
-    input   logic       branch,
+    input   logic [2:0] funct3,         // to select the type of branch
+    input   logic       branch,         // from the control unit
     output  logic [2:0] branchType,
-    output  logic       takeBranch
+    output  logic       takeBranch      // branch ? 1 : 0
     );
 
     typedef enum logic [ 2:0 ]{
-        BEQ,
-        BNE,
-        BLT,
-        BLE,
-        BGE,
-        BLTU,
-        BGEU
+        BEQ  = 3'b000,
+        BNE  = 3'b001,
+        BLT  = 3'b100,
+        BGE  = 3'b101,
+        BLTU = 3'b110,
+        BGEU = 3'b111
     } branch_;
 
     branch_ _;
@@ -25,16 +24,13 @@ module pcBranch(
             else if (funct3 == 3'b001) begin
                 branchType <= BNE;            
             end
-            else if (funct3 == 3'b010) begin
+            else if (funct3 == 3'b100) begin
                 branchType <= BLT;           
             end
-            else if (funct3 == 3'b011) begin
-                branchType <= BLE;            
-            end
-            else if (funct3 == 3'b100) begin
+            else if (funct3 == 3'b101) begin
                 branchType <= BGE;            
             end
-            else if (funct3 == 3'b101) begin
+            else if (funct3 == 3'b110) begin
                 branchType <= BLTU;            
             end
             else if (funct3 == 3'b111) begin
@@ -43,6 +39,7 @@ module pcBranch(
         end
         else begin
             takeBranch <= '0;
+            branchType <= 3'b000;
         end
     end
 
