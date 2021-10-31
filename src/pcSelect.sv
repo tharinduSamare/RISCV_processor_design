@@ -2,16 +2,12 @@ module pcSelect(
     /*  
         control signals
     */
-    input   logic           jump_,
-    input   logic           jumpReg,  
-    input   logic           takeBranch,  
+    input   logic           pcSelect,  
 
     /*  
         Corresponding pc signals
     */
     input   logic   [31:0]  pcAdd,
-    input   logic   [31:0]  pcJump,
-    input   logic   [31:0]  pcRegJump,
     input   logic   [31:0]  pcBranch,
 
     /*  
@@ -22,17 +18,11 @@ module pcSelect(
 
     
     always_comb begin : pcSelectBlock 
-        if (!jump_ && !jumpReg && !takeBranch) begin
-            pcOut <= pcAdd;
+        if (pcSelect) begin
+            pcOut <= pcBranch;
         end
-        else if (jump_ && !jumpReg && !takeBranch) begin
-            pcOut <= pcJump;      
-        end
-        else if (!jump_ && jumpReg && !takeBranch) begin
-            pcOut <= pcRegJump;     
-        end
-        else if (!jump_ && !jumpReg && takeBranch) begin
-            pcOut <= pcBranch;   
+        else begin
+            pcOut <= pcAddl;
         end
     end
 
