@@ -5,5 +5,5 @@ module pcBranchAnd (
     output logic branchOut
 );
     
-    //get the and of the two
+    assign branchOut = ifBranch && branchIn;
 endmodule
