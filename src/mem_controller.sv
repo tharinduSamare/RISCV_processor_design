@@ -41,7 +41,7 @@ localparam [3:0]
     SW  = 3'b010;
     
 
-typedef enum [3:0]logic { 
+typedef enum logic[3:0] { 
     idle,
     load_0,
     load_1,
@@ -123,7 +123,7 @@ always_comb begin
                 address_next = address;
                 data_in_next = data_in;
                 if (func3 == SW) begin  // replace existing memory word
-                    next_state = store_3;
+                    next_state = store_1;
                     next_write_en = 1'b1;
                     next_write_delay_count = '0;
                 end
