@@ -1,62 +1,62 @@
 module pipilineRegister_ID_EX(
     // from control unit
     // to execution stage
-    input logic [1:0]       aluSrc1,
-    input logic [1:0]       aluSrc2,
-    input logic [1:0]       aluOp,
+    input logic [1:0]       aluSrc1_IDIn,
+    input logic [1:0]       aluSrc2_IDIn,
+    input logic [1:0]       aluOp_IDIn,
 
     // to memory stage
-    input logic             memWrite,
-    input logic             memRead,
+    input logic             memWrite_IDIn,
+    input logic             memRead_IDIn,
     
-    // to memory stage
-    input logic             regWrite,
-    input logic             memToRegWrite,
+    // to writeback stage
+    input logic             regWrite_IDIn,
+    input logic             memToRegWrite_IDIn,
 
 
-    // other signals
-    input logic [7 : 0]     func7In,
-    input logic [2 : 0]     func3In,
-    input logic [15 : 0]    read1,
-    input logic [15 : 0]    read2,
+    // other signals to exe stage
+    input logic [7 : 0]     func7_IDIn,
+    input logic [2 : 0]     func3_IDIn,
+    input logic [15 : 0]    read1_IDIn,
+    input logic [15 : 0]    read2_IDIn,
     
-    input logic [31 : 0]    I_imme,
-    input logic [31 : 0]    S_imme,
-    input logic [31 : 0]    U_imme,
+    input logic [31 : 0]    I_imme_IDIn,
+    input logic [31 : 0]    S_imme_IDIn,
+    input logic [31 : 0]    U_imme_IDIn,
 
-    input logic [4 : 0]     rd,
-    input logic [4 : 0]     rs1,
-    input logic [4 : 0]     rs2,
+    input logic [4 : 0]     rd_IDIn,
+    input logic [4 : 0]     rs1_IDIn,
+    input logic [4 : 0]     rs2_IDIn,
 
     
     //pipelined outputs
     //to execution stage
-    output logic [1:0]      aluSrc1,
-    output logic [1:0]      aluSrc2,
-    output logic [1:0]      aluOp,
+    output logic [1:0]      aluSrc_ID1Out,
+    output logic [1:0]      aluSrc2_IDOut,
+    output logic [1:0]      aluOp_IDOut,
 
     
     // to memory stage
-    output logic             memWrite,
-    output logic             memRead,
+    output logic             memWrite_IDOut,
+    output logic             memRead_IDOut,
     
-    // to memory stage
-    output logic             regWrite,
-    output logic             memToRegWrite,
+    // to writeback stage
+    output logic             regWrite_IDOut,
+    output logic             memToRegWrite_IDOut,
 
-    // other signals
-    output logic [7 : 0]    func7In,
-    output logic [2 : 0]    func3In,
-    output logic [15 : 0]   read1,
-    output logic [15 : 0]   read2,
+    // other signals to exe stage
+    output logic [7 : 0]    func7_IDOut,
+    output logic [2 : 0]    func3_IDOut,
+    output logic [15 : 0]   read1_IDOut,
+    output logic [15 : 0]   read2_IDOut,
     
-    output logic [31 : 0] I_imme,
-    output logic [31 : 0] S_imme,
-    output logic [31 : 0] U_imme,
+    output logic [31 : 0] I_imme_IDOut,
+    output logic [31 : 0] S_imme_IDOut,
+    output logic [31 : 0] U_imme_IDOut,
 
-    output logic [4 : 0] rd,
-    output logic [4 : 0] rs1,
-    output logic [4 : 0] rs2
+    output logic [4 : 0] rd_IDOut,
+    output logic [4 : 0] rs1_IDOut,
+    output logic [4 : 0] rs2_IDOut
 );
 
 endmodule
