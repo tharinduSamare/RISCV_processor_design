@@ -22,7 +22,7 @@ module pcSelect(
             pcOut <= pcBranch;
         end
         else begin
-            pcOut <= pcAddl;
+            pcOut <= pcAdd;
         end
     end
 
