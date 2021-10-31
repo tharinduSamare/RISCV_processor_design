@@ -2,7 +2,7 @@
 // import reg_names::*;
 
 module reg_file #(
-    parameter DATA_WIDTH = 16,
+    parameter DATA_WIDTH = 32,
     parameter REG_COUNT = 32,
     parameter REG_SIZE = $clog2(REG_COUNT)
 )(
