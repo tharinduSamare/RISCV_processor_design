@@ -1,11 +1,10 @@
 module pcBranchType #(
-    parameter REG_COUNT     = 32,
-    parameter REG_SIZE      = $clog2(REG_COUNT)
+    parameter DATA_WIDTH     = 32
 )
 (
-    input logic signed [REG_SIZE - 1 : 0]   rs1,
-    input logic signed [REG_SIZE - 1 : 0]   rs2,
-    input logic [2:0]                   brachType,
+    input logic signed [DATA_WIDTH - 1 : 0]   read1,
+    input logic signed [DATA_WIDTH - 1 : 0]   read2,
+    input logic [2:0]                   branchType,
 
     output logic                        branchN
 );
@@ -25,22 +24,22 @@ typedef enum logic [ 2:0 ]{
         Depending on the type of branch 
         required comparison is carried out
     */
-        if (branchType == BEQ && rs1 == rs2)begin
+        if (branchType == BEQ && read1 == read2)begin
             branchN = '1;
         end
-        else if (branchType == BNE && rs1 != rs2)begin
+        else if (branchType == BNE && read1 != read2)begin
             branchN = '1;
         end
-        else if (branchType == BLT && rs1 < rs2)begin
+        else if (branchType == BLT && read1 < read2)begin
             branchN = '1;
         end
-        else if (branchType == BGE && rs1 >= rs2)begin
+        else if (branchType == BGE && read1 >= read2)begin
             branchN = '1;
         end
-        else if (branchType == BLTU && (Unsigned)'((32)'rs1) < (Unsigned)'((32)'rs2))begin
+        else if (branchType == BLTU && read1 < read2) begin
             branchN = '1;
         end
-        else if (branchType == BGEU && (Unsigned)'((32)'rs1) >= (Unsigned)'((32)'rs2))begin
+        else if (branchType == BGEU && read1 >= read2) begin
             branchN = '1;
         end
         else begin

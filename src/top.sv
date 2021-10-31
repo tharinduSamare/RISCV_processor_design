@@ -38,16 +38,28 @@ assign takeBranch = branchCU & branchS;
 assign pcIn = (takeBranch) ? jumpAddr : pcInc;
 
 
+/// Branch Type Select Module /////
+logic branchS;
+logic [2:0] func3ID = instructionID[14:12];
+pcBranchType #(
+    .DATA_WIDTH(DATA_WIDTH)
+) BranchTypeSelection (
+    .read1(rs1DataID),
+    .read2(rs2DataID),
+    .branchType(func3ID),
+    .branchN(branchS)
+);
 
-///// IM /////
-// logic [ADDRESS_WIDTH-1:0]address,
+
+///// IRAM /////
 logic [INSTRUCTION_WIDTH-1:0]instructionIF;
-// ins_memory #(
-//     INSTRUCTION_WIDTH = INSTRUCTION_WIDTH,
-//     MEMORY_DEPTH = IM_MEM_DEPTH
-// ) IM (
-
-// );
+ins_memory #(
+    .INSTRUCTION_WIDTH (INSTRUCTION_WIDTH),
+    .MEMORY_DEPTH (IM_MEM_DEPTH)
+) IRAM (
+    .address(pcIF),
+    .instruction(instructionIF)
+);
 
 
 ///// IF/ID Pipeline Register/////
@@ -57,6 +69,7 @@ logic [INSTRUCTION_WIDTH-1:0] pcID;
 logic [INSTRUCTION_WIDTH-1:0] instructionID;
 
 pipilineRegister_IF_ID IF_ID_Register(
+    .clk,
     .pcIn(pcIF),
     .instructionIn(instructionIF),
     .harzardIF_ID_Write(harzardIF_ID_Write),
@@ -95,7 +108,10 @@ logic [REG_SIZE-1:0] rdWB;
 logic [DATA_WIDTH-1:0] dataInWB;
 logic [DATA_WIDTH-1:0] rs1DataID, rs2DataID;
 
-reg_file Reg_File(
+reg_file #(
+    .DATA_WIDTH(DATA_WIDTH),
+    .REG_COUNT(REG_COUNT)
+)Reg_File(
     .clk,
     .rstN,
     .wen(regWriteWB),
@@ -107,9 +123,7 @@ reg_file Reg_File(
     .regB_out(rs2DataID)
 );
 
-///// Branch Logic Module /////
-///// Branch Exe Module /////
-logic branchS;
+
 //// Extender Module /////
     // input logic [31:0]instruction,
     // output logic signed [31:0] I_immediate, S_immediate, SB_immediate, U_immediate, UJ_immediate
