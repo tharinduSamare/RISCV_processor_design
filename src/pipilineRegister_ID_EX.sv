@@ -1,4 +1,5 @@
 module pipilineRegister_ID_EX(
+    input logic             clk,
     // from control unit
     // to execution stage
     input logic [1:0]       aluSrc1_IDIn,
