@@ -1,4 +1,5 @@
 module pipilineRegister_EX_MEM (
+    input logic             clk,
     // from control unit
     // to memory stage
     input logic             memWrite_EX_IN,
@@ -33,5 +34,7 @@ module pipilineRegister_EX_MEM (
     input logic [4 : 0]     rd_EX_Out
 
 );
-    
+    always_ff @( posedge clk ) begin : blockName
+        
+    end
 endmodule
