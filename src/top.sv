@@ -20,7 +20,10 @@ logic pcWrite;
 logic [INSTRUCTION_WIDTH-1:0] pcIF;
 logic [INSTRUCTION_WIDTH-1:0] pcInc;
 logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
+logic [INSTRUCTION_WIDTH-1:0] jumpOp1;
+logic [INSTRUCTION_WIDTH-1:0] jumpOp2;
 logic takeBranch;
+
 pc PC(
     .clk(clk),
     .pcIn(pcIn),
@@ -36,8 +39,17 @@ pcAdd PC_Adder (
 // pc mux //
 assign takeBranch = branchCU & branchS;
 assign pcIn = (takeBranch) ? jumpAddr : pcInc;
+assign jumpOp1 = (jumpReg) ? rs1DataID : pcID;
+assign jumpAddr = jumpOp1 + jumpOp2;
 
+always_comb begin : BranchImm
+    if(jumpReg) jumpOp2 = immIID;
+    else if(jump) jumpOp2 = immUJ;
+    else if(branch) jumpOp2 = immSB;
+    else jumpOp2 = '0;
+end
 
+ 
 /// Branch Type Select Module /////
 logic branchS;
 logic [2:0] func3ID = instructionID[14:12];
@@ -50,6 +62,15 @@ pcBranchType #(
     .branchN(branchS)
 );
 
+// // Extender Module /////
+logic signed [INSTRUCTION_WIDTH-1:0] immIID;
+logic signed [INSTRUCTION_WIDTH-1:0] immUJ;
+logic signed [INSTRUCTION_WIDTH-1:0] immSB;
+//     input logic [31:0]instruction,
+//     output logic signed [31:0] I_immediate, S_immediate, SB_immediate, U_immediate, UJ_immediate
+// immediate_extend(
+//     .instruction()
+// );
 
 ///// IRAM /////
 logic [INSTRUCTION_WIDTH-1:0]instructionIF;
@@ -123,13 +144,6 @@ reg_file #(
     .regB_out(rs2DataID)
 );
 
-
-//// Extender Module /////
-    // input logic [31:0]instruction,
-    // output logic signed [31:0] I_immediate, S_immediate, SB_immediate, U_immediate, UJ_immediate
-// immediate_extend(
-//     .instruction()
-// );
 
 ///// ID/EX Pipeline Register /////
 
