@@ -1,4 +1,4 @@
-module branchType #(
+module pcBranchType #(
     parameter REG_COUNT     = 32,
     parameter REG_SIZE      = $clog2(REG_COUNT)
 )
