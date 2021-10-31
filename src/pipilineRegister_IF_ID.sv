@@ -1,4 +1,4 @@
-module(
+module pipilineRegister_IF_ID(
     input logic [31 : 0] pcIn,
     input logic [31 : 0] instructionIn,
 
