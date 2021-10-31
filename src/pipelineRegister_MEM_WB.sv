@@ -1,4 +1,5 @@
 module pipelineRegister_MEM_WB (
+    input logic             clk,
     // from control unit
     // to writeback stage
     input logic             regWrite_Mem_In,
