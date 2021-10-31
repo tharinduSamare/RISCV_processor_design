@@ -1,4 +1,4 @@
 projects/RISC_V/*
 !projects/RISC_V/RISC_V.xpr
 projects/Test/*
-src/*.sv.bak
+src/*.bak
