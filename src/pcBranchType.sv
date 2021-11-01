@@ -1,13 +1,10 @@
 module pcBranchType #(
-    parameter REG_COUNT     = 32,
-    parameter REG_SIZE      = $clog2(REG_COUNT)
+    parameter DATA_WIDTH     = 32
 )
 (
-    input logic                         branch, // from control unit
-    input logic [2:0]                   func3,
-
-    input logic signed [31 : 0]         rs1,
-    input logic signed [31 : 0]         rs2,
+    input logic signed [DATA_WIDTH - 1 : 0]   read1,
+    input logic signed [DATA_WIDTH - 1 : 0]   read2,
+    input logic [2:0]                   branchType,
 
     output logic                        branchN
 );
@@ -22,50 +19,31 @@ module pcBranchType #(
     } branch_;
 
     branch_ _;
-
-    logic   [31:0]  rs1_un;
-    logic   [31:0]  rs2_un;
-    
-    always_comb begin
-        if (rs1[31] == 1'b1) begin
-            rs1_un = -rs1;
-        end
-        else begin
-            rs1_un = rs1;
-        end
-        if (rs2[31] == 1'b1) begin
-            rs2_un = -rs2;
-        end
-        else begin
-            rs2_un = rs2;
-        end
-    end
-
     always_comb begin : check_branch
-        /*  
-            Depending on the type of branch 
-            required comparison is carried out
-        */
-            if (branch && func3 == BEQ && rs1 == rs2)begin
-                branchN = '1;
-            end
-            else if (branch && func3 == BNE && rs1 != rs2)begin
-                branchN = '1;
-            end
-            else if (branch && func3 == BLT && rs1 < rs2)begin
-                branchN = '1;
-            end
-            else if (branch && func3 == BGE && rs1 >= rs2)begin
-                branchN = '1;
-            end
-            else if (branch && func3 == BLTU && rs1_un < rs2_un)begin
-                branchN = '1;
-            end
-            else if (branch && func3 == BGEU && rs1_un >= rs2_un)begin
-                branchN = '1;
-            end
-            else begin
-                branchN = '0;
-            end
+    /*  
+        Depending on the type of branch 
+        required comparison is carried out
+    */
+        if (branchType == BEQ && read1 == read2)begin
+            branchN = '1;
+        end
+        else if (branchType == BNE && read1 != read2)begin
+            branchN = '1;
+        end
+        else if (branchType == BLT && read1 < read2)begin
+            branchN = '1;
+        end
+        else if (branchType == BGE && read1 >= read2)begin
+            branchN = '1;
+        end
+        else if (branchType == BLTU && read1 < read2) begin
+            branchN = '1;
+        end
+        else if (branchType == BGEU && read1 >= read2) begin
+            branchN = '1;
+        end
+        else begin
+            branchN = '0;
+        end
     end
 endmodule
