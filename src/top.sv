@@ -5,6 +5,11 @@ module top #(
     input logic clk, rstN
 );
 
+localparam ZERO = 2'b00;
+localparam ONE = 2'b01;
+localparam TWO = 2'b10;
+localparam THREE = 2'b11;
+
 localparam INSTRUCTION_WIDTH = 32;
 localparam DM_ADDRESS_WIDTH = 32;
 localparam DATA_WIDTH = 32;
@@ -260,17 +265,17 @@ data_forwarding #(
 
 always_comb begin : DataForward1
     unique case (forwardSel1) 
-        2'b00 : forwardOut1 = rs1DataEX;
-        2'b01 : forwardOut1 = aluOutMeM;
-        2'b10 : forwardOut1 = dataInWB;
+        ZERO : forwardOut1 = rs1DataEX;
+        ONE : forwardOut1 = aluOutMeM;
+        TWO : forwardOut1 = dataInWB;
 endcase
 end
 
 always_comb begin : DataForward2
     unique case (forwardSel2) 
-        2'b00 : forwardOut2 = rs2DataEX;
-        2'b01 : forwardOut2 = aluOutMeM;
-        2'b10 : forwardOut2 = dataInWB;
+        ZERO : forwardOut2 = rs2DataEX;
+        ONE : forwardOut2 = aluOutMeM;
+        TWO : forwardOut2 = dataInWB;
 endcase
 end
 
@@ -305,18 +310,18 @@ alu #(
 
 always_comb begin : ALUIn1Select
     unique case (aluSrc1EX) 
-        2'b00 : aluIn1 = forwardOut1;
-        2'b01 : aluIn1 = immUEX;
-        2'b10 : aluIn1 = 32'd4;
+        ZERO : aluIn1 = forwardOut1;
+        ONE : aluIn1 = immUEX;
+        TWO : aluIn1 = 32'd4;
 endcase  
 end
 
 always_comb begin : ALUIn2Select
     unique case (aluSrc2EX) 
-        2'b00 : aluIn2 = forwardOut2;
-        2'b01 : aluIn2 = immIEX;
-        2'b10 : aluIn2 = immSEX;
-        2'b11 : aluIn2 = pcEX;
+        ZERO : aluIn2 = forwardOut2;
+        ONE : aluIn2 = immIEX;
+        TWO : aluIn2 = immSEX;
+        THREE : aluIn2 = pcEX;
 endcase
 end
 
