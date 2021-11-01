@@ -1,8 +1,8 @@
 module hazard_unit
 (
     input logic clk, rstN,
-    input logic [3:0] IF_ID_rs1, IF_ID_rs2,
-    input logic [3:0] ID_Ex_rd,
+    input logic [4:0] IF_ID_rs1, IF_ID_rs2,
+    input logic [4:0] ID_Ex_rd,
     input logic ID_Ex_MemRead,ID_Ex_MemWrite,mem_ready,
     output logic IF_ID_write, PC_write, ID_Ex_enable
 
