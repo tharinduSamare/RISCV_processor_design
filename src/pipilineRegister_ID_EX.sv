@@ -63,4 +63,35 @@ module pipilineRegister_ID_EX(
     output logic [4 : 0] rs2_IDOut
 );
 
+    always_ff @( posedge clk ) begin : ID_EX_REGISTER
+        //pipelined outputs
+        //to execution stage
+        aluSrc_ID1Out           <=  aluSrc1_IDIn;
+        aluSrc2_IDOut           <=  aluSrc2_IDIn;
+        aluOp_IDOut             <=  aluOp_IDIn;
+
+        
+        // to memory stage
+        memWrite_IDOut          <=  memWrite_IDIn;
+        memRead_IDOut           <=  memRead_IDIn;
+        
+        // to writeback stage
+        regWrite_IDOut          <=  regWrite_IDIn;
+        memToRegWrite_IDOut     <=  memToRegWrite_IDIn;
+
+        // other signals to exe stage
+        func7_IDOut             <=  func7_IDIn; 
+        func3_IDOut             <=  func3_IDIn;
+        read1_IDOut             <=  read1_IDIn;
+        read2_IDOut             <=  read2_IDIn;
+        
+        I_imme_IDOut            <=  I_imme_ID;
+        S_imme_IDOut            <=  S_imme_ID;
+        U_imme_IDOut            <=  U_imme_ID;
+
+        rd_IDOut                <=  rd_IDIn;
+        rs1_IDOut               <=  rs1_IDIn;
+        rs2_IDOut               <=  rs2_IDIn;      
+    end
+    
 endmodule
