@@ -11,4 +11,8 @@ module pipilineRegister_IF_ID(
     output logic [31 : 0] instructionOut
 );
 
+    always_ff @( posedge clk ) begin : IF_ID_REGISTER
+        pcOut               <=      pcIn;
+        instructionOu       <=      instructionIn;
+    end
 endmodule
