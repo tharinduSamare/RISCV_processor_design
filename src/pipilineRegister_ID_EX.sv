@@ -18,8 +18,8 @@ module pipilineRegister_ID_EX(
     // other signals to exe stage
     input logic [7 : 0]     func7_IDIn,
     input logic [2 : 0]     func3_IDIn,
-    input logic [15 : 0]    read1_IDIn,
-    input logic [15 : 0]    read2_IDIn,
+    input logic [31 : 0]    read1_IDIn,
+    input logic [31 : 0]    read2_IDIn,
     
     input logic [31 : 0]    I_imme_IDIn,
     input logic [31 : 0]    S_imme_IDIn,
@@ -48,8 +48,8 @@ module pipilineRegister_ID_EX(
     // other signals to exe stage
     output logic [7 : 0]    func7_IDOut,
     output logic [2 : 0]    func3_IDOut,
-    output logic [15 : 0]   read1_IDOut,
-    output logic [15 : 0]   read2_IDOut,
+    output logic [31 : 0]   read1_IDOut,
+    output logic [31 : 0]   read2_IDOut,
     
     output logic [31 : 0] I_imme_IDOut,
     output logic [31 : 0] S_imme_IDOut,

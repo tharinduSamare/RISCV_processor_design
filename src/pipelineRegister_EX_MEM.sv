@@ -13,7 +13,7 @@ module pipilineRegister_EX_MEM (
     input logic [2 : 0]     func3_EX_IN,
     input logic [31 : 0]    aluOut_EX_IN,
 
-    input logic [15 : 0]    aluSrc2_EX_IN,
+    input logic [31 : 0]    aluSrc2_EX_IN,
     input logic [4 : 0]     rd_EX_IN,
 
 
@@ -30,7 +30,7 @@ module pipilineRegister_EX_MEM (
     input logic [2 : 0]     func3_EX_Out,
     input logic [31 : 0]    aluOut_EX_Out,
 
-    input logic [15 : 0]    aluSrc2_EX_Out,
+    input logic [31 : 0]    aluSrc2_EX_Out,
     input logic [4 : 0]     rd_EX_Out
 
 );
