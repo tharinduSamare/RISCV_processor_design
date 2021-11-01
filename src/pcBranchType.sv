@@ -9,7 +9,7 @@ module pcBranchType #(
     output logic                        branchN
 );
 
-typedef enum logic [ 2:0 ]{
+    typedef enum logic [ 2:0 ]{
         BEQ  = 3'b000,
         BNE  = 3'b001,
         BLT  = 3'b100,
@@ -43,7 +43,7 @@ typedef enum logic [ 2:0 ]{
             branchN = '1;
         end
         else begin
-            branchN = '0;
+            rs2_un = rs2;
         end
     end
 endmodule
