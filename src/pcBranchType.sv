@@ -43,7 +43,7 @@ module pcBranchType #(
             branchN = '1;
         end
         else begin
-            rs2_un = rs2;
+            branchN = '0;
         end
     end
 endmodule
