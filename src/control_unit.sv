@@ -3,7 +3,8 @@
 // import definitions::*;
 
 module control_unit(
-    input logic [6:0] opCode,
+    input logic [6:0] opCode, 
+    input enable,
     output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite, //writeSrc
     output logic [1:0] aluSrc1, aluSrc2, aluOp 
 );
@@ -35,6 +36,9 @@ always_comb begin : signalGenerator
     regWrite = '0;
     aluOp = 2'b00;
 
+    if (!enable) memWrite = '0;
+    else begin
+        
     case (opCode)
         LTYPE : begin
             aluSrc2 = 2'b01;
@@ -85,5 +89,6 @@ always_comb begin : signalGenerator
         default: begin
         end 
     endcase
+    end
 end
 endmodule

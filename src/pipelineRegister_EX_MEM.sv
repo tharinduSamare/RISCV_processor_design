@@ -1,4 +1,4 @@
-module pipilineRegister_EX_MEM (
+module pipelineRegister_EX_MEM (
     input logic             clk,
     // from control unit
     // to memory stage
@@ -19,19 +19,19 @@ module pipilineRegister_EX_MEM (
 
     // from control unit
     // to memory stage
-    input logic             memWrite_EX_Out,
-    input logic             memRead_EX_Out,
+    output logic             memWrite_EX_Out,
+    output logic             memRead_EX_Out,
     
     // to writeback stage
-    input logic             regWrite_EX_Out,
-    input logic             memToRegWrite_EX_Out,
+    output logic             regWrite_EX_Out,
+    output logic             memToRegWrite_EX_Out,
 
     // other signals to mem stage
-    input logic [2 : 0]     func3_EX_Out,
-    input logic [31 : 0]    aluOut_EX_Out,
+    output logic [2 : 0]     func3_EX_Out,
+    output logic [31 : 0]    aluOut_EX_Out,
 
-    input logic [31 : 0]    aluSrc2_EX_Out,
-    input logic [4 : 0]     rd_EX_Out
+    output logic [31 : 0]    aluSrc2_EX_Out,
+    output logic [4 : 0]     rd_EX_Out
 
 );
     always_ff @( posedge clk ) begin : blockName
