@@ -81,7 +81,7 @@ always_comb begin : alu_op_sel
                 default: nextOpSel <= ADD;
             endcase
         end
-        u_type : nextOpSel <= ;
+        u_type : nextOpSel <= '0;
         default : nextOpSel <= ADD;
     endcase
 end

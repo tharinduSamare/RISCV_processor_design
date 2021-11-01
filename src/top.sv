@@ -14,14 +14,12 @@ localparam FUNC7_WIDTH = 7;
 localparam FUNC3_WIDTH = 3;
 
 
-///// PC Module /////   
+///// PC related Wires /////   
 logic [INSTRUCTION_WIDTH-1:0] pcIn; 
 logic pcWrite;
 logic [INSTRUCTION_WIDTH-1:0] pcIF;
 logic [INSTRUCTION_WIDTH-1:0] pcInc;
 logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
-logic [INSTRUCTION_WIDTH-1:0] jumpOp1;
-logic [INSTRUCTION_WIDTH-1:0] jumpOp2;
 logic takeBranch;
 
 pc PC(
@@ -36,45 +34,15 @@ pcAdd PC_Adder (
     .pcNewFour(pcInc)
 );
 
-// pc mux //
+
+// PC related Modules //
 assign takeBranch = branchCU & branchS;
 assign pcIn = (takeBranch) ? jumpAddr : pcInc;
-assign jumpOp1 = (jumpReg) ? rs1DataID : pcID;
-assign jumpAddr = jumpOp1 + jumpOp2;
 
-always_comb begin : BranchImm
-    if(jumpReg) jumpOp2 = immIID;
-    else if(jump) jumpOp2 = immJ;
-    else if(branchCU) jumpOp2 = immB;
-    else jumpOp2 = '0;
-end
-
- 
-/// Branch Type Select Module /////
-logic branchS;
-logic [2:0] func3ID = instructionID[14:12];
-pcBranchType #(
-    .DATA_WIDTH(DATA_WIDTH)
-) BranchTypeSelection (
-    .read1(rs1DataID),
-    .read2(rs2DataID),
-    .branchType(func3ID),
-    .branchN(branchS)
-);
-
-// // Extender Module /////
-logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
-immediate_extend(
-    .instruction(instructionID),
-    .I_immediate(immIID),
-    .S_immediate(immSID),
-    .SB_immediate(immB),
-    .U_immediate(immUID),
-    .UJ_immediate(immJ)
-);
 
 ///// IRAM /////
 logic [INSTRUCTION_WIDTH-1:0]instructionIF;
+
 ins_memory #(
     .INSTRUCTION_WIDTH (INSTRUCTION_WIDTH),
     .MEMORY_DEPTH (IM_MEM_DEPTH)
@@ -82,13 +50,20 @@ ins_memory #(
     .address(pcIF),
     .instruction(instructionIF)
 );
-
+ 
 
 ///// IF/ID Pipeline Register/////
 logic harzardIF_ID_Write;
 logic flush;
 logic [INSTRUCTION_WIDTH-1:0] pcID;
-logic [INSTRUCTION_WIDTH-1:0] instructionID;
+
+logic [INSTRUCTION_WIDTH-1:0]      instructionID;
+logic [OP_CODE_WIDTH-1:0] opCode = instructionID[6:0];
+logic [REG_SIZE-1:0] rdID        = instructionID[11:7];
+logic [FUNC3_WIDTH-1:0] func3ID  = instructionID[14:12];
+logic [REG_SIZE-1:0] rs1ID       = instructionID[19:15];
+logic [REG_SIZE-1:0] rs2ID       = instructionID[24:20];
+logic [FUNC7_WIDTH-1:0] func7ID  = instructionID[31:25];
 
 pipilineRegister_IF_ID IF_ID_Register(
     .clk,
@@ -102,7 +77,6 @@ pipilineRegister_IF_ID IF_ID_Register(
 
 
 ///// Control Unit /////
-logic [OP_CODE_WIDTH-1:0] opCode = instructionID[31:25];
 logic jump, jumpReg, branchCU, memReadID, memWriteID, memtoRegID, regWriteID;
 logic [1:0] aluSrc1ID,aluSrc2ID;
 logic [1:0] aluOpID;
@@ -124,8 +98,6 @@ control_unit CU(
 
 ///// Register File /////
 logic regWriteWB;
-logic [REG_SIZE-1:0] rs1ID = instructionID[19:15];
-logic [REG_SIZE-1:0] rs2ID = instructionID[24:20];
 logic [REG_SIZE-1:0] rdWB;
 logic [DATA_WIDTH-1:0] dataInWB;
 logic [DATA_WIDTH-1:0] rs1DataID, rs2DataID;
@@ -146,60 +118,155 @@ reg_file #(
 );
 
 
+/// Branching Modules /////
+logic [INSTRUCTION_WIDTH-1:0] jumpOp1;
+logic [INSTRUCTION_WIDTH-1:0] jumpOp2;
+logic branchS;
+
+pcBranchType #(
+    .DATA_WIDTH(DATA_WIDTH)
+) BranchTypeSelection (
+    .read1(rs1DataID),
+    .read2(rs2DataID),
+    .branchType(func3ID),
+    .branchN(branchS)
+);
+
+assign jumpOp1 = (jumpReg) ? rs1DataID : pcID;
+always_comb begin : BranchImm
+    if(jumpReg) jumpOp2 = immIID;
+    else if(jump) jumpOp2 = immJ;
+    else if(branchCU) jumpOp2 = immB;
+    else jumpOp2 = '0;
+end
+assign jumpAddr = jumpOp1 + jumpOp2;
+
+
+///// Extender Module /////
+logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
+
+immediate_extend(
+    .instruction(instructionID),
+    .I_immediate(immIID),
+    .S_immediate(immSID),
+    .SB_immediate(immB),
+    .U_immediate(immUID),
+    .UJ_immediate(immJ)
+);
+
+
+
+
 ///// ID/EX Pipeline Register /////
+logic [1:0] aluSrc1EX,aluSrc2EX;
+logic [1:0] aluOpEX;
+logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
+logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
+logic [REG_SIZE-1:0] rdEX;
+logic [FUNC3_WIDTH-1:0] func3EX;
+logic [REG_SIZE-1:0] rs1EX;
+logic [REG_SIZE-1:0] rs2EX;
+logic [FUNC7_WIDTH-1:0] func7EX;
+logic [DATA_WIDTH-1:0] rs1DataEX, rs2DataEX;
+logic [INSTRUCTION_WIDTH-1:0] pcEX;
 
-    // // other signals to exe stage
-    // input logic [7 : 0]     func7_IDIn,
-    // input logic [2 : 0]     func3_IDIn,
-    // input logic [15 : 0]    read1_IDIn,
-    // input logic [15 : 0]    read2_IDIn,
+pipilineRegister_ID_EX ID_EX_Register(
+    .clk,
+
+    .pcIn(pcID),
+    .aluSrc1_IDIn(aluSrc1ID),
+    .aluSrc2_IDIn(aluSrc2ID),
+    .aluOp_IDIn(aluOpID),
+
+    .memWrite_IDIn(memWriteID),
+    .memRead_IDIn(memReadID),
+    .regWrite_IDIn(regWriteID),
+    .memToRegWrite_IDIn(memtoRegID),
+
+    .func7_IDIn(func7ID),
+    .func3_IDIn(func3ID),
+    .read1_IDIn(rs1DataID),
+    .read2_IDIn(rs2DataID),
+
+    .I_imme_IDIn(immIID),
+    .S_imme_IDIn(immSID),
+    .U_imme_IDIn(immUID),
+
+    .rd_IDIn(rdID),
+    .rs1_IDIn(rs1ID),
+    .rs2_IDIn(rs2ID),
+
+    .pcOut(pcEX),
+    .aluSrc1_IDOut(aluSrc1EX),
+    .aluSrc2_IDOut(aluSrc2EX),
+    .aluOp_IDOut(aluOpEX),
+
+    .memWrite_IDOut(memWriteEX),
+    .memRead_IDOut(memReadEX),
+    .regWrite_IDOut(regWriteEX),
+    .memToRegWrite_IDOut(memtoRegEX),
+
+    .func7_IDOut(func7EX),
+    .func3_IDOut(func3EX),
+    .read1_IDOut(rs1DataEX),
+    .read2_IDOut(rs2DataEX),
+
+    .I_imme_IDOut(immIEX),
+    .S_imme_IDOut(immSEX),
+    .U_imme_IDOut(immUEX),
+
+    .rd_IDOut(rdEX),
+    .rs1_IDOut(rs1EX),
+    .rs2_IDOut(rs2EX)
+
+);
+
+
+///// Alu Modules /////
+logic [3:0] aluOpSel;
+logic overflow, Z;
+logic [DATA_WIDTH-1:0] forward1Out, forward2Out, aluIn1, aluIn2, aluOutEx;
+
+alu_op #(
+    .DATA_WIDTH(DATA_WIDTH)
+) ALU_OpSelect(
+    .aluOp(aluOpEX),
+    .funct7(func7EX),
+    .funct3(func3EX),
+    .opSel(aluOpSel)
+);
+
+alu #(
+    .DATA_WIDTH(DATA_WIDTH)
+) ALU (
+    .bus_a(aluIn1),
+    .bus_b(aluIn2),
+    .opSel(aluOpSel),
+    .out(aluOutEx),
+    .overflow,
+    .Z
+);
+
+assign forward1Out = rs1DataEX;
+assign forward2Out = rs2DataEX;
+
+always_comb begin : ALUIn1Select
+    unique case (aluSrc1EX) 
+        2'b00 : aluIn1 = forward1Out;
+        2'b01 : aluIn1 = immUEX;
+        2'b10 : aluIn1 = 32'd4;
+endcase
     
-    // input logic [31 : 0]    I_imme_IDIn,
-    // input logic [31 : 0]    S_imme_IDIn,
-    // input logic [31 : 0]    U_imme_IDIn,
+end
 
-    // input logic [4 : 0]     rd_IDIn,
-    // input logic [4 : 0]     rs1_IDIn,
-    // input logic [4 : 0]     rs2_IDIn,
+always_comb begin : ALUIn2Select
+    unique case (aluSrc2EX) 
+        2'b00 : aluIn2 = forward2Out;
+        2'b01 : aluIn2 = immIEX;
+        2'b10 : aluIn2 = immSEX;
+        2'b11 : aluIn2 = pcEX;
+endcase
+end
 
-    
-    // //pipelined outputs
-    // //to execution stage
-    // output logic [1:0]      aluSrc_ID1Out,
-    // output logic [1:0]      aluSrc2_IDOut,
-    // output logic [1:0]      aluOp_IDOut,
 
-    
-    // // to memory stage
-    // output logic             memWrite_IDOut,
-    // output logic             memRead_IDOut,
-    
-    // // to writeback stage
-    // output logic             regWrite_IDOut,
-    // output logic             memToRegWrite_IDOut,
-
-    // // other signals to exe stage
-    // output logic [7 : 0]    func7_IDOut,
-    // output logic [2 : 0]    func3_IDOut,
-    // output logic [15 : 0]   read1_IDOut,
-    // output logic [15 : 0]   read2_IDOut,
-    
-    // output logic [31 : 0] I_imme_IDOut,
-    // output logic [31 : 0] S_imme_IDOut,
-    // output logic [31 : 0] U_imme_IDOut,
-
-    // output logic [4 : 0] rd_IDOut,
-    // output logic [4 : 0] rs1_IDOut,
-    // output logic [4 : 0] rs2_IDOut
-// pipilineRegister_ID_EX ID_EX_Register(
-//     .aluSrc1_IDIn(aluSrc1ID),
-//     .aluSrc2_IDIn(aluSrc2ID),
-//     .aluOp_IDIn(aluOpID),
-
-//     .memWrite_IDIn(memWriteID),
-//     .memRead_IDIn(memReadID),
-//     .regWrite_IDIn(regWriteID),
-//     .memToRegWrite_IDIn(memtoRegID),
-
-// );
 endmodule

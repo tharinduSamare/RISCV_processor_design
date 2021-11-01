@@ -2,6 +2,8 @@ module pipilineRegister_ID_EX(
     input logic             clk,
     // from control unit
     // to execution stage
+
+    input logic [31:0]      pcIn,
     input logic [1:0]       aluSrc1_IDIn,
     input logic [1:0]       aluSrc2_IDIn,
     input logic [1:0]       aluOp_IDIn,
@@ -16,10 +18,10 @@ module pipilineRegister_ID_EX(
 
 
     // other signals to exe stage
-    input logic [7 : 0]     func7_IDIn,
+    input logic [6 : 0]     func7_IDIn,
     input logic [2 : 0]     func3_IDIn,
-    input logic [15 : 0]    read1_IDIn,
-    input logic [15 : 0]    read2_IDIn,
+    input logic [31 : 0]    read1_IDIn,
+    input logic [31 : 0]    read2_IDIn,
     
     input logic [31 : 0]    I_imme_IDIn,
     input logic [31 : 0]    S_imme_IDIn,
@@ -32,7 +34,8 @@ module pipilineRegister_ID_EX(
     
     //pipelined outputs
     //to execution stage
-    output logic [1:0]      aluSrc_ID1Out,
+    output logic [31:0] pcOut,
+    output logic [1:0]      aluSrc1_IDOut,
     output logic [1:0]      aluSrc2_IDOut,
     output logic [1:0]      aluOp_IDOut,
 
@@ -46,10 +49,10 @@ module pipilineRegister_ID_EX(
     output logic             memToRegWrite_IDOut,
 
     // other signals to exe stage
-    output logic [7 : 0]    func7_IDOut,
+    output logic [6 : 0]    func7_IDOut,
     output logic [2 : 0]    func3_IDOut,
-    output logic [15 : 0]   read1_IDOut,
-    output logic [15 : 0]   read2_IDOut,
+    output logic [31 : 0]   read1_IDOut,
+    output logic [31 : 0]   read2_IDOut,
     
     output logic [31 : 0] I_imme_IDOut,
     output logic [31 : 0] S_imme_IDOut,
