@@ -1,6 +1,6 @@
 module immediate_extend 
 (
-    input logic [31:0]instruction,
+    input logic [31:7]instruction,
     output logic signed [31:0] I_immediate, S_immediate, SB_immediate, U_immediate, UJ_immediate
 );
 

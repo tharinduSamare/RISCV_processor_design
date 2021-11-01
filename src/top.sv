@@ -44,8 +44,8 @@ assign jumpAddr = jumpOp1 + jumpOp2;
 
 always_comb begin : BranchImm
     if(jumpReg) jumpOp2 = immIID;
-    else if(jump) jumpOp2 = immUJ;
-    else if(branch) jumpOp2 = immSB;
+    else if(jump) jumpOp2 = immJ;
+    else if(branchCU) jumpOp2 = immB;
     else jumpOp2 = '0;
 end
 
@@ -63,14 +63,15 @@ pcBranchType #(
 );
 
 // // Extender Module /////
-logic signed [INSTRUCTION_WIDTH-1:0] immIID;
-logic signed [INSTRUCTION_WIDTH-1:0] immUJ;
-logic signed [INSTRUCTION_WIDTH-1:0] immSB;
-//     input logic [31:0]instruction,
-//     output logic signed [31:0] I_immediate, S_immediate, SB_immediate, U_immediate, UJ_immediate
-// immediate_extend(
-//     .instruction()
-// );
+logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
+immediate_extend(
+    .instruction(instructionID),
+    .I_immediate(immIID),
+    .S_immediate(immSID),
+    .SB_immediate(immB),
+    .U_immediate(immUID),
+    .UJ_immediate(immJ)
+);
 
 ///// IRAM /////
 logic [INSTRUCTION_WIDTH-1:0]instructionIF;
