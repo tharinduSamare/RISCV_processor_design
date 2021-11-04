@@ -1,4 +1,4 @@
-module pipilineRegister_IF_ID( 
+module pipelineRegister_IF_ID( 
     input logic             clk,
 
     input logic [31 : 0]    pcIn,
@@ -13,6 +13,6 @@ module pipilineRegister_IF_ID(
 
     always_ff @( posedge clk ) begin : IF_ID_REGISTER
         pcOut               <=      pcIn;
-        instructionOu       <=      instructionIn;
+        instructionOut       <=      instructionIn;
     end
 endmodule

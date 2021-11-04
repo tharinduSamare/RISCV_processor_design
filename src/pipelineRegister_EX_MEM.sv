@@ -1,4 +1,4 @@
-module pipilineRegister_EX_MEM ( 
+module pipelineRegister_EX_MEM (
     input logic             clk,
     // from control unit
     // to memory stage

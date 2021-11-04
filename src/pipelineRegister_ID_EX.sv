@@ -1,7 +1,9 @@
-module pipilineRegister_ID_EX(  
+module pipelineRegister_ID_EX(  
     input logic             clk,
     // from control unit
     // to execution stage
+
+    input logic [31:0]      pcIn,
     input logic [1:0]       aluSrc1_IDIn,
     input logic [1:0]       aluSrc2_IDIn,
     input logic [1:0]       aluOp_IDIn,
@@ -32,7 +34,8 @@ module pipilineRegister_ID_EX(
     
     //pipelined outputs
     //to execution stage
-    output logic [1:0]      aluSrc_ID1Out,
+    output logic [31:0] pcOut,
+    output logic [1:0]      aluSrc1_IDOut,
     output logic [1:0]      aluSrc2_IDOut,
     output logic [1:0]      aluOp_IDOut,
 
@@ -63,7 +66,7 @@ module pipilineRegister_ID_EX(
     always_ff @( posedge clk ) begin : ID_EX_REGISTER
         //pipelined outputs
         //to execution stage
-        aluSrc_ID1Out           <=  aluSrc1_IDIn;
+        aluSrc1_IDOut           <=  aluSrc1_IDIn;
         aluSrc2_IDOut           <=  aluSrc2_IDIn;
         aluOp_IDOut             <=  aluOp_IDIn;
 
@@ -82,9 +85,9 @@ module pipilineRegister_ID_EX(
         read1_IDOut             <=  read1_IDIn;
         read2_IDOut             <=  read2_IDIn;
         
-        I_imme_IDOut            <=  I_imme_ID;
-        S_imme_IDOut            <=  S_imme_ID;
-        U_imme_IDOut            <=  U_imme_ID;
+        I_imme_IDOut            <=  I_imme_IDIn;
+        S_imme_IDOut            <=  S_imme_IDIn;
+        U_imme_IDOut            <=  U_imme_IDIn;
 
         rd_IDOut                <=  rd_IDIn;
         rs1_IDOut               <=  rs1_IDIn;
