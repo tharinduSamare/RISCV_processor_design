@@ -4,6 +4,6 @@ module pcAdd(
     output  logic   [31:0]  pcNewFour
     );
 
-    assign pcNewFour = pcOld + 3'd4;
+    assign pcNewFour = pcOld + 32'd4;
 
 endmodule: pcAdd
