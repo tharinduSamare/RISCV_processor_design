@@ -33,6 +33,7 @@ module pipelineRegister_MEM_WB (
             readD_Mem_Out           <=  '0;
             aluOut_Mem_Out          <=  '0;
             rd_Mem_Out              <=  '0;
+        end
         else begin
             // from control unit
             // to writeback stage

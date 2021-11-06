@@ -5,10 +5,10 @@ module top import definitions::*; #(
     input logic clk, rstN
 );
 
-localparam ZERO = 2'b00;
-localparam ONE = 2'b01;
-localparam TWO = 2'b10;
-localparam THREE = 2'b11;
+// localparam ZERO = 2'b00;
+// localparam ONE = 2'b01;
+// localparam TWO = 2'b10;
+// localparam THREE = 2'b11;
 
 localparam INSTRUCTION_WIDTH = 32;
 localparam DM_ADDRESS_WIDTH = 32;
@@ -29,9 +29,12 @@ logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 logic takeBranch;
 
 pc PC(
-    .clk(clk),
+    .rstN,
+    .clk,
+
     .pcIn(pcIn),
     .pcWrite(pcWrite),
+
     .pcOut(pcIF)
 );
 
@@ -54,6 +57,7 @@ ins_memory #(
     .MEMORY_DEPTH (IM_MEM_DEPTH)
 ) IRAM (
     .address(pcIF),
+
     .instruction(instructionIF)
 );
  
@@ -73,10 +77,13 @@ logic [FUNC7_WIDTH-1:0] func7ID  = instructionID[31:25];
 
 pipelineRegister_IF_ID IF_ID_Register(
     .clk,
+    .rstN,
+
     .pcIn(pcIF),
     .instructionIn(instructionIF),
     .harzardIF_ID_Write(hazardIFIDWrite),
     .flush(flush),
+
     .pcOut(pcID),
     .instructionOut(instructionID)
 );
@@ -84,12 +91,13 @@ pipelineRegister_IF_ID IF_ID_Register(
 
 ///// Control Unit /////
 logic jump, jumpReg, branchCU, memReadID, memWriteID, memtoRegID, regWriteID;
-logic [1:0] aluSrc1ID,aluSrc2ID;
+alu_sel_t aluSrc1ID,aluSrc2ID;
 aluOp_t aluOpID; //
 logic enableCU;
 
 control_unit CU(
     .opCode,
+
     .enable(enableCU),
     .jump,
     .jumpReg,
@@ -116,11 +124,13 @@ reg_file #(
 )Reg_File(
     .clk,
     .rstN,
+
     .wen(regWriteWB),
     .rs1(rs1ID),
     .rs2(rs2ID),
     .rd(rdWB),
     .data_in(dataInWB),
+
     .regA_out(rs1DataID),
     .regB_out(rs2DataID)
 );
@@ -137,6 +147,7 @@ pcBranchType #(
     .read1(rs1DataID),
     .read2(rs2DataID),
     .branchType(func3ID),
+
     .branchN(branchS)
 );
 
@@ -155,6 +166,7 @@ logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
 
 immediate_extend(
     .instruction(instructionID),
+
     .I_immediate(immIID),
     .S_immediate(immSID),
     .SB_immediate(immB),
@@ -181,7 +193,7 @@ hazard_unit Hazard_Unit(
 
 ///// ID/EX Pipeline Register /////
 alu_sel_t aluSrc1EX,aluSrc2EX;
-logic [1:0] aluOpEX;
+aluOp_t aluOpEX;
 logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
 logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
 logic [REG_SIZE-1:0] rdEX;
@@ -194,6 +206,7 @@ logic [INSTRUCTION_WIDTH-1:0] pcEX;
 
 pipelineRegister_ID_EX ID_EX_Register(
     .clk,
+    .rstN,
 
     .pcIn(pcID),
     .aluSrc1_IDIn(aluSrc1ID),
@@ -258,6 +271,7 @@ data_forwarding #(
     .wb_rd(rdWB),
     .ex_rs1(rs1EX),
     .ex_rs2(rs2EX),
+
     .df_mux1(forwardSel1),
     .df_mux2(forwardSel2)
 );
@@ -290,6 +304,7 @@ alu_op #(
     .aluOp(aluOpEX),
     .funct7(func7EX),
     .funct3(func3EX),
+
     .opSel(aluOpSel)
 );
 
@@ -299,6 +314,7 @@ alu #(
     .bus_a(aluIn1),
     .bus_b(aluIn2),
     .opSel(aluOpSel),
+
     .out(aluOutEx),
     .overflow,
     .Z
@@ -334,6 +350,7 @@ logic [DATA_WIDTH-1:0] rs2DataMeM;
 
 pipelineRegister_EX_MEM EX_MEM_Register (
     .clk,
+    .rstN,
 
     .memWrite_EX_IN(memWriteEX),
     .memRead_EX_IN(memReadEX),
@@ -365,11 +382,13 @@ mem_controller #(
 ) DRAM (
     .clk,
     .rstN,
+
     .write_En(memWriteMeM),
     .read_En(memReadMeM),
-    .func3(func3MeM),
+    .func3_in(func3MeM),
     .address(aluOutMeM),
     .data_in(rs2DataMeM),
+
     .data_out(dMOutMem),
     .ready(dMReadyMem)
 );
@@ -382,6 +401,8 @@ logic [DATA_WIDTH-1:0] dMOutWB;
 
 pipelineRegister_MEM_WB MEM_WB_Register (
     .clk,
+    .rstN,
+
     .regWrite_Mem_In(regWriteMeM),
     .memToRegWrite_Mem_In(memtoRegMeM),
     .readD_Mem_In(dMOutMem),
