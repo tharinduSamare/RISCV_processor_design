@@ -1,4 +1,4 @@
-module top #(
+module top import definitions::*; #(
     parameter IM_MEM_DEPTH = 256,
     parameter DM_MEM_DEPTH = 4096
 )(
@@ -19,7 +19,6 @@ localparam REG_SIZE = $clog2(REG_COUNT);
 localparam OP_CODE_WIDTH = 7;
 localparam FUNC7_WIDTH = 7;
 localparam FUNC3_WIDTH = 3;
-
 
 ///// PC related Wires /////   
 logic [INSTRUCTION_WIDTH-1:0] pcIn; 
@@ -86,7 +85,7 @@ pipelineRegister_IF_ID IF_ID_Register(
 ///// Control Unit /////
 logic jump, jumpReg, branchCU, memReadID, memWriteID, memtoRegID, regWriteID;
 logic [1:0] aluSrc1ID,aluSrc2ID;
-logic [1:0] aluOpID;
+aluOp_t aluOpID; //
 logic enableCU;
 
 control_unit CU(
@@ -181,7 +180,7 @@ hazard_unit Hazard_Unit(
 );
 
 ///// ID/EX Pipeline Register /////
-logic [1:0] aluSrc1EX,aluSrc2EX;
+alu_sel_t aluSrc1EX,aluSrc2EX;
 logic [1:0] aluOpEX;
 logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
 logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;

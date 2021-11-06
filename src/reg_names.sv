@@ -7,7 +7,7 @@ typedef enum logic [4:0]{
     gp  = 5'd3, //global pointer
     tp  = 5'd4, //thread pointer
     t0  = 5'd5, //temporary / alt. link register
-    t1  = 5'd6,
+    t1  = 5'd6, 
     t2  = 5'd7, 
     s0  = 5'd8, //saved register/frame pointer
     s1  = 5'd9, //saved register
