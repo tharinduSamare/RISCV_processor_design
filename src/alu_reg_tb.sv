@@ -43,10 +43,14 @@ reg_file reg_dut (
 );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Alu alu_dut (
 =======
 alu alu_dut (
 >>>>>>> 8944899 (Modifications and updates for pipeline model)
+=======
+Alu alu_dut (
+>>>>>>> 170d9f8 (Commit to pull)
     .bus_a,
     .bus_b,
     .opSel,

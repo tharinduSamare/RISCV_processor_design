@@ -24,7 +24,7 @@ flag_t overflow, Z, error;
 operation_t opSel;
 logic [DATA_WIDTH_L-1:0] bus_a, bus_b;
     
-alu alu_dut (
+Alu alu_dut (
     .bus_a(bus_a),
     .bus_b(bus_b),
     .opSel(opSel),
@@ -33,13 +33,13 @@ alu alu_dut (
     .Z(Z)
 );
 
-// alu_op_unit op_dut (
-//     .aluOp(aluOp),
-//     .funct7(funct7),
-//     .funct3(funct3),
-//     .opSel,
-//     .error
-// );
+alu_op_unit op_dut (
+    .aluOp(aluOp),
+    .funct7(funct7),
+    .funct3(funct3),
+    .opSel,
+    .error
+);
 
 // initial begin
 //     bus_a = 32'd1293;

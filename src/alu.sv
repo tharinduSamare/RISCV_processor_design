@@ -1,4 +1,4 @@
-module alu 
+module Alu 
 import alu_definitions::*;
 #(
     parameter D_WIDTH = 32
@@ -42,4 +42,4 @@ end
 assign out = result[D_WIDTH-1:0];
 assign overflow = (result[D_WIDTH]) ? HIGH : LOW;
 assign Z = (result[D_WIDTH-1:0]==0) ? HIGH : LOW;
-endmodule: alu
+endmodule: Alu
