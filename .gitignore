@@ -6,3 +6,5 @@ projects/Test/*
 projects/alu*
 projects/df*
 src/*.bak
+# !projects/RISC_V/RISC_V.xpr
+*.bat
