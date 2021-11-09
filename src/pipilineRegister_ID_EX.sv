@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 module pipilineRegister_ID_EX(
     input logic             clk,
     // from control unit
     // to execution stage
 
     input logic [31:0]      pcIn,
+=======
+module pipilineRegister_ID_EX(  
+    input logic             clk,
+    // from control unit
+    // to execution stage
+>>>>>>> f6aaff5 (Add removed pipeline registers)
     input logic [1:0]       aluSrc1_IDIn,
     input logic [1:0]       aluSrc2_IDIn,
     input logic [1:0]       aluOp_IDIn,
@@ -34,8 +41,12 @@ module pipilineRegister_ID_EX(
     
     //pipelined outputs
     //to execution stage
+<<<<<<< HEAD
     output logic [31:0] pcOut,
     output logic [1:0]      aluSrc1_IDOut,
+=======
+    output logic [1:0]      aluSrc_ID1Out,
+>>>>>>> f6aaff5 (Add removed pipeline registers)
     output logic [1:0]      aluSrc2_IDOut,
     output logic [1:0]      aluOp_IDOut,
 
