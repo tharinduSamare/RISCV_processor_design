@@ -67,7 +67,7 @@ logic [REG_SIZE-1:0] rs1ID       = instructionID[19:15];
 logic [REG_SIZE-1:0] rs2ID       = instructionID[24:20];
 logic [FUNC7_WIDTH-1:0] func7ID  = instructionID[31:25];
 
-pipilineRegister_IF_ID IF_ID_Register(
+pipelineRegister_IF_ID IF_ID_Register(
     .clk,
     .pcIn(pcIF),
     .instructionIn(instructionIF),
@@ -188,7 +188,7 @@ logic [FUNC7_WIDTH-1:0] func7EX;
 logic [DATA_WIDTH-1:0] rs1DataEX, rs2DataEX;
 logic [INSTRUCTION_WIDTH-1:0] pcEX;
 
-pipilineRegister_ID_EX ID_EX_Register(
+pipelineRegister_ID_EX ID_EX_Register(
     .clk,
 
     .pcIn(pcID),
