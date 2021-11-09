@@ -1,14 +1,22 @@
-module memory 
+`include "definitions.sv"
+import definitions::*;
+
+module memory
 #(
     parameter MEM_DEPTH = 256,
-    parameter ADDR_WIDTH = $clog2(MEM_DEPTH),
-    parameter DATA_WIDTH = 32
+    parameter DATA_WIDTH = 32,
+    parameter LS_WIDTH = $clog2(DATA_WIDTH),
+    parameter MS_WIDTH = $clog2(MEM_DEPTH),
+    parameter ADDR_WIDTH = MS_WIDTH + LS_WIDTH  // byte addressible, one word has several bytes
+    
 )
 (
-    input logic clk,wrEn,
+    input logic clk,
+    input mem_operation_t mem_operation,
     input logic [ADDR_WIDTH-1:0]address,
     input logic [DATA_WIDTH-1:0]data_in,
-    output logic [DATA_WIDTH-1:0]data_out
+    output logic [DATA_WIDTH-1:0]data_out,
+    output logic stall
 );
 
 logic [ADDR_WIDTH-1:0]reg_address;
