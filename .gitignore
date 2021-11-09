@@ -1,10 +1,7 @@
-projects/RISC_V/*
+projects/*
 *.bak
 *.bat
 !projects/RISC_V/RISC_V.xpr
-projects/Test/*
-projects/alu*
-projects/df*
 src/*.bak
 # !projects/RISC_V/RISC_V.xpr
 *.bat
