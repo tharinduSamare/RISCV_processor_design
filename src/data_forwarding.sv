@@ -4,8 +4,8 @@ module data_forwarding #(
 ) (
     //input  logic [DATA_WIDTH-1   :0] mem_regWrite, wb_regWrite,
     input  logic mem_regWrite, wb_regWrite,
-    input  logic [REG_SIZE-1     :0] mem_rd, wb_rd,
-    input  logic [REG_SIZE-1     :0] ex_rs1, ex_rs2,
+    input  logic [REG_SIZE-1:0] mem_rd, wb_rd,
+    input  logic [REG_SIZE-1:0] ex_rs1, ex_rs2,
     output logic [1:0] df_mux1, df_mux2
 );
 logic wb_fwd1,  wb_fwd2;

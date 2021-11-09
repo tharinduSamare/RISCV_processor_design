@@ -42,7 +42,11 @@ reg_file reg_dut (
     .regB_out(bus_b) 
 );
 
+<<<<<<< HEAD
 Alu alu_dut (
+=======
+alu alu_dut (
+>>>>>>> 8944899 (Modifications and updates for pipeline model)
     .bus_a,
     .bus_b,
     .opSel,
