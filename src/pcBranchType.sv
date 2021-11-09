@@ -1,4 +1,4 @@
-module pcfunc3 #(
+module pcBranchType #(
     parameter REG_COUNT     = 32,
     parameter REG_SIZE      = $clog2(REG_COUNT)
 )
@@ -43,6 +43,7 @@ module pcfunc3 #(
 
     always_comb begin : check_branch
 <<<<<<< HEAD
+<<<<<<< HEAD
     /*  
         Depending on the type of branch 
         required comparison is carried out
@@ -73,32 +74,40 @@ module pcfunc3 #(
             branchN = '1;
 =======
         if (branch) begin
+=======
+>>>>>>> 3bb1e50 (Bug fix: fixed the module name issue and changed the condition statement for the branching)
         /*  
             Depending on the type of branch 
             required comparison is carried out
         */
-            if (func3 == BEQ && rs1 == rs2)begin
+            if (branch && func3 == BEQ && rs1 == rs2)begin
                 branchN = '1;
             end
-            else if (func3 == BNE && rs1 != rs2)begin
+            else if (branch && func3 == BNE && rs1 != rs2)begin
                 branchN = '1;
             end
-            else if (func3 == BLT && rs1 < rs2)begin
+            else if (branch && func3 == BLT && rs1 < rs2)begin
                 branchN = '1;
             end
-            else if (func3 == BGE && rs1 >= rs2)begin
+            else if (branch && func3 == BGE && rs1 >= rs2)begin
                 branchN = '1;
             end
-            else if (func3 == BLTU && rs1_un < rs2_un)begin
+            else if (branch && func3 == BLTU && rs1_un < rs2_un)begin
                 branchN = '1;
             end
-            else if (func3 == BGEU && rs1_un >= rs2_un)begin
+            else if (branch && func3 == BGEU && rs1_un >= rs2_un)begin
                 branchN = '1;
             end
+<<<<<<< HEAD
 >>>>>>> e2cd857 (Add feature: check branch in the module itself)
         end
         else begin
             branchN = '0;
         end
+=======
+            else begin
+                branchN = '0;
+            end
+>>>>>>> 3bb1e50 (Bug fix: fixed the module name issue and changed the condition statement for the branching)
     end
 endmodule
