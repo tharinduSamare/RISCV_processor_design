@@ -1,2 +1,3 @@
 projects/RISC_V/*
 *.bak
+# !projects/RISC_V/RISC_V.xpr
