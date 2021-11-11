@@ -1,20 +1,27 @@
+<<<<<<< HEAD
 <<<<<<< HEAD:src/pipilineRegister_ID_EX.sv
 <<<<<<< HEAD
 module pipilineRegister_ID_EX(
 =======
 module pipelineRegister_ID_EX(  
 >>>>>>> 2fd7694 (added complete top module):src/pipelineRegister_ID_EX.sv
+=======
+module pipelineRegister_ID_EX(  
+>>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
     input logic             clk,
     // from control unit
     // to execution stage
 
     input logic [31:0]      pcIn,
+<<<<<<< HEAD
 =======
 module pipilineRegister_ID_EX(  
     input logic             clk,
     // from control unit
     // to execution stage
 >>>>>>> f6aaff5 (Add removed pipeline registers)
+=======
+>>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
     input logic [1:0]       aluSrc1_IDIn,
     input logic [1:0]       aluSrc2_IDIn,
     input logic [1:0]       aluOp_IDIn,
@@ -46,11 +53,16 @@ module pipilineRegister_ID_EX(
     //pipelined outputs
     //to execution stage
 <<<<<<< HEAD
+<<<<<<< HEAD
     output logic [31:0] pcOut,
     output logic [1:0]      aluSrc1_IDOut,
 =======
     output logic [1:0]      aluSrc_ID1Out,
 >>>>>>> f6aaff5 (Add removed pipeline registers)
+=======
+    output logic [31:0] pcOut,
+    output logic [1:0]      aluSrc1_IDOut,
+>>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
     output logic [1:0]      aluSrc2_IDOut,
     output logic [1:0]      aluOp_IDOut,
 

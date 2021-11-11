@@ -21,7 +21,7 @@ aluOp_t aluOp;
 logic [6:0] funct7; 
 logic [2:0] funct3;
 logic [DATA_WIDTH_L-1:0] alu_out;
-flag_t overflow, Z, error;
+flag_t overflow, Z, error_out;
 operation_t opSel;
 
 logic rstN, wen;
@@ -42,7 +42,7 @@ reg_file reg_dut (
     .regB_out(bus_b) 
 );
 
-Alu alu_dut (
+alu alu_dut (
     .bus_a,
     .bus_b,
     .opSel,
@@ -56,10 +56,10 @@ alu_op_unit op_dut (
     .funct7(funct7),
     .funct3(funct3),
     .opSel,
-    .error
+    .error_out
 );
 
-/*task write_all_reg(
+task write_all_reg(
     // output wen,
     // output [DATA_WIDTH_L-1:0] data_in
     );
@@ -70,7 +70,7 @@ alu_op_unit op_dut (
         data_in <= $random;
     end
 endtask //write_all_reg
-*//*
+/*
 1 - add     rd rs1 rs2 31..25=0  14..12=0 6..2=0x0C 1..0=3
 2 - sub     rd rs1 rs2 31..25=32 14..12=0 6..2=0x0C 1..0=3
 3 - sll     rd rs1 rs2 31..25=0  14..12=1 6..2=0x0C 1..0=3
@@ -82,7 +82,7 @@ endtask //write_all_reg
 9 - or      rd rs1 rs2 31..25=0  14..12=6 6..2=0x0C 1..0=3
 10 -and     rd rs1 rs2 31..25=0  14..12=7 6..2=0x0C 1..0=3
 */
-/*typedef enum logic [3:0] { 
+typedef enum logic [3:0] { 
     add, sub, sll, slt, sltu, xor_op, srl, sra, or_op, and_op
 } rtype_inst;
 
@@ -126,6 +126,6 @@ initial begin
     write_all_reg();
     rInstruction(t0, a0, a1, add);
 end
-*/
+
 
 endmodule : alu_reg_tb
