@@ -63,8 +63,18 @@ logic rstN, start,done;
 
 top #(.IM_MEM_DEPTH(IM_MEM_DEPTH), .DM_MEM_DEPTH(DM_MEM_DEPTH)) DUT(.*);
 
-Memory #(.WIDTH(32), .DEPTH(DM_MEM_DEPTH), .MEM_READ_DELAY(DATA_MEM_READ_DELAY), .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("dataMem.txt"));
-Memory #(.WIDTH(32), .DEPTH(IM_MEM_DEPTH), .MEM_READ_DELAY(INS_MEM_READ_DELAY), .MEM_WRITE_DELAY(INS_MEM_WRITE_DELAY)) insMemory = new(.mem_init_file("insMem.txt"));
+Memory #(
+    .WIDTH(32), 
+    .DEPTH(DM_MEM_DEPTH), 
+    .MEM_READ_DELAY(DATA_MEM_READ_DELAY), 
+    .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("dataMem.txt")
+    );
+Memory #(
+    .WIDTH(32), 
+    .DEPTH(IM_MEM_DEPTH), 
+    .MEM_READ_DELAY(INS_MEM_READ_DELAY), 
+    .MEM_WRITE_DELAY(INS_MEM_WRITE_DELAY)) insMemory= new(.mem_init_file("insMem.txt")
+    );
 
 // dataMemory = new(.mem_init_file("dataMem.txt"));
 // insMemory = new(.mem_init_file("insMem.txt"));
