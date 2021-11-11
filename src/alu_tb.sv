@@ -20,11 +20,11 @@ aluOp_t aluOp;
 logic [6:0] funct7; 
 logic [2:0] funct3;
 logic [DATA_WIDTH_L-1:0] alu_out;
-flag_t overflow, Z, error;
+flag_t overflow, Z, error_out;
 operation_t opSel;
 logic [DATA_WIDTH_L-1:0] bus_a, bus_b;
     
-Alu alu_dut (
+alu alu_dut (
     .bus_a(bus_a),
     .bus_b(bus_b),
     .opSel(opSel),
@@ -38,7 +38,7 @@ alu_op_unit op_dut (
     .funct7(funct7),
     .funct3(funct3),
     .opSel,
-    .error
+    .error_out
 );
 
 // initial begin

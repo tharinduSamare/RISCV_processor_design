@@ -6,8 +6,10 @@ import  alu_definitions::*,
     input  logic [6:0] funct7, 
     input  logic [2:0] funct3,
     output operation_t opSel,
-    output flag_t error
+    output flag_t error_out
 );
+
+flag_t error;
 
 operation_t nextOpSel;
 
@@ -82,5 +84,6 @@ always_comb begin : alu_op_sel
 end
 
 assign opSel = nextOpSel;
+assign error_out = error;
 
 endmodule :alu_op_unit

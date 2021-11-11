@@ -19,7 +19,6 @@ typedef enum logic [1:0] {
     TYPE_R
 } aluOp_t;
     
-endpackage
 typedef enum logic [2:0] {
     ld_byte_s,
     ld_byte_u,

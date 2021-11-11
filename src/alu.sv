@@ -1,21 +1,22 @@
-module Alu 
+module alu 
 import alu_definitions::*;
 #(
     parameter D_WIDTH = 32
 )(
-    input  [D_WIDTH-1:0] bus_a, bus_b,
+    input  logic [D_WIDTH-1:0] bus_a, bus_b,
     input  operation_t  opSel, 
     output logic [D_WIDTH-1:0] out,
     output flag_t overflow, Z
 );
 
+operation_t curOpSel;
+assign curOpSel = opSel;
+
 logic [D_WIDTH:0] result;
-wire  [D_WIDTH-1:0] sub_res = bus_a - bus_b;
-// logic [D_WIDTH-1:0] nextOut;
-// logic nextCarry;
+logic  [D_WIDTH-1:0] sub_res = bus_a - bus_b;
 
 always_comb begin : alu_operation
-    case (opSel)
+    case (curOpSel)
         //Arithmetic Operations
         ADD : result <= bus_a + bus_b;
         SUB : result <= sub_res;
@@ -42,4 +43,4 @@ end
 assign out = result[D_WIDTH-1:0];
 assign overflow = (result[D_WIDTH]) ? HIGH : LOW;
 assign Z = (result[D_WIDTH-1:0]==0) ? HIGH : LOW;
-endmodule: Alu
+endmodule: alu
