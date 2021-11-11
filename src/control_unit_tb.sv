@@ -4,7 +4,7 @@ timeunit 1ns;
 timeprecision 1ps;
     
 logic [6:0] opCode;
-logic enable;
+logic enable, startProcess, endProcess;
 logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite, aluSrc1; //writeSrc
 logic [1:0] aluSrc1, aluSrc2, aluOp;
 
@@ -21,7 +21,8 @@ initial begin
 end
 
 initial begin
-    enable <=1;
+    enable <= 1;
+    startProcess <= 1;
     opCode <= '0;
     @(posedge clk);
     opCode <= 7'b1100011; //branch

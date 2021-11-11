@@ -3,7 +3,10 @@
 module control_unit import definitions::*;(
     input logic [6:0] opCode, 
     input logic enable,
-    output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite, //writeSrc
+    input logic startProcess,
+    
+    output logic endProcess,
+    output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite,
     output alu_sel_t aluSrc1, aluSrc2,
     output aluOp_t aluOp
      
@@ -25,7 +28,7 @@ always_comb begin
          default:    opCodeEnum = NOP;
     endcase
 end
-
+assign endProcess = 0;
 // opCode |jump|jumpReg|branch|memRead|memWrite|memtoReg|regWrite|aluSrc1|aluSrc2|aluOp|
 // 
 // LTYPE  | 0  |  0    |  0   |   1   |   0    |    1   |   1    |  00   |  01   | 00  | 
@@ -47,11 +50,10 @@ always_comb begin : signalGenerator
     memRead = '0;
     memWrite = '0;
     memtoReg = '0;
-    // writeSrc = '0;
     regWrite = '0;
     aluOp = ADD; //2'b00;
 
-    if (!enable) memWrite = '0;
+    if (!(enable & startProcess)) memWrite = '0;
     else begin
         
     case (opCodeEnum)
@@ -91,14 +93,12 @@ always_comb begin : signalGenerator
             jumpReg = '1;
             aluSrc1 = TWO; //2'b10;
             aluSrc2 = THREE; //2'b11;
-            // writeSrc = '1;
             regWrite = '1;
         end
         JTYPE : begin
             jump = '1;
             aluSrc1 = TWO; //2'b10;
             aluSrc2 = THREE; //2'b11;
-            // writeSrc = '1;
             regWrite = '1;
         end
         default: begin
@@ -106,4 +106,4 @@ always_comb begin : signalGenerator
     endcase
     end
 end
-endmodule
+endmodule : control_unit
