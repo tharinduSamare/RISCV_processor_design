@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 module pipelineRegister_EX_MEM (
-=======
-module pipilineRegister_EX_MEM ( 
->>>>>>> f6aaff5 (Add removed pipeline registers)
-=======
-module pipelineRegister_EX_MEM (
->>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
     input logic             clk,
     // from control unit
     // to memory stage
@@ -27,10 +19,6 @@ module pipelineRegister_EX_MEM (
 
     // from control unit
     // to memory stage
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
     output logic             memWrite_EX_Out,
     output logic             memRead_EX_Out,
     
@@ -44,24 +32,6 @@ module pipelineRegister_EX_MEM (
 
     output logic [31 : 0]    aluSrc2_EX_Out,
     output logic [4 : 0]     rd_EX_Out
-<<<<<<< HEAD
-=======
-    input logic             memWrite_EX_Out,
-    input logic             memRead_EX_Out,
-    
-    // to writeback stage
-    input logic             regWrite_EX_Out,
-    input logic             memToRegWrite_EX_Out,
-
-    // other signals to mem stage
-    input logic [2 : 0]     func3_EX_Out,
-    input logic [31 : 0]    aluOut_EX_Out,
-
-    input logic [31 : 0]    aluSrc2_EX_Out,
-    input logic [4 : 0]     rd_EX_Out
->>>>>>> f6aaff5 (Add removed pipeline registers)
-=======
->>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
 
 );
     always_ff @( posedge clk ) begin : EX_MEM_REGISTER
