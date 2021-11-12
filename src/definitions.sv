@@ -19,17 +19,6 @@ typedef enum logic [1:0] {
     TYPE_R
 } aluOp_t;
     
-typedef enum logic [2:0] {
-    ld_byte_s,
-    ld_byte_u,
-    ld_half_word_s,
-    ld_half_word_u,
-    ld_word,
-    str_byte,
-    str_half_word,
-    str_word
-} mem_operation_t;
-
 typedef enum logic [4:0] { 
         zero = 5'd0,    //hard-wired zero
         ra = 5'd1,      //return address
@@ -41,6 +30,14 @@ typedef enum logic [4:0] {
         a[0:7] = 5'd10, //function args/ return values
         s[2:11] = 5'd18,//saved registers (cont.)
         t[3:6] = 5'd28  //Temporaries (cont.)
-    } regName_t;
+ } regName_t;
     
-endpackage : definitions
+
+typedef enum bit [1:0] { 
+    ZERO,
+    ONE,
+    TWO,
+    THREE
+} alu_sel_t;
+
+endpackage:definitions

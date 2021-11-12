@@ -1,89 +1,104 @@
 // `include "definitions.sv"
 
-// import definitions::*;
-
-module control_unit(
+module control_unit import definitions::*;(
     input logic [6:0] opCode, 
-    input enable,
-    output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite, //writeSrc
-    output logic [1:0] aluSrc1, aluSrc2, aluOp 
+    input logic enable,
+    input logic startProcess,
+    
+    output logic endProcess,
+    output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite,
+    output alu_sel_t aluSrc1, aluSrc2,
+    output aluOp_t aluOp
+     
 );
 
-/*                                 |jump|jumpReg|branch|memRead|memWrite|memtoReg|regWrite|aluSrc1|aluSrc2|aluOp|
-*/
-localparam LTYPE = 7'b0000011; //  | 0  |  0    |  0   |   1   |   0    |    1   |   1    |  00   |  01   | 00  |
-localparam ITYPE = 7'b0010011; //  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  01   | 11  |
-localparam AUIPC = 7'b0010111; //  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  01   |  11   | 00  |
-localparam STYPE = 7'b0100011; //  | 0  |  0    |  0   |   0   |   1    |    0   |   0    |  00   |  10   | 00  |
-localparam RTYPE = 7'b0110011; //  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  00   | 10  |
-localparam LUI   = 7'b0110111; //  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  01   |  00   | 01  |
-localparam BTYPE = 7'b1100011; //  | 0  |  0    |  1   |   0   |   0    |    0   |   0    |  00   |  00   | 00  |
-localparam JALR  = 7'b1100111; //  | 0  |  1    |  0   |   0   |   0    |    0   |   1    |  10   |  11   | 00  |
-localparam JTYPE = 7'b1101111; //  | 1  |  0    |  0   |   0   |   0    |    0   |   1    |  10   |  11   | 00  |
+opCode_t opCodeEnum;
 
-// assign opCode2 = opCode_t'(opCode);
+always_comb begin
+    case (opCode)
+        7'b0000011 : opCodeEnum = LTYPE; 
+        7'b0010011 : opCodeEnum = ITYPE; 
+        7'b0010111 : opCodeEnum = AUIPC; 
+        7'b0100011 : opCodeEnum = STYPE; 
+        7'b0110011 : opCodeEnum = RTYPE; 
+        7'b0110111 : opCodeEnum = LUI  ; 
+        7'b1100011 : opCodeEnum = BTYPE; 
+        7'b1100111 : opCodeEnum = JALR ; 
+        7'b1101111 : opCodeEnum = JTYPE;
+         default:    opCodeEnum = NOP;
+    endcase
+end
+assign endProcess = 0;
+// opCode |jump|jumpReg|branch|memRead|memWrite|memtoReg|regWrite|aluSrc1|aluSrc2|aluOp|
+// 
+// LTYPE  | 0  |  0    |  0   |   1   |   0    |    1   |   1    |  00   |  01   | 00  | 
+// ITYPE  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  01   | 11  |
+// AUIPC  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  01   |  11   | 00  |
+// STYPE  | 0  |  0    |  0   |   0   |   1    |    0   |   0    |  00   |  10   | 00  |
+// RTYPE  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  00   | 10  |
+// LUI    | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  01   |  00   | 01  |
+// BTYPE  | 0  |  0    |  1   |   0   |   0    |    0   |   0    |  00   |  00   | 00  | 
+// JALR   | 0  |  1    |  0   |   0   |   0    |    0   |   1    |  10   |  11   | 00  |
+// JTYPE  | 1  |  0    |  0   |   0   |   0    |    0   |   1    |  10   |  11   | 00  |
 
 always_comb begin : signalGenerator
     jump = '0;
     jumpReg = '0;
     branch = '0;
-    aluSrc1 = 2'b00;
-    aluSrc2 = 2'b00;
+    aluSrc1 = ZERO;  //2'b00;
+    aluSrc2 = ZERO; //2'b00;
     memRead = '0;
     memWrite = '0;
     memtoReg = '0;
-    // writeSrc = '0;
     regWrite = '0;
-    aluOp = 2'b00;
+    aluOp = ADD; //2'b00;
 
-    if (!enable) memWrite = '0;
+    if (!(enable & startProcess)) memWrite = '0;
     else begin
         
-    case (opCode)
+    case (opCodeEnum)
         LTYPE : begin
-            aluSrc2 = 2'b01;
+            aluSrc2 = ONE; //2'b01;
             memRead  = '1;
             memtoReg = '1;
             regWrite = '1;
         end 
         ITYPE : begin
-            aluSrc2 = 2'b01;
+            aluSrc2 = ONE; //2'b01;
             regWrite = '1;
-            aluOp = 2'b11;
+            aluOp = TYPE_R; //2'b11;
         end
         AUIPC : begin
-            aluSrc1 = 2'b01;
-            aluSrc2 = 2'b11;
+            aluSrc1 = ONE; //2'b01;
+            aluSrc2 = THREE; //2'b11;
             regWrite = '1;
         end
         STYPE : begin
-            aluSrc2 = 2'b10;
+            aluSrc2 = TWO; //2'b10;
             memWrite = '1;
         end
         RTYPE : begin
             regWrite = '1;
-            aluOp = 2'b10;
+            aluOp = TYPE_I; //2'b10;
         end
         LUI   : begin
-            aluSrc1 = 2'b01;
+            aluSrc1 = ONE; //2'b01;
             regWrite = '1;
-            aluOp = 2'b01;
+            aluOp = PASS_S1; //2'b01;
         end
         BTYPE : begin
             branch = '1;
         end
         JALR  : begin
             jumpReg = '1;
-            aluSrc1 = 2'b10;
-            aluSrc2 = 2'b11;
-            // writeSrc = '1;
+            aluSrc1 = TWO; //2'b10;
+            aluSrc2 = THREE; //2'b11;
             regWrite = '1;
         end
         JTYPE : begin
             jump = '1;
-            aluSrc1 = 2'b10;
-            aluSrc2 = 2'b11;
-            // writeSrc = '1;
+            aluSrc1 = TWO; //2'b10;
+            aluSrc2 = THREE; //2'b11;
             regWrite = '1;
         end
         default: begin
@@ -91,4 +106,4 @@ always_comb begin : signalGenerator
     endcase
     end
 end
-endmodule
+endmodule : control_unit

@@ -4,8 +4,9 @@ timeunit 1ns;
 timeprecision 1ps;
     
 logic [6:0] opCode;
-logic jump, jumpReg, branch, memRead, memWrite, memtoReg, writeSrc, regWrite, aluSrc1;
-logic [1:0] aluSrc2, aluOp;
+logic enable, startProcess, endProcess;
+logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite, aluSrc1; //writeSrc
+logic [1:0] aluSrc1, aluSrc2, aluOp;
 
 control_unit dut(.*);
 
@@ -20,13 +21,17 @@ initial begin
 end
 
 initial begin
+    enable <= 1;
+    startProcess <= 1;
     opCode <= '0;
     @(posedge clk);
     opCode <= 7'b1100011; //branch
     #(CLK_PERIOD);
     @(posedge clk);
     opCode <= 7'b1101111; //J type
-    #(CLK_PERIOD*2);
+    #(CLK_PERIOD);
+    opCode <= 7'b0010011; //I type
+    #(CLK_PERIOD);
     $stop;
 end
 endmodule
