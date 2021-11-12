@@ -1,5 +1,9 @@
 projects/*
-# projects/RISC_V/*
+*.bak
+*.bat
+!projects/RISC_V/RISC_V.xpr
+src/*.bak
 # !projects/RISC_V/RISC_V.xpr
 *.bat
-*.bak
+
+src/*.sv.bak
