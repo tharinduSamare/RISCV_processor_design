@@ -1,4 +1,6 @@
-module pipelineRegister_EX_MEM (
+module pipelineRegister_EX_MEM 
+import  definitions::*;
+(
     input logic             clk,
     input logic             rstN,
     // from control unit
@@ -15,7 +17,7 @@ module pipelineRegister_EX_MEM (
     input logic [31 : 0]    aluOut_EX_IN,
 
     input logic [31 : 0]    aluSrc2_EX_IN,
-    input logic [4 : 0]     rd_EX_IN,
+    input regName_t         rd_EX_IN,
 
 
     // from control unit
@@ -32,7 +34,7 @@ module pipelineRegister_EX_MEM (
     output logic [31 : 0]    aluOut_EX_Out,
 
     output logic [31 : 0]    aluSrc2_EX_Out,
-    output logic [4 : 0]     rd_EX_Out
+    output regName_t         rd_EX_Out
 
 );
     always_ff @( posedge clk or negedge rstN ) begin : EX_MEM_REGISTER
