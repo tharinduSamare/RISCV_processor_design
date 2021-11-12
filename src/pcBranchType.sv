@@ -1,13 +1,10 @@
 module pcBranchType #(
-    parameter REG_COUNT     = 32,
-    parameter REG_SIZE      = $clog2(REG_COUNT)
+    parameter DATA_WIDTH     = 32
 )
 (
-    input logic                         branch, // from control unit
-    input logic [2:0]                   func3,
-
-    input logic signed [31 : 0]         rs1,
-    input logic signed [31 : 0]         rs2,
+    input logic signed [DATA_WIDTH - 1 : 0]   read1,
+    input logic signed [DATA_WIDTH - 1 : 0]   read2,
+    input logic [2:0]                   branchType,
 
     output logic                        branchN
 );
@@ -22,6 +19,7 @@ module pcBranchType #(
     } branch_;
 
     branch_ _;
+<<<<<<< HEAD
 
     logic   [31:0]  rs1_un;
     logic   [31:0]  rs2_un;
@@ -44,6 +42,9 @@ module pcBranchType #(
     always_comb begin : check_branch
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+    always_comb begin : check_branch
+>>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
     /*  
         Depending on the type of branch 
         required comparison is carried out
@@ -61,10 +62,14 @@ module pcBranchType #(
             branchN = '1;
         end
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
         else if (branchType == BLTU && read1 < read2) begin
             branchN = '1;
         end
         else if (branchType == BGEU && read1 >= read2) begin
+<<<<<<< HEAD
 =======
         else if (branchType == BLTU && rs1_un < rs2_un)begin
             branchN = '1;
@@ -100,14 +105,20 @@ module pcBranchType #(
             end
 <<<<<<< HEAD
 >>>>>>> e2cd857 (Add feature: check branch in the module itself)
+=======
+            branchN = '1;
+>>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
         end
         else begin
             branchN = '0;
         end
+<<<<<<< HEAD
 =======
             else begin
                 branchN = '0;
             end
 >>>>>>> 3bb1e50 (Bug fix: fixed the module name issue and changed the condition statement for the branching)
+=======
+>>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e
     end
 endmodule
