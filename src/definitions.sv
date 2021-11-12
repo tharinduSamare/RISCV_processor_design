@@ -30,5 +30,17 @@ typedef enum logic [2:0] {
     str_word
 } mem_operation_t;
 
-
+typedef enum logic [4:0] { 
+        zero = 5'd0,    //hard-wired zero
+        ra = 5'd1,      //return address
+        sp = 5'd2,      //stack pointer
+        gp = 5'd3,      //global pointer
+        tp = 5'd4,      //thread pointer
+        t[3] = 5'd5,    //temporary / alt. link register
+        s[2] = 5'd8,    //saved register
+        a[0:7] = 5'd10, //function args/ return values
+        s[2:11] = 5'd18,//saved registers (cont.)
+        t[3:6] = 5'd28  //Temporaries (cont.)
+    } regName_t;
+    
 endpackage : definitions
