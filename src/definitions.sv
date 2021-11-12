@@ -9,7 +9,8 @@ typedef enum logic [6:0] {
  LUI   = 7'b0110111,
  BTYPE = 7'b1100011,
  JALR  = 7'b1100111,
- JTYPE = 7'b1101111
+ JTYPE = 7'b1101111,
+ ERROR
 } opCode_t;
 
 typedef enum logic [1:0] { 
