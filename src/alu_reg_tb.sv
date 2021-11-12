@@ -6,6 +6,11 @@ import  alu_definitions::*,
 timeunit 1ns;
 timeprecision 1ps;
 
+localparam ZERO = 2'b00;
+localparam ONE = 2'b01;
+localparam TWO = 2'b10;
+localparam THREE = 2'b11;
+
 localparam DATA_WIDTH_L = 32;
 localparam CLK_PERIOD = 10;
 logic clk;
@@ -21,14 +26,15 @@ aluOp_t aluOp;
 logic [6:0] funct7; 
 logic [2:0] funct3;
 logic [DATA_WIDTH_L-1:0] alu_out;
-flag_t overflow, Z, error_out;
+flag_t overflow, Z, error;
 operation_t opSel;
 
 logic rstN, wen;
 regName_t rs1, rs2, rd;
 logic [DATA_WIDTH_L-1:0] data_in;
 logic [DATA_WIDTH_L-1:0] bus_a, bus_b;
-    
+logic [DATA_WIDTH_L-1:0] regOut1,immUEX,regOut2,immIEX,immSEX,pcEX; 
+logic [2:0] aluSrc1, aluSrc2;
 
 reg_file reg_dut (
     .clk, 
@@ -38,9 +44,26 @@ reg_file reg_dut (
     .rs2(rs2), 
     .rd(rd),
     .data_in(data_in),
-    .regA_out(bus_a), 
-    .regB_out(bus_b) 
+    .regA_out(regOut1), 
+    .regB_out(regOut2) 
 );
+
+always_comb begin : ALUIn1Select
+    unique case (aluSrc1) 
+        ZERO : bus_a = regOut1;
+        ONE : bus_a = immUEX;
+        TWO : bus_a = 32'd4;
+    endcase  
+end
+
+always_comb begin : ALUIn2Select
+    unique case (aluSrc2) 
+        ZERO : bus_b = regOut2;
+        ONE : bus_b = immIEX;
+        TWO : bus_b = immSEX;
+        THREE : bus_b = pcEX;
+    endcase
+end
 
 alu alu_dut (
     .bus_a,
@@ -56,7 +79,7 @@ alu_op op_dut (
     .funct7(funct7),
     .funct3(funct3),
     .opSel,
-    .error_out
+    .error
 );
 
 logic [4:0] sample;
@@ -66,8 +89,11 @@ task write_all_reg();
     rd = rd.first;
     for (int i = 1; i<32; i=i+1) begin
         @(posedge clk);
-        sample = $random;
-        data_in = sample;
+        if (rd == s0) begin 
+            sample = $random;
+            data_in = sample;
+        end
+        else data_in = $random;
         rd = rd.next;
     end
 endtask //write_all_reg
@@ -92,27 +118,29 @@ task automatic rInstruction(
     input rtype_inst instruction
     );
     @(posedge clk);
-    {rs1, rs2, rd} = {src1, src2, dest};
-    wen = 1;
-    aluOp = TYPE_R;
+    {rs1, rs2, rd} <= {src1, src2, dest};
+    aluSrc1 <= ZERO;
+    aluSrc2 <= ZERO;
+    wen <= 1;
+    aluOp <= TYPE_R;
     if  (instruction != sub && instruction != sra) begin
-        funct7 = 7'd0;
+        funct7 <= 7'd0;
         case (instruction) 
-            add     : funct3 = 3'd0;
-            sll     : funct3 = 3'd1;
-            slt     : funct3 = 3'd2;
-            sltu    : funct3 = 3'd3;
-            xor_op  : funct3 = 3'd4;
-            srl     : funct3 = 3'd5;
-            or_op   : funct3 = 3'd6;
-            and_op  : funct3 = 3'd7;
+            add     : funct3 <= 3'd0;
+            sll     : funct3 <= 3'd1;
+            slt     : funct3 <= 3'd2;
+            sltu    : funct3 <= 3'd3;
+            xor_op  : funct3 <= 3'd4;
+            srl     : funct3 <= 3'd5;
+            or_op   : funct3 <= 3'd6;
+            and_op  : funct3 <= 3'd7;
         endcase
     end
     else begin
-        funct7 = 7'd32;
+        funct7 <= 7'd32;
         case (instruction)
-            sub : funct3 = 3'd0;
-            sra : funct3 = 3'd5;
+            sub : funct3 <= 3'd0;
+            sra : funct3 <= 3'd5;
         endcase
     end 
     #(CLK_PERIOD*2);
@@ -125,9 +153,9 @@ task automatic iInstruction(
     input rtype_inst instruction
 );
     @(posedge clk);
-    {rs1, rd} = {src1, dest};
-    aluOp = TYPE_I;
-    wen = 1;
+    {rs1, rd} <= {src1, dest};
+    aluOp <= TYPE_I;
+    wen <= 1;
     case (instruction)
         add: funct3 = 3'd0;
         slt: funct3 = 3'd2;
@@ -142,10 +170,10 @@ initial begin
     write_all_reg();
     rInstruction(t0, a0, a1, add);
     rInstruction(t1, a0, a1, xor_op);
-    rInstruction(t2, a2 ,s0, sub);
-    rInstruction(t3, a3 ,s2, sll);
+    rInstruction(t2, s2 ,a0, sub);
+    rInstruction(t3, a3 ,s1, sll);
     rInstruction(t4, a4 ,s3, sltu);
-    rInstruction(t5, a5 ,s4, srl);
+    rInstruction(t5, a5 ,s1, srl);
     rInstruction(t6, a6 ,s5, or_op);
     rInstruction(t0, a7 ,s6, and_op);
     

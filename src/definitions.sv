@@ -13,7 +13,6 @@ typedef enum logic [6:0] {
 } opCode_t;
 
 typedef enum logic [1:0] { 
-<<<<<<< HEAD
     DEF_ADD,
     PASS_S1,
     TYPE_I,
@@ -33,12 +32,3 @@ typedef enum logic [2:0] {
 
 
 endpackage : definitions
-=======
-    ADD,
-    PASS_S1,
-    TYPE_I,
-    TYPE_R
-} aluOp;
-    
-endpackage
->>>>>>> 7976b3dfae5b02a687b022f3bd9966bcf4017e1e

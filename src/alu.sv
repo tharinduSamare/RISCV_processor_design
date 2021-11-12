@@ -13,18 +13,21 @@ operation_t curOpSel;
 assign curOpSel = opSel;
 
 logic [D_WIDTH:0] result;
-logic  [D_WIDTH-1:0] sub_res = bus_a - bus_b;
+// logic [D_WIDTH-1:0] sub_res
+logic comp;
+
+assign comp = (bus_a < bus_b) ? 1'b1: 1'b0;
 
 always_comb begin : alu_operation
     case (curOpSel)
         //Arithmetic Operations
         ADD : result <= bus_a + bus_b;
-        SUB : result <= sub_res;
+        SUB : result <= bus_a - bus_b;
         //Comparison Operations
         SLTU: result <= (bus_a < bus_b) ? 32'd0 : 32'd1;
         SLT : begin
             if (bus_a[D_WIDTH-1] == bus_b[D_WIDTH-1])  result <= (bus_a < bus_b) ? 32'd0 : 32'd1;
-            else result <= (sub_res[D_WIDTH-1]) ? 32'd1 : 32'd0;
+            else result <= (comp) ? 32'd0 : 32'd1;
         end
         //Shift Operations
         SLL : result <= bus_a <<   bus_b;
@@ -41,6 +44,6 @@ always_comb begin : alu_operation
 end
 
 assign out = result[D_WIDTH-1:0];
-assign overflow = (result[D_WIDTH]) ? HIGH : LOW;
+assign overflow = (result[D_WIDTH] && curOpSel == ADD) ? HIGH : LOW;
 assign Z = (result[D_WIDTH-1:0]==0) ? HIGH : LOW;
 endmodule: alu
