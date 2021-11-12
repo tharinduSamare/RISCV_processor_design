@@ -37,12 +37,12 @@ reg_file reg_dut (
     .rs1(rs1), 
     .rs2(rs2), 
     .rd(rd),
-    .data_in(alu_out),
+    .data_in(data_in),
     .regA_out(bus_a), 
     .regB_out(bus_b) 
 );
 
-Alu alu_dut (
+alu alu_dut (
     .bus_a,
     .bus_b,
     .opSel,
@@ -51,7 +51,7 @@ Alu alu_dut (
     .Z
 );
 
-alu_op_unit op_dut (
+alu_op op_dut (
     .aluOp(aluOp),
     .funct7(funct7),
     .funct3(funct3),
@@ -59,18 +59,19 @@ alu_op_unit op_dut (
     .error
 );
 
-/*task write_all_reg(
-    // output wen,
-    // output [DATA_WIDTH_L-1:0] data_in
-    );
+logic [4:0] sample;
+task write_all_reg();
     @(posedge clk);
-    wen <= 0;
+    wen = 1;
+    rd = rd.first;
     for (int i = 1; i<32; i=i+1) begin
         @(posedge clk);
-        data_in <= $random;
+        sample = $random;
+        data_in = sample;
+        rd = rd.next;
     end
 endtask //write_all_reg
-*//*
+/*
 1 - add     rd rs1 rs2 31..25=0  14..12=0 6..2=0x0C 1..0=3
 2 - sub     rd rs1 rs2 31..25=32 14..12=0 6..2=0x0C 1..0=3
 3 - sll     rd rs1 rs2 31..25=0  14..12=1 6..2=0x0C 1..0=3
@@ -82,18 +83,13 @@ endtask //write_all_reg
 9 - or      rd rs1 rs2 31..25=0  14..12=6 6..2=0x0C 1..0=3
 10 -and     rd rs1 rs2 31..25=0  14..12=7 6..2=0x0C 1..0=3
 */
-/*typedef enum logic [3:0] { 
+typedef enum logic [3:0] { 
     add, sub, sll, slt, sltu, xor_op, srl, sra, or_op, and_op
 } rtype_inst;
 
 task automatic rInstruction(
     input regName_t dest, src1, src2,
     input rtype_inst instruction
-    // output regName_t rs1, rs2, rd, 
-    // output aluOp_t aluOp,
-    // output logic [6:0] funct7, 
-    // output logic [2:0] funct3,
-    // output logic wen
     );
     @(posedge clk);
     {rs1, rs2, rd} = {src1, src2, dest};
@@ -113,6 +109,7 @@ task automatic rInstruction(
         endcase
     end
     else begin
+        funct7 = 7'd32;
         case (instruction)
             sub : funct3 = 3'd0;
             sra : funct3 = 3'd5;
@@ -122,10 +119,37 @@ task automatic rInstruction(
 
 endtask //rInstruction
 
+task automatic iInstruction(
+    input regName_t dest, src1,
+    input logic [DATA_WIDTH_L-1:0] imm,
+    input rtype_inst instruction
+);
+    @(posedge clk);
+    {rs1, rd} = {src1, dest};
+    aluOp = TYPE_I;
+    wen = 1;
+    case (instruction)
+        add: funct3 = 3'd0;
+        slt: funct3 = 3'd2;
+        xor_op:funct3 = 3'd4;
+        or_op: funct3 = 3'd6;
+        and_op:funct3 = 3'd7;
+    endcase 
+endtask //iInstruction
+
 initial begin
+    rstN <= 1;
     write_all_reg();
     rInstruction(t0, a0, a1, add);
+    rInstruction(t1, a0, a1, xor_op);
+    rInstruction(t2, a2 ,s0, sub);
+    rInstruction(t3, a3 ,s2, sll);
+    rInstruction(t4, a4 ,s3, sltu);
+    rInstruction(t5, a5 ,s4, srl);
+    rInstruction(t6, a6 ,s5, or_op);
+    rInstruction(t0, a7 ,s6, and_op);
+    
 end
-*/
+
 
 endmodule : alu_reg_tb

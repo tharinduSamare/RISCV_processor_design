@@ -1,4 +1,4 @@
-module alu_op_unit 
+module alu_op 
 import  alu_definitions::*,
 		definitions::*;   
 (
@@ -6,10 +6,10 @@ import  alu_definitions::*,
     input  logic [6:0] funct7, 
     input  logic [2:0] funct3,
     output operation_t opSel,
-    output flag_t error_out
+    output flag_t error
 );
 
-flag_t error;
+flag_t send_error;
 
 operation_t nextOpSel;
 
@@ -29,11 +29,8 @@ typedef enum logic [6:0] {
     type2 = 7'd32
 } funct7_op;
 
-// funct3_op funct3_cur = funct3;
-// funct7_op funct7_cur = funct7;
-
 always_comb begin : alu_op_sel
-    error = LOW;
+    send_error = LOW;
     case (aluOp)
         TYPE_I: begin
             case (funct3)
@@ -44,7 +41,7 @@ always_comb begin : alu_op_sel
                 land    : nextOpSel = AND;  
                 default : begin
                     nextOpSel = ADD;
-                    error = HIGH;
+                    send_error = HIGH;
                 end
             endcase
         end
@@ -68,13 +65,13 @@ always_comb begin : alu_op_sel
                         srl_sra :nextOpSel = SRA;
 						default : begin
                             nextOpSel = ADD;
-                            error = HIGH;
+                            send_error = HIGH;
                         end
                     endcase
                 end
                 default: begin
                     nextOpSel = ADD;
-                    error = HIGH;
+                    send_error = HIGH;
                 end
             endcase
         end
@@ -84,6 +81,6 @@ always_comb begin : alu_op_sel
 end
 
 assign opSel = nextOpSel;
-assign error_out = error;
+assign error = send_error;
 
-endmodule :alu_op_unit
+endmodule :alu_op
