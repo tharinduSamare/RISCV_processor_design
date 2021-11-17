@@ -1,12 +1,12 @@
 import random
 
-depth = 4096
+depth = 256
 width = 32
 fill_depth = 100
 
 numbers = '0123456789abcdef012345678'
 
-mem_file = open('data_mem_init.txt', 'w')
+mem_file = open('ins_mem_init.txt', 'w')
 
 for i in range(fill_depth):
     start_idx = random.randint(0,15)
