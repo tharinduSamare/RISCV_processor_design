@@ -2,9 +2,9 @@ module pcBranchType #(
     parameter DATA_WIDTH     = 32
 )
 (
-    input logic signed [DATA_WIDTH - 1 : 0]   read1,
-    input logic signed [DATA_WIDTH - 1 : 0]   read2,
-    input logic [2:0]                   branchType,
+    input logic signed [DATA_WIDTH - 1 : 0]   rs1,
+    input logic signed [DATA_WIDTH - 1 : 0]   rs2,
+    input logic [2:0]                       branchType,
 
     output logic                        branchN
 );
