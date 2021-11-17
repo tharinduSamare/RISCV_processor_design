@@ -2,6 +2,7 @@ module pcBranchType #(
     parameter DATA_WIDTH     = 32
 )
 (
+	 input logic 										 branch,
     input logic signed [DATA_WIDTH - 1 : 0]   rs1,
     input logic signed [DATA_WIDTH - 1 : 0]   rs2,
     input logic [2:0]                       branchType,
@@ -45,34 +46,28 @@ module pcBranchType #(
         Depending on the type of branch 
         required comparison is carried out
     */
-        if (branch) begin
-        /*  
-            Depending on the type of branch 
-            required comparison is carried out
-        */
-            if (branch && func3 == 3'b000 && rs1 == rs2)begin
+        
+            if (branch && branchType == 3'b000 && rs1 == rs2)begin
                 branchN = '1;
             end
-            else if (branch && func3 == 3'b001 && rs1 != rs2)begin
+            else if (branch && branchType == 3'b001 && rs1 != rs2)begin
                 branchN = '1;
             end
-            else if (branch && func3 == 3'b100 && rs1 < rs2)begin
+            else if (branch && branchType == 3'b100 && rs1 < rs2)begin
                 branchN = '1;
             end
-            else if (branch && func3 == 3'b101 && rs1 >= rs2)begin
+            else if (branch && branchType == 3'b101 && rs1 >= rs2)begin
                 branchN = '1;
             end
-            else if (branch && func3 == 3'b110 && rs1_un < rs2_un)begin
+            else if (branch && branchType == 3'b110 && rs1_un < rs2_un)begin
                 branchN = '1;
             end
-            else if (branch && func3 == 3'b111 && rs1_un >= rs2_un)begin
+            else if (branch && branchType == 3'b111 && rs1_un >= rs2_un)begin
                 branchN = '1;
             end
 
-            branchN = '1;
-        end
-        else begin
-            branchN = '0;
-        end
+			  else begin
+					branchN = '0;
+			  end
     end
 endmodule
