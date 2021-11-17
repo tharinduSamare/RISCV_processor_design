@@ -25,7 +25,7 @@ always_comb begin
         7'b1100011 : opCodeEnum = BTYPE; 
         7'b1100111 : opCodeEnum = JALR ; 
         7'b1101111 : opCodeEnum = JTYPE;
-         default:    opCodeEnum = NOP;
+         default:    opCodeEnum = ERROR;
     endcase
 end
 assign endProcess = 0;

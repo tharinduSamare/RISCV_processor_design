@@ -1,33 +1,17 @@
-// `include "alu_definitions.sv"
-// import alu_definitions::*;
-
-module alu_op #(
-    parameter DATA_WIDTH=32
-) (
-    input  logic [1:0] aluOp,
+module alu_op 
+import  alu_definitions::*,
+		definitions::*;   
+(
+    input  aluOp_t aluOp,
     input  logic [6:0] funct7, 
     input  logic [2:0] funct3,
-    output logic [3:0] opSel
-    //load
+    output operation_t opSel,
+    output flag_t error
 );
 
-typedef enum logic [3:0] { 
-    ADD, SUB,
-    SLT, SLTU,
-    SLL, SRL, SRA,
-    AND, OR , XOR,  
-    LUI //rs2 forward
-} alu_op;
+flag_t send_error;
 
-    
-typedef enum logic [1:0] { 
-    i_type = 2'b11, //i type
-    r_type = 2'b10, //r type
-    u_type = 2'b01, //rs1 forward?
-    no_op  = 2'b00 //add
-} ins_type;
-
-logic [3:0] nextOpSel;
+operation_t nextOpSel;
 
 typedef enum logic [2:0] { //12-14 in ISA
     add_sub = 3'd0,
@@ -46,46 +30,57 @@ typedef enum logic [6:0] {
 } funct7_op;
 
 always_comb begin : alu_op_sel
+    send_error = LOW;
     case (aluOp)
-        i_type: begin
+        TYPE_I: begin
             case (funct3)
-                add_sub : nextOpSel <= ADD;
-                slt     : nextOpSel <= SLT;
-                lxor    : nextOpSel <= XOR;
-                lor     : nextOpSel <= OR;
-                land    : nextOpSel <= AND;  
-
-                default : nextOpSel <= ADD;              
+                add_sub : nextOpSel = ADD;
+                slt     : nextOpSel = SLT;
+                lxor    : nextOpSel = XOR;
+                lor     : nextOpSel = OR;
+                land    : nextOpSel = AND;  
+                default : begin
+                    nextOpSel = ADD;
+                    send_error = HIGH;
+                end
             endcase
         end
-        r_type: begin
+        TYPE_R: begin
             case (funct7)
                 type1 : begin
                     case (funct3)
-                        add_sub :nextOpSel <= ADD;
-                        slt     :nextOpSel <= SLT;
-                        sltu    :nextOpSel <= SLTU;
-                        lxor    :nextOpSel <= XOR;                        
-                        lor     :nextOpSel <= OR;
-                        land    :nextOpSel <= AND;
-                        sll     :nextOpSel <= SLL;
-                        srl_sra :nextOpSel <= SRL;
+                        add_sub :nextOpSel = ADD;
+                        slt     :nextOpSel = SLT;
+                        sltu    :nextOpSel = SLTU;
+                        lxor    :nextOpSel = XOR;                        
+                        lor     :nextOpSel = OR;
+                        land    :nextOpSel = AND;
+                        sll     :nextOpSel = SLL;
+                        srl_sra :nextOpSel = SRL;
                     endcase
                 end
                 type2 : begin
                     case (funct3)
-                        add_sub :nextOpSel <= SUB;
-                        srl_sra :nextOpSel <= SRA;
+                        add_sub :nextOpSel = SUB;
+                        srl_sra :nextOpSel = SRA;
+						default : begin
+                            nextOpSel = ADD;
+                            send_error = HIGH;
+                        end
                     endcase
                 end
-                default: nextOpSel <= ADD;
+                default: begin
+                    nextOpSel = ADD;
+                    send_error = HIGH;
+                end
             endcase
         end
-        u_type : nextOpSel <= '0;
-        default : nextOpSel <= ADD;
+        DEF_ADD : nextOpSel = ADD;
+        PASS_S1 : nextOpSel = FWD;
     endcase
 end
 
 assign opSel = nextOpSel;
+assign error = send_error;
 
 endmodule :alu_op

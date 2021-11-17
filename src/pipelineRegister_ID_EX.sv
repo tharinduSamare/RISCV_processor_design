@@ -1,13 +1,15 @@
-module pipelineRegister_ID_EX(  
+module pipelineRegister_ID_EX
+import  definitions::*;
+(  
     input logic             clk,
     input logic             rstN,
     // from control unit
     // to execution stage
 
     input logic [31:0]      pcIn,
-    input logic [1:0]       aluSrc1_IDIn,
-    input logic [1:0]       aluSrc2_IDIn,
-    input logic [1:0]       aluOp_IDIn,
+    input alu_sel_t         aluSrc1_IDIn,
+    input alu_sel_t         aluSrc2_IDIn,
+    input aluOp_t           aluOp_IDIn,
 
     // to memory stage
     input logic             memWrite_IDIn,
@@ -28,17 +30,17 @@ module pipelineRegister_ID_EX(
     input logic [31 : 0]    S_imme_IDIn,
     input logic [31 : 0]    U_imme_IDIn,
 
-    input logic [4 : 0]     rd_IDIn,
-    input logic [4 : 0]     rs1_IDIn,
-    input logic [4 : 0]     rs2_IDIn,
+    input regName_t         rd_IDIn,
+    input regName_t         rs1_IDIn,
+    input regName_t         rs2_IDIn,
 
     
     //pipelined outputs
     //to execution stage
-    output logic [31:0] pcOut,
-    output logic [1:0]      aluSrc1_IDOut,
-    output logic [1:0]      aluSrc2_IDOut,
-    output logic [1:0]      aluOp_IDOut,
+    output logic [31:0]     pcOut,
+    output alu_sel_t               aluSrc1_IDOut,
+    output alu_sel_t               aluSrc2_IDOut,
+    output aluOp_t                 aluOp_IDOut,
 
     
     // to memory stage
@@ -55,13 +57,13 @@ module pipelineRegister_ID_EX(
     output logic [31 : 0]   read1_IDOut,
     output logic [31 : 0]   read2_IDOut,
     
-    output logic [31 : 0] I_imme_IDOut,
-    output logic [31 : 0] S_imme_IDOut,
-    output logic [31 : 0] U_imme_IDOut,
+    output logic [31 : 0]   I_imme_IDOut,
+    output logic [31 : 0]   S_imme_IDOut,
+    output logic [31 : 0]   U_imme_IDOut,
 
-    output logic [4 : 0] rd_IDOut,
-    output logic [4 : 0] rs1_IDOut,
-    output logic [4 : 0] rs2_IDOut
+    output regName_t        rd_IDOut,
+    output regName_t        rs1_IDOut,
+    output regName_t        rs2_IDOut
 );
 
     always_ff @( posedge clk or negedge rstN) begin : ID_EX_REGISTER

@@ -67,20 +67,16 @@ logic hazardIFIDWrite;
 logic flush;
 logic [INSTRUCTION_WIDTH-1:0] pcID;
 
-logic [INSTRUCTION_WIDTH-1:0] instructionID;
-logic [OP_CODE_WIDTH-1:0] opCode;
-logic [REG_SIZE-1:0] rdID;
-logic [FUNC3_WIDTH-1:0] func3ID;
-logic [REG_SIZE-1:0] rs1ID;
-logic [REG_SIZE-1:0] rs2ID;
-logic [FUNC7_WIDTH-1:0] func7ID;
-
-assign opCode = instructionID[6:0];
-assign rdID = instructionID[11:7];
-assign func3ID = instructionID[14:12];
-assign rs1ID = instructionID[19:15];
-assign rs2ID = instructionID[24:20];
-assign func7ID = instructionID[31:25];
+logic [INSTRUCTION_WIDTH-1:0]      instructionID;
+logic [OP_CODE_WIDTH-1:0] opCode = instructionID[6:0];
+logic [FUNC3_WIDTH-1:0] func3ID  = instructionID[14:12];
+regName_t                          rdID;
+regName_t                          rs2ID;
+regName_t                          rs2ID;
+assign                     rdID  = regName_t'(instructionID[11:7]);     
+assign                     rs1ID = regName_t'(instructionID[19:15]);     
+assign                     rs2ID = regName_t'(instructionID[24:20]);     
+logic [FUNC7_WIDTH-1:0] func7ID  = instructionID[31:25];
 
 pipelineRegister_IF_ID IF_ID_Register(
     .clk,
@@ -123,7 +119,7 @@ control_unit CU(
 
 ///// Register File /////
 logic regWriteWB;
-logic [REG_SIZE-1:0] rdWB;
+regName_t rdWB;
 logic [DATA_WIDTH-1:0] dataInWB;
 logic [DATA_WIDTH-1:0] rs1DataID, rs2DataID;
 
@@ -209,10 +205,14 @@ alu_sel_t aluSrc1EX,aluSrc2EX;
 aluOp_t aluOpEX;
 
 logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 logic [FUNC3_WIDTH-1:0] func3EX;
-logic [REG_SIZE-1:0] rs1EX;
-logic [REG_SIZE-1:0] rs2EX;
+regName_t rdEX;
+regName_t rs1EX;
+regName_t rs2EX;
 logic [FUNC7_WIDTH-1:0] func7EX;
 logic [DATA_WIDTH-1:0] rs1DataEX, rs2DataEX;
 logic [INSTRUCTION_WIDTH-1:0] pcEX;
@@ -357,7 +357,8 @@ end
 
 
 ///// EX/MEM Pipeline Register /////
-
+logic memtoRegMeM, regWriteMeM;
+regName_t rdMeM;
 
 pipelineRegister_EX_MEM EX_MEM_Register (
     .clk,
