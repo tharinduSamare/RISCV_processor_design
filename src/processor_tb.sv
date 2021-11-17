@@ -9,14 +9,16 @@ class Memory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DELAY=
         $readmemh(mem_init_file, this.memory);
     endfunction
 
-    task Read_memory(input addr_t addr, input logic rdEn, output data_t value, ref logic clk); 
+    task Read_memory(input addr_t addr, ref logic rdEn, output data_t value, ref logic clk, output logic mem_ready); 
         repeat(MEM_READ_DELAY) @(posedge clk);
+        mem_ready = 1'b0;
         if (rdEn) begin
             value = this.memory[addr];
         end
+        mem_ready = 1'b1;
     endtask
 
-    task Write_memory(input addr_t addr, input data_t data, input logic wrEn, ref logic clk);
+    task Write_memory(input addr_t addr, input data_t data, ref logic wrEn, ref logic clk);
         repeat(MEM_READ_DELAY) @(posedge clk);
         if (wrEn) begin
             this.memory[addr] = data;
@@ -59,15 +61,21 @@ localparam DATA_MEM_WRITE_DELAY = 4;
 localparam INS_MEM_READ_DELAY = 0;
 localparam INS_MEM_WRITE_DELAY = 0;
 
-logic rstN, start,done;
+localparam INSTRUCTION_WIDTH = 32;
+localparam FUNC3_WIDTH = 3;
+localparam DATA_WIDTH = 32;
 
-top #(.IM_MEM_DEPTH(IM_MEM_DEPTH), .DM_MEM_DEPTH(DM_MEM_DEPTH)) DUT(.*);
+logic rstN, startProcess,endProcess;
+
+processor #(.IM_MEM_DEPTH(IM_MEM_DEPTH), .DM_MEM_DEPTH(DM_MEM_DEPTH), 
+    .INSTRUCTION_WIDTH(INSTRUCTION_WIDTH), .FUNC3_WIDTH(FUNC3_WIDTH),
+    .DATA_WIDTH(DATA_WIDTH)) DUT(.*);
 
 Memory #(
     .WIDTH(32), 
     .DEPTH(DM_MEM_DEPTH), 
     .MEM_READ_DELAY(DATA_MEM_READ_DELAY), 
-    .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("dataMem.txt")
+    .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("data_mem_init.txt")
     );
 Memory #(
     .WIDTH(32), 
@@ -82,16 +90,16 @@ Memory #(
 initial begin
     @(posedge clk);  // initialize everything
     rstN = 1'b0;
-    start = 1'b0;
+    startProcess = 1'b0;
     @(posedge clk);
     rstN = 1'b1;
 
-    @(posedge clk); // start the processor
-    start = 1'b1;
+    @(posedge clk); // startProcess the processor
+    startProcess = 1'b1;
     @(posedge clk);
-    start = 1'b0;
+    startProcess = 1'b0;
 
-    wait(done);
+    wait(endProcess);
     repeat(10) @(posedge clk);
     $stop;
 

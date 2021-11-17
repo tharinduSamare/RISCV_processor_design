@@ -230,6 +230,9 @@ always_comb begin
                 LHU: begin
                     data_out_next = DATA_WIDTH'(mem_data_out[DATA_WIDTH/2-1:0]);
                 end
+                default: begin
+                    data_out_next = mem_data_out;  // default = LW
+                end
             endcase
             next_state = idle;
         end
@@ -253,6 +256,9 @@ always_comb begin
                 end
                 SW: begin
                     mem_data_in_next = data_in_reg;
+                end
+                default: begin
+                    mem_data_in_next = data_in_reg; // default = SW
                 end
             endcase
             next_state = idle;

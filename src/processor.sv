@@ -39,6 +39,7 @@ logic pcWrite;
 logic [INSTRUCTION_WIDTH-1:0] pcInc;
 logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 logic takeBranch;
+logic branchCU;
 
 pc PC(
     .rstN,
@@ -55,7 +56,7 @@ pcAdd PC_Adder (
     .pcNewFour(pcInc)
 );
 
-
+logic branchS;
 // PC related Modules //
 assign takeBranch = branchCU & branchS;
 assign pcIn = (takeBranch) ? jumpAddr : pcInc;
@@ -66,13 +67,20 @@ logic hazardIFIDWrite;
 logic flush;
 logic [INSTRUCTION_WIDTH-1:0] pcID;
 
-logic [INSTRUCTION_WIDTH-1:0]      instructionID;
-logic [OP_CODE_WIDTH-1:0] opCode = instructionID[6:0];
-logic [REG_SIZE-1:0] rdID        = instructionID[11:7];
-logic [FUNC3_WIDTH-1:0] func3ID  = instructionID[14:12];
-logic [REG_SIZE-1:0] rs1ID       = instructionID[19:15];
-logic [REG_SIZE-1:0] rs2ID       = instructionID[24:20];
-logic [FUNC7_WIDTH-1:0] func7ID  = instructionID[31:25];
+logic [INSTRUCTION_WIDTH-1:0] instructionID;
+logic [OP_CODE_WIDTH-1:0] opCode;
+logic [REG_SIZE-1:0] rdID;
+logic [FUNC3_WIDTH-1:0] func3ID;
+logic [REG_SIZE-1:0] rs1ID;
+logic [REG_SIZE-1:0] rs2ID;
+logic [FUNC7_WIDTH-1:0] func7ID;
+
+assign opCode = instructionID[6:0];
+assign rdID = instructionID[11:7];
+assign func3ID = instructionID[14:12];
+assign rs1ID = instructionID[19:15];
+assign rs2ID = instructionID[24:20];
+assign func7ID = instructionID[31:25];
 
 pipelineRegister_IF_ID IF_ID_Register(
     .clk,
@@ -89,7 +97,7 @@ pipelineRegister_IF_ID IF_ID_Register(
 
 
 ///// Control Unit /////
-logic jump, jumpReg, branchCU, memReadID, memWriteID, memtoRegID, regWriteID;
+logic jump, jumpReg, memReadID, memWriteID, memtoRegID, regWriteID;
 alu_sel_t aluSrc1ID,aluSrc2ID;
 aluOp_t aluOpID; //
 logic enableCU;
@@ -140,7 +148,9 @@ reg_file #(
 /// Branching Modules /////
 logic [INSTRUCTION_WIDTH-1:0] jumpOp1;
 logic [INSTRUCTION_WIDTH-1:0] jumpOp2;
-logic branchS;
+
+
+logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
 
 pcBranchType #(
     .DATA_WIDTH(DATA_WIDTH)
@@ -163,9 +173,9 @@ assign jumpAddr = jumpOp1 + jumpOp2;
 
 
 ///// Extender Module /////
-logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
 
-immediate_extend(
+
+immediate_extend immediate_extend(
     .instruction(instructionID),
 
     .I_immediate(immIID),
@@ -175,6 +185,8 @@ immediate_extend(
     .UJ_immediate(immJ)
 );
 
+logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
+logic [REG_SIZE-1:0] rdEX;
 ////// Hazard Unit //////
 hazard_unit Hazard_Unit(
     .clk,
@@ -195,9 +207,9 @@ hazard_unit Hazard_Unit(
 ///// ID/EX Pipeline Register /////
 alu_sel_t aluSrc1EX,aluSrc2EX;
 aluOp_t aluOpEX;
-logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
+
 logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
-logic [REG_SIZE-1:0] rdEX;
+
 logic [FUNC3_WIDTH-1:0] func3EX;
 logic [REG_SIZE-1:0] rs1EX;
 logic [REG_SIZE-1:0] rs2EX;
@@ -258,6 +270,8 @@ pipelineRegister_ID_EX ID_EX_Register(
 );
 
 
+logic memtoRegMeM, regWriteMeM;
+logic [REG_SIZE-1:0] rdMeM;
 ///// Data Forwarding Units /////
 logic [1:0] forwardSel1, forwardSel2;
 logic [DATA_WIDTH-1:0] forwardOut1, forwardOut2;
@@ -343,8 +357,7 @@ end
 
 
 ///// EX/MEM Pipeline Register /////
-logic memtoRegMeM, regWriteMeM;
-logic [REG_SIZE-1:0] rdMeM;
+
 
 pipelineRegister_EX_MEM EX_MEM_Register (
     .clk,
