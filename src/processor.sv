@@ -67,16 +67,20 @@ logic hazardIFIDWrite;
 logic flush;
 logic [INSTRUCTION_WIDTH-1:0] pcID;
 
-logic [INSTRUCTION_WIDTH-1:0]      instructionID;
-logic [OP_CODE_WIDTH-1:0] opCode = instructionID[6:0];
-logic [FUNC3_WIDTH-1:0] func3ID  = instructionID[14:12];
-regName_t                          rdID;
-regName_t                          rs2ID;
-regName_t                          rs2ID;
-assign                     rdID  = regName_t'(instructionID[11:7]);     
-assign                     rs1ID = regName_t'(instructionID[19:15]);     
-assign                     rs2ID = regName_t'(instructionID[24:20]);     
-logic [FUNC7_WIDTH-1:0] func7ID  = instructionID[31:25];
+logic [INSTRUCTION_WIDTH-1:0] instructionID;
+logic [OP_CODE_WIDTH-1:0] opCode;
+logic [FUNC3_WIDTH-1:0] func3ID;
+regName_t rdID;
+regName_t rs1ID;
+regName_t rs2ID;
+logic [FUNC7_WIDTH-1:0] func7ID;
+
+assign opCode = instructionID[6:0];
+assign func3ID  = instructionID[14:12];
+assign rdID  = regName_t'(instructionID[11:7]);     
+assign rs1ID = regName_t'(instructionID[19:15]);     
+assign rs2ID = regName_t'(instructionID[24:20]);     
+assign func7ID  = instructionID[31:25];
 
 pipelineRegister_IF_ID IF_ID_Register(
     .clk,
@@ -182,7 +186,7 @@ immediate_extend immediate_extend(
 );
 
 logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
-logic [REG_SIZE-1:0] rdEX;
+
 ////// Hazard Unit //////
 hazard_unit Hazard_Unit(
     .clk,
@@ -205,10 +209,6 @@ alu_sel_t aluSrc1EX,aluSrc2EX;
 aluOp_t aluOpEX;
 
 logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 logic [FUNC3_WIDTH-1:0] func3EX;
 regName_t rdEX;
 regName_t rs1EX;
@@ -269,9 +269,6 @@ pipelineRegister_ID_EX ID_EX_Register(
 
 );
 
-
-logic memtoRegMeM, regWriteMeM;
-logic [REG_SIZE-1:0] rdMeM;
 ///// Data Forwarding Units /////
 logic [1:0] forwardSel1, forwardSel2;
 logic [DATA_WIDTH-1:0] forwardOut1, forwardOut2;
