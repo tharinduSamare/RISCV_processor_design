@@ -3,8 +3,8 @@ module pcBranchType #(
 )
 (
 	 input logic 										 branch,
-    input logic signed [DATA_WIDTH - 1 : 0]   rs1,
-    input logic signed [DATA_WIDTH - 1 : 0]   rs2,
+    input logic signed [DATA_WIDTH - 1 : 0]   read1,
+    input logic signed [DATA_WIDTH - 1 : 0]   read2,
     input logic [2:0]                       branchType,
 
     output logic                        branchN
@@ -22,21 +22,21 @@ module pcBranchType #(
     // branch_ _;
 
 
-    logic   [31:0]  rs1_un;
-    logic   [31:0]  rs2_un;
+    logic   [31:0]  read1_un;
+    logic   [31:0]  read2_un;
     
     always_comb begin
-        if (rs1[31] == 1'b1) begin
-            rs1_un = -rs1;
+        if (read1[31] == 1'b1) begin
+            read1_un = -read1;
         end
         else begin
-            rs1_un = rs1;
+            read1_un = read1;
         end
-        if (rs2[31] == 1'b1) begin
-            rs2_un = -rs2;
+        if (read2[31] == 1'b1) begin
+            read2_un = -read2;
         end
         else begin
-            rs2_un = rs2;
+            read2_un = read2;
         end
     end
 
@@ -47,22 +47,22 @@ module pcBranchType #(
         required comparison is carried out
     */
         
-            if (branch && branchType == 3'b000 && rs1 == rs2)begin
+            if (branch && branchType == 3'b000 && read1 == read2)begin
                 branchN = '1;
             end
-            else if (branch && branchType == 3'b001 && rs1 != rs2)begin
+            else if (branch && branchType == 3'b001 && read1 != read2)begin
                 branchN = '1;
             end
-            else if (branch && branchType == 3'b100 && rs1 < rs2)begin
+            else if (branch && branchType == 3'b100 && read1 < read2)begin
                 branchN = '1;
             end
-            else if (branch && branchType == 3'b101 && rs1 >= rs2)begin
+            else if (branch && branchType == 3'b101 && read1 >= read2)begin
                 branchN = '1;
             end
-            else if (branch && branchType == 3'b110 && rs1_un < rs2_un)begin
+            else if (branch && branchType == 3'b110 && read1_un < read2_un)begin
                 branchN = '1;
             end
-            else if (branch && branchType == 3'b111 && rs1_un >= rs2_un)begin
+            else if (branch && branchType == 3'b111 && read1_un >= read2_un)begin
                 branchN = '1;
             end
 
