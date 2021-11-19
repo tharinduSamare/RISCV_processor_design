@@ -11,7 +11,7 @@ import  definitions::*;
     // other signals to wb stage
     input logic [31 : 0]    readD_Mem_In,
     input logic [31 : 0]    aluOut_Mem_In,
-    input regName_t       rd_Mem_In,
+    input regName_t         rd_Mem_In,
     
     // from control unit
     // to writeback stage
@@ -21,7 +21,7 @@ import  definitions::*;
     // other signals to wb stage
     output logic [31 : 0]    readD_Mem_Out,
     output logic [31 : 0]    aluOut_Mem_Out,
-    output regName_t       rd_Mem_Out
+    output regName_t         rd_Mem_Out
 );
 
     always_ff @( posedge clk or negedge rstN ) begin : MEM_WB_REGISTER
@@ -34,7 +34,7 @@ import  definitions::*;
             // other signals to wb stage
             readD_Mem_Out           <=  '0;
             aluOut_Mem_Out          <=  '0;
-            rd_Mem_Out              <=  '0;
+            rd_Mem_Out              <=  zero;
         end
         else begin
             // from control unit
