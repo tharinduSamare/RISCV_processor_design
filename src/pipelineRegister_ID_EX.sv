@@ -70,15 +70,10 @@ import  definitions::*;
         if (~rstN) begin
             //  pipelined outputs
             //  to execution stage
-<<<<<<< HEAD
             aluSrc1_IDOut           <=  ZERO; 
             aluSrc2_IDOut           <=  ZERO;
             aluOp_IDOut             <=  DEF_ADD;  
-=======
-            aluSrc1_IDOut           <=  ZERO;
-            aluSrc2_IDOut           <=  ZERO;
-            aluOp_IDOut             <=  DEF_ADD; //double check
->>>>>>> main
+
 
             
             // to memory stage
