@@ -1,6 +1,6 @@
 module alu_reg_tb
-import  alu_definitions::*,
-		definitions::*,
+// import  alu_definitions::*,
+import definitions::*,
         reg_names::*;   
 ();
 timeunit 1ns;
@@ -27,7 +27,7 @@ logic [6:0] funct7;
 logic [2:0] funct3;
 logic [DATA_WIDTH_L-1:0] alu_out;
 flag_t overflow, Z, error;
-operation_t opSel;
+alu_operation_t opSel;
 
 logic rstN, wen;
 regName_t rs1, rs2, rd;

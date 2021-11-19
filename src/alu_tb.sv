@@ -1,6 +1,6 @@
 module alu_tb
-import  alu_definitions::*,
-		definitions::*;
+// import  alu_definitions::*,
+import 	definitions::*;
 ();
 timeunit 1ns;
 timeprecision 1ps;
@@ -21,7 +21,7 @@ logic [6:0] funct7;
 logic [2:0] funct3;
 logic [DATA_WIDTH_L-1:0] alu_out;
 flag_t overflow, Z, error_out;
-operation_t opSel;
+alu_operation_t opSel;
 logic [DATA_WIDTH_L-1:0] bus_a, bus_b;
     
 alu alu_dut (

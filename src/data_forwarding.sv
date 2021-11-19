@@ -1,5 +1,6 @@
 module data_forwarding 
-    import reg_names::*;
+    // import reg_names::*;
+    import definitions::*;
 #(
     parameter DATA_WIDTH = 32
 ) (

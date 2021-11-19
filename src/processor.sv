@@ -32,6 +32,10 @@ localparam REG_SIZE = $clog2(REG_COUNT);
 localparam OP_CODE_WIDTH = 7;
 localparam FUNC7_WIDTH = 7;
 
+///// EX/MEM Pipeline Register /////
+logic memtoRegMeM, regWriteMeM;
+regName_t rdMeM;
+
 ///// PC related Wires /////   
 logic [INSTRUCTION_WIDTH-1:0] pcIn; 
 logic pcWrite;
@@ -128,8 +132,7 @@ logic [DATA_WIDTH-1:0] dataInWB;
 logic [DATA_WIDTH-1:0] rs1DataID, rs2DataID;
 
 reg_file #(
-    .DATA_WIDTH(DATA_WIDTH),
-    .REG_COUNT(REG_COUNT)
+    .DATA_WIDTH(DATA_WIDTH)
 )Reg_File(
     .clk,
     .rstN,
@@ -274,8 +277,7 @@ logic [1:0] forwardSel1, forwardSel2;
 logic [DATA_WIDTH-1:0] forwardOut1, forwardOut2;
 
 data_forwarding #(
-    .DATA_WIDTH(DATA_WIDTH),
-    .REG_SIZE(REG_SIZE)
+    .DATA_WIDTH(DATA_WIDTH)
 ) Data_Forward_Unit(
     .mem_regWrite(regWriteMeM),
     .wb_regWrite(regWriteWB),
@@ -306,13 +308,11 @@ end
 
 
 ///// Alu Modules /////
-logic [3:0] aluOpSel;
-logic overflow, Z;
+alu_operation_t aluOpSel;
+flag_t overflow, Z;
 logic [DATA_WIDTH-1:0] aluIn1, aluIn2, aluOutEx;
 
-alu_op #(
-    .DATA_WIDTH(DATA_WIDTH)
-) ALU_OpSelect(
+alu_op ALU_OpSelect(
     .aluOp(aluOpEX),
     .funct7(func7EX),
     .funct3(func3EX),
@@ -352,10 +352,6 @@ always_comb begin : ALUIn2Select
 endcase
 end
 
-
-///// EX/MEM Pipeline Register /////
-logic memtoRegMeM, regWriteMeM;
-regName_t rdMeM;
 
 pipelineRegister_EX_MEM EX_MEM_Register (
     .clk,

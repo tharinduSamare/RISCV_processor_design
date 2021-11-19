@@ -105,7 +105,8 @@ logic [DATA_WIDTH-1:0]mem_data_in, mem_data_in_next;
 logic [$clog2(MEM_READ_DELAY):0]current_read_delay_count, next_read_delay_count;
 logic [$clog2(MEM_WRITE_DELAY):0]current_write_delay_count, next_write_delay_count;
 
-logic [ADDRESS_WIDTH-1:0]address_reg, address_next;
+logic [ADDRESS_WIDTH-3:0]address_reg, address_next; // do not include last 2 bits 
+logic [1:0]addr_LSB_bits_reg, addr_LSB_bits_next; // last 2 bits of the address used for LHW, LB, SHW, SB etc.
 logic current_read_en, next_read_en;
 logic current_write_en, next_write_en;
 
@@ -134,6 +135,7 @@ always_ff @(posedge clk) begin
     if (!rstN) begin
         current_state <= idle;
         address_reg  <= '0;
+        addr_LSB_bits_reg <= '0;
         current_read_en <= 1'b0;
         current_write_en <= 1'b0;
 
@@ -149,6 +151,7 @@ always_ff @(posedge clk) begin
     else begin
         current_state   <= next_state;
         address_reg     <= address_next;
+        addr_LSB_bits_reg <= addr_LSB_bits_next;
         current_read_en <= next_read_en;
         current_write_en <= next_write_en;
 
@@ -166,6 +169,7 @@ end
 always_comb begin
     next_state = current_state;
     address_next = address_reg;
+    addr_LSB_bits_next = addr_LSB_bits_reg;
     next_read_en = current_read_en;
     next_write_en = current_write_en;
 
@@ -183,13 +187,14 @@ always_comb begin
             next_write_en = 1'b0;
             if (read_En) begin  // read has high priority
                 next_state = load_0;
-                address_next = address;
+                address_next = address[ADDRESS_WIDTH-1:2];
+                addr_LSB_bits_next = address[1:0];
                 next_read_en = 1'b1; 
                 next_read_delay_count = '0;  
                 func3_next = func3;     
             end
             else if (write_En) begin
-                address_next = address;
+                address_next = address[ADDRESS_WIDTH-1:2];
                 data_in_next = data_in;
                 func3_next = func3;  
                 if (func3 == SW) begin  // replace existing memory word
@@ -216,19 +221,19 @@ always_comb begin
         load_1: begin
             case (func3_reg)
                 LB: begin
-                    data_out_next = DATA_WIDTH'(signed'(mem_data_out[7:0]));
+                    data_out_next = DATA_WIDTH'(signed'(mem_data_out[addr_LSB_bits_reg*8 +:8]));
                 end
                 LH: begin
-                    data_out_next = DATA_WIDTH'(signed'(mem_data_out[DATA_WIDTH/2-1:0]));
+                    data_out_next = DATA_WIDTH'(signed'(mem_data_out[addr_LSB_bits_reg[1]*16 +:16]));
                 end
                 LW: begin
                     data_out_next = mem_data_out;
                 end
                 LBU: begin
-                    data_out_next = DATA_WIDTH'(mem_data_out[7:0]);
+                    data_out_next = DATA_WIDTH'(mem_data_out[addr_LSB_bits_reg*8 +:8]);
                 end
                 LHU: begin
-                    data_out_next = DATA_WIDTH'(mem_data_out[DATA_WIDTH/2-1:0]);
+                    data_out_next = DATA_WIDTH'(mem_data_out[addr_LSB_bits_reg[1]*16 +:16]);
                 end
                 default: begin
                     data_out_next = mem_data_out;  // default = LW
@@ -249,10 +254,10 @@ always_comb begin
             next_write_en = 1'b1;
             case (func3_reg)
                 SB: begin
-                    mem_data_in_next = {mem_data_out[DATA_WIDTH-1:8],data_in_reg[7:0]};
+                    mem_data_in_next = {mem_data_out[DATA_WIDTH-1:8],data_in_reg[7:0]}; // stores the low 8 bits
                 end
                 SH: begin
-                    mem_data_in_next = {mem_data_out[DATA_WIDTH-1:DATA_WIDTH/2],data_in_reg[DATA_WIDTH/2-1:0]};
+                    mem_data_in_next = {mem_data_out[DATA_WIDTH-1:DATA_WIDTH/2],data_in_reg[DATA_WIDTH/2-1:0]}; // stores low 16 bits
                 end
                 SW: begin
                     mem_data_in_next = data_in_reg;
