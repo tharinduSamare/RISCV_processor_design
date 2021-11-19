@@ -1,17 +1,17 @@
 module alu_op 
-import  alu_definitions::*,
-		definitions::*;   
+// import  alu_definitions::*,
+import  definitions::*;   
 (
     input  aluOp_t aluOp,
     input  logic [6:0] funct7, 
     input  logic [2:0] funct3,
-    output operation_t opSel,
+    output alu_operation_t opSel,
     output flag_t error
 );
 
 flag_t send_error;
 
-operation_t nextOpSel;
+alu_operation_t nextOpSel;
 
 typedef enum logic [2:0] { //12-14 in ISA
     add_sub = 3'd0,

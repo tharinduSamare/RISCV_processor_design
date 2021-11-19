@@ -1,5 +1,9 @@
 module reg_file 
-    import reg_names::*;
+    // import reg_names::*;
+    import definitions::*;
+#(
+    parameter DATA_WIDTH = 32
+)
 (
     input  logic clk, rstN, wen, 
     input  regName_t rs1, rs2, rd,

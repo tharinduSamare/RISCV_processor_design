@@ -51,7 +51,7 @@ always_comb begin : signalGenerator
     memWrite = '0;
     memtoReg = '0;
     regWrite = '0;
-    aluOp = ADD; //2'b00;
+    aluOp = DEF_ADD; //2'b00;
 
     if (!(enable & startProcess)) memWrite = '0;
     else begin

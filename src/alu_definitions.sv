@@ -10,7 +10,7 @@ typedef enum logic [3:0] {
     SLL, SRL, SRA,
     AND, OR , XOR,  
     FWD
-} operation_t;
+} alu_operation_t;
 
 
 endpackage:alu_definitions

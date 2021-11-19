@@ -20,6 +20,8 @@ typedef enum logic [1:0] {
     TYPE_R
 } aluOp_t;
     
+parameter REG_COUNT = 32;
+parameter REG_SIZE = $clog2(REG_COUNT);
 typedef enum logic [4:0] { 
         zero = 5'd0,    //hard-wired zero
         ra = 5'd1,      //return address
@@ -40,5 +42,15 @@ typedef enum bit [1:0] {
     TWO,
     THREE
 } alu_sel_t;
+
+typedef enum logic { LOW, HIGH } flag_t;
+
+typedef enum logic [3:0] { 
+    ADD, SUB,
+    SLT, SLTU,
+    SLL, SRL, SRA,
+    AND, OR , XOR,  
+    FWD
+} alu_operation_t;
 
 endpackage:definitions
