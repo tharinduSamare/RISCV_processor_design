@@ -22,6 +22,7 @@ typedef enum logic [1:0] {
     
 parameter REG_COUNT = 32;
 parameter REG_SIZE = $clog2(REG_COUNT);
+
 typedef enum logic [4:0] { 
         zero = 5'd0,    //hard-wired zero
         ra = 5'd1,      //return address
