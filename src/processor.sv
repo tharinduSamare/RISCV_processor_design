@@ -158,8 +158,8 @@ logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
 pcBranchType #(
     .DATA_WIDTH(DATA_WIDTH)
 ) BranchTypeSelection (
-    .read1(rs1DataID),
-    .read2(rs2DataID),
+    .rs1(rs1DataID),
+    .rs2(rs2DataID),
     .branchType(func3ID),
 
     .branchN(branchS)

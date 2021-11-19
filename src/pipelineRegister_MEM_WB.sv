@@ -34,7 +34,7 @@ import  definitions::*;
             // other signals to wb stage
             readD_Mem_Out           <=  '0;
             aluOut_Mem_Out          <=  '0;
-            rd_Mem_Out              <=  '0;
+            rd_Mem_Out              <=  zero;
         end
         else begin
             // from control unit

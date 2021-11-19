@@ -53,7 +53,7 @@ import  definitions::*;
             aluOut_EX_Out           <=  '0;
 
             aluSrc2_EX_Out          <=  '0;
-            rd_EX_Out               <=  '0;
+            rd_EX_Out               <=  zero; // added by samare Check whether correct or not (previous value = '0)
         end
         else begin
             // from control unit

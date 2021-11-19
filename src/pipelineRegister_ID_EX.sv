@@ -70,9 +70,9 @@ import  definitions::*;
         if (~rstN) begin
             //  pipelined outputs
             //  to execution stage
-            aluSrc1_IDOut           <=  '0;
-            aluSrc2_IDOut           <=  '0;
-            aluOp_IDOut             <=  '0;
+            aluSrc1_IDOut           <=  ZERO; 
+            aluSrc2_IDOut           <=  ZERO;
+            aluOp_IDOut             <=  DEF_ADD;  
 
             
             // to memory stage
@@ -93,9 +93,9 @@ import  definitions::*;
             S_imme_IDOut            <=  '0;
             U_imme_IDOut            <=  '0;
 
-            rd_IDOut                <=  '0;
-            rs1_IDOut               <=  '0;
-            rs2_IDOut               <=  '0;  
+            rd_IDOut                <=  zero; 
+            rs1_IDOut               <=  zero; 
+            rs2_IDOut               <=  zero;  
         end
         else begin    
             //  pipelined outputs
