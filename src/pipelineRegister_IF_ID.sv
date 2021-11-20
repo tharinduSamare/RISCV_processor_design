@@ -6,7 +6,6 @@ module pipelineRegister_IF_ID(
     input logic [31 : 0]    instructionIn,
 
     input logic             harzardIF_ID_Write,
-    input logic             flush,
 
     output logic [31 : 0]   pcOut,
     output logic [31 : 0]   instructionOut
@@ -18,8 +17,14 @@ module pipelineRegister_IF_ID(
             instructionOut      <=      '0;
         end
         else begin
+		  if (~harzardIF_ID_Write) begin
+			pcOut               <=      '0;
+            instructionOut      <=      '0;
+		  end
+		  else begin
             pcOut               <=      pcIn;
             instructionOut      <=      instructionIn;
-        end
+            end
+		end
     end
 endmodule
