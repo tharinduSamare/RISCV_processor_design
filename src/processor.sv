@@ -45,6 +45,9 @@ logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 logic takeBranch;
 logic branchCU;
 
+assign takeBranch = branchCU & branchS;
+assign pcIn = (takeBranch) ? jumpAddr : pcInc;
+ 
 pc PC(
     .rstN,
     .clk,
@@ -62,9 +65,6 @@ pcAdd PC_Adder (
 
 logic branchS;
 // PC related Modules //
-assign takeBranch = branchCU & branchS;
-assign pcIn = (takeBranch) ? jumpAddr : pcInc;
- 
 
 ///// IF/ID Pipeline Register/////
 logic hazardIFIDWrite;
