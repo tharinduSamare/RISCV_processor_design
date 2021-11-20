@@ -68,7 +68,6 @@ assign pcIn = (takeBranch) ? jumpAddr : pcInc;
 
 ///// IF/ID Pipeline Register/////
 logic hazardIFIDWrite;
-logic flush;
 logic [INSTRUCTION_WIDTH-1:0] pcID;
 
 logic [INSTRUCTION_WIDTH-1:0] instructionID;
@@ -85,6 +84,7 @@ assign rdID  = regName_t'(instructionID[11:7]);
 assign rs1ID = regName_t'(instructionID[19:15]);     
 assign rs2ID = regName_t'(instructionID[24:20]);     
 assign func7ID  = instructionID[31:25];
+// assign imme_instruction  = instructionID[31:7];
 
 pipelineRegister_IF_ID IF_ID_Register(
     .clk,
@@ -93,7 +93,6 @@ pipelineRegister_IF_ID IF_ID_Register(
     .pcIn(pcIF),
     .instructionIn(instructionIF),
     .harzardIF_ID_Write(hazardIFIDWrite),
-    .flush(flush),
 
     .pcOut(pcID),
     .instructionOut(instructionID)
@@ -158,6 +157,7 @@ logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
 pcBranchType #(
     .DATA_WIDTH(DATA_WIDTH)
 ) BranchTypeSelection (
+    .branch(branchCU),
     .read1(rs1DataID),
     .read2(rs2DataID),
     .branchType(func3ID),
@@ -179,8 +179,7 @@ assign jumpAddr = jumpOp1 + jumpOp2;
 
 
 immediate_extend immediate_extend(
-    .instruction(instructionID),
-
+    .instruction(instructionID[31:7]),
     .I_immediate(immIID),
     .S_immediate(immSID),
     .SB_immediate(immB),
@@ -291,25 +290,27 @@ data_forwarding #(
 );
 
 always_comb begin : DataForward1
-    unique case (forwardSel1) 
+     case (forwardSel1) 
         ZERO : forwardOut1 = rs1DataEX;
         ONE : forwardOut1 = aluOutMeM;
         TWO : forwardOut1 = dataInWB;
+	  default : forwardOut1 = rs1DataEX;
 endcase
 end
 
 always_comb begin : DataForward2
-    unique case (forwardSel2) 
+     case (forwardSel2) 
         ZERO : forwardOut2 = rs2DataEX;
         ONE : forwardOut2 = aluOutMeM;
         TWO : forwardOut2 = dataInWB;
+		  default : forwardOut2 = rs2DataEX;
 endcase
 end
 
 
 ///// Alu Modules /////
 alu_operation_t aluOpSel;
-flag_t overflow, Z;
+flag_t overflow, Z, error;
 logic [DATA_WIDTH-1:0] aluIn1, aluIn2, aluOutEx;
 
 alu_op ALU_OpSelect(
@@ -317,7 +318,8 @@ alu_op ALU_OpSelect(
     .funct7(func7EX),
     .funct3(func3EX),
 
-    .opSel(aluOpSel)
+    .opSel(aluOpSel),
+    .error(error)
 );
 
 alu #(
@@ -328,18 +330,19 @@ alu #(
     .opSel(aluOpSel),
 
     .out(aluOutEx),
-    .overflow,
-    .Z
+    .overflow(overflow),
+    .Z(Z)
 );
 
 // assign forward1Out = rs1DataEX;
 // assign forward2Out = rs2DataEX;
 
 always_comb begin : ALUIn1Select
-    unique case (aluSrc1EX) 
+    case (aluSrc1EX) 
         ZERO : aluIn1 = forwardOut1;
         ONE : aluIn1 = immUEX;
         TWO : aluIn1 = 32'd4;
+		  default : aluIn1 = forwardOut1;
 endcase  
 end
 
