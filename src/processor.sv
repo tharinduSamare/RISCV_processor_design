@@ -273,7 +273,7 @@ pipelineRegister_ID_EX ID_EX_Register(
 );
 
 ///// Data Forwarding Units /////
-logic [1:0] forwardSel1, forwardSel2;
+alu_sel_t forwardSel1, forwardSel2;
 logic [DATA_WIDTH-1:0] forwardOut1, forwardOut2;
 
 data_forwarding #(

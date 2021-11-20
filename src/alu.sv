@@ -1,5 +1,4 @@
 module alu 
-// import alu_definitions::*;
 import definitions::*;
 #(
     parameter DATA_WIDTH = 32
