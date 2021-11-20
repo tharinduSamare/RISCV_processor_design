@@ -70,6 +70,7 @@ import  definitions::*;
         if (~rstN) begin
             //  pipelined outputs
             //  to execution stage
+            pcOut                   <= '0;
             aluSrc1_IDOut           <=  ZERO; 
             aluSrc2_IDOut           <=  ZERO;
             aluOp_IDOut             <=  DEF_ADD;  
@@ -101,6 +102,7 @@ import  definitions::*;
         else begin    
             //  pipelined outputs
             //  to execution stage
+            pcOut                   <=  pcIn;   
             aluSrc1_IDOut           <=  aluSrc1_IDIn;
             aluSrc2_IDOut           <=  aluSrc2_IDIn;
             aluOp_IDOut             <=  aluOp_IDIn;
