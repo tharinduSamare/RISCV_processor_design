@@ -1,5 +1,4 @@
 module data_forwarding 
-    // import reg_names::*;
     import definitions::*;
 #(
     parameter DATA_WIDTH = 32
@@ -7,7 +6,8 @@ module data_forwarding
     input  logic mem_regWrite, wb_regWrite,
     input  regName_t mem_rd, wb_rd,
     input  regName_t ex_rs1, ex_rs2,
-    output logic [1:0] df_mux1, df_mux2
+    // output logic [1:0] df_mux1, df_mux2
+    output alu_sel_t df_mux1, df_mux2
 );
 
 logic wb_fwd1,  wb_fwd2;
@@ -23,15 +23,15 @@ always_comb begin : d_fwd_mem
     else if only wb stage instruction rd correspond to ex_stage instruction rs: mux <= 2
     else if       both           rd correspond to ex_stage instruction rs: mux <= 1 (i.e. the most recent)
     */
-    if (mem_fwd1) df_mux1 = 2'b01;
+    if (mem_fwd1) df_mux1 = ONE; //2'b01;
     else begin
-        if (wb_fwd1) df_mux1 = 2'b10;
-        else df_mux1 = 2'b00;
+        if (wb_fwd1) df_mux1 = TWO; //2'b10;
+        else df_mux1 = ZERO; //2'b00;
     end
-    if (mem_fwd2) df_mux2 = 2'b01;
+    if (mem_fwd2) df_mux2 = ONE; //2'b01;
     else begin
-        if (wb_fwd2) df_mux2 = 2'b10;
-        else df_mux2 = 2'b00;
+        if (wb_fwd2) df_mux2 = TWO; //2'b10;
+        else df_mux2 = ZERO; //2'b00;
     end
 end
 //data forward from wb stage

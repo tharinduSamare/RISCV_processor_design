@@ -12,13 +12,14 @@ module pc(
     always_ff @(posedge clk  or negedge rstN) begin : assignNextAddress
         if (~rstN) begin
             pcOut <= '0;
-        end else begin
+        end 
+        else begin
             if (pcWrite)begin
                 pcOut   <= pcIn;
             end
-            else begin
-                pcOut   <= pcOut;
-            end
+            // else begin
+            //     pcOut   <= pcOut;
+            // end
         end
     end
 
