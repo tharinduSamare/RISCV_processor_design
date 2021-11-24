@@ -12,7 +12,8 @@ module ins_memory
 localparam ADDRESS_WIDTH = $clog2(MEMORY_DEPTH);
 logic [ADDRESS_WIDTH-1:0]address_truncated;
 
-assign address_truncated = (PC_WIDTH<ADDRESS_WIDTH)? {'0,address} : address[ADDRESS_WIDTH-1:0];
+// assign address_truncated = (PC_WIDTH<ADDRESS_WIDTH)? {'0,address} : address[ADDRESS_WIDTH-1:0];
+assign address_truncated = ADDRESS_WIDTH'(address);
 
 logic [INSTRUCTION_WIDTH-1:0]memory[0:MEMORY_DEPTH-1];
 

@@ -44,8 +44,11 @@ logic [INSTRUCTION_WIDTH-1:0] pcInc;
 logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 logic takeBranch;
 logic branchCU;
-
 logic branchS;
+
+assign takeBranch = branchCU & branchS;
+assign pcIn = (takeBranch) ? jumpAddr : pcInc;
+
 // PC related Modules //
 
 ///// IF/ID Pipeline Register/////
