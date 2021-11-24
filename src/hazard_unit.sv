@@ -10,13 +10,6 @@ module hazard_unit
 
 logic stall;
 
-// assign stall = (ID_Ex_MemRead & ((ID_Ex_rd==IF_ID_rs1) | (ID_Ex_rd == IF_ID_rs2)))?1'b1:1'b0;
-assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite )?1'b1:1'b0;
-
-assign ID_Ex_enable = (stall == 1'b0)? 1'b1:1'b0;
-assign PC_write = (stall == 1'b0)? 1'b1:1'b0;
-assign IF_ID_write = (stall == 1'b0)? 1'b1:1'b0;
-
 typedef enum logic [2:0]{
     idle = 3'd0,
     before_read_mem = 3'd1,
@@ -26,6 +19,13 @@ typedef enum logic [2:0]{
 }state_t;
 
 state_t current_state, next_state;
+
+// assign stall = (ID_Ex_MemRead & ((ID_Ex_rd==IF_ID_rs1) | (ID_Ex_rd == IF_ID_rs2)))?1'b1:1'b0;
+assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite )?1'b1:1'b0;
+
+assign ID_Ex_enable = (stall == 1'b0)? 1'b1:1'b0;
+assign PC_write = (stall == 1'b0)? 1'b1:1'b0;
+assign IF_ID_write = (stall == 1'b0)? 1'b1:1'b0;
 
 always_ff @(posedge clk) begin
     if (~rstN)begin

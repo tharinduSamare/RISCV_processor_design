@@ -1,38 +1,110 @@
-class Memory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DELAY=0);
+class DataMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DELAY=0);
 
     localparam ADDRESS_WIDTH = $clog2(DEPTH);
     logic signed [WIDTH-1:0]memory[0:DEPTH-1]; // can be initialized with random values
     typedef logic [WIDTH-1:0]  data_t;
     typedef logic [ADDRESS_WIDTH-1:0] addr_t;
+    logic [1:0] addr_LSB_bits;
+    logic [ADDRESS_WIDTH-3:0]addr_MSB_bits;
+
+    localparam [2:0]
+        LB  = 3'b000,
+        LH  = 3'b001,
+        LW  = 3'b010,
+        LBU = 3'b100,
+        LHU = 3'b101,
+        SB  = 3'b000,
+        SH  = 3'b001,
+        SW  = 3'b010;
 
     function new(input string mem_init_file);
         $readmemh(mem_init_file, this.memory);
     endfunction
 
-    task Read_memory(input addr_t addr, ref logic rdEn, output data_t value, ref logic clk, output logic mem_ready); 
+    task automatic Read_memory(input addr_t addr, ref logic rdEn, input logic [2:0]func3, output data_t value, ref logic clk, output logic mem_ready); 
         repeat(MEM_READ_DELAY) @(posedge clk);
         mem_ready = 1'b0;
+        addr_LSB_bits = addr[1:0];
+        addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
+
         if (rdEn) begin
-            value = this.memory[addr];
+            case (func3) 
+                LB : value = WIDTH'(signed'((this.memory[addr_MSB_bits])[addr_LSB_bits*8 +:8]));
+                LH : value = WIDTH'(signed'((this.memory[addr_MSB_bits])[addr_LSB_bits[1]*16 +:16]));
+                LW : value = this.memory[addr_MSB_bits]
+                LBU: value = WIDTH'((this.memory[addr_MSB_bits])[addr_LSB_bits*8 +:8]);
+                LHU: value = WIDTH'((this.memory[addr_MSB_bits])[addr_LSB_bits[1]*16 +:16]);
+                default: $display("wrong func3 for load data");
+            endcase
         end
         mem_ready = 1'b1;
     endtask
 
-    task Write_memory(input addr_t addr, input data_t data, ref logic wrEn, ref logic clk);
+    task automatic Write_memory(input addr_t addr, ref logic wrEn, input logic [2:0]func3, input data_t data, ref logic clk);
         repeat(MEM_READ_DELAY) @(posedge clk);
+        mem_ready = 1'b0;
+        addr_LSB_bits = addr[1:0];
+        addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
         if (wrEn) begin
-            this.memory[addr] = data;
+            case (func3) 
+                SB : this.memory[addr_MSB_bits] = WIDTH'(signed'(data[7:0]));
+                SH : this.memory[addr_MSB_bits] = WIDTH'(signed'(data[WIDT/2-1:0]));
+                SW : this.memory[addr_MSB_bits] = data;
+                default: $display("wrong func3 for store data");
+            endcase
+        end
+        mem_ready = 1'b1;
+    endtask
+
+    // function void display_RAM();
+    //     foreach(this.memory[i])
+    //         $display(i,this.memory[i]);
+    // endfunction
+
+    // function data_t get_value(input addr_t addr);
+    //     return memory[addr];
+    // endfunction
+
+endclass
+
+class InstructionMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DELAY=0);
+
+    localparam ADDRESS_WIDTH = $clog2(DEPTH);
+    logic signed [WIDTH-1:0]memory[0:DEPTH-1]; // can be initialized with random values
+    typedef logic [WIDTH-1:0]  data_t;
+    typedef logic [ADDRESS_WIDTH-1:0] addr_t;
+    logic [ADDRESS_WIDTH-3:0]addr_MSB_bits;
+
+    function new(input string mem_init_file);
+        $readmemh(mem_init_file, this.memory);
+    endfunction
+
+    task automatic Read_memory(input addr_t addr, ref logic rdEn, output data_t value, ref logic clk, output logic mem_ready); 
+        repeat(MEM_READ_DELAY) @(posedge clk);
+        mem_ready = 1'b0;
+        addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
+        if (rdEn) begin
+            value = this.memory[addr_MSB_bits];
+        end
+        mem_ready = 1'b1;
+    endtask
+
+    task automatic Write_memory(input addr_t addr, input data_t data, ref logic wrEn, ref logic clk);
+        repeat(MEM_READ_DELAY) @(posedge clk);
+        addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
+        if (wrEn) begin
+            this.memory[addr_MSB_bits] = data;
         end
     endtask
 
-    function void display_RAM();
-        foreach(this.memory[i])
-            $display(i,this.memory[i]);
-    endfunction
+    // function void display_RAM();
+    //     foreach(this.memory[i])
+    //         $display(i,this.memory[i]);
+    // endfunction
 
-    function data_t get_value(input addr_t addr);
-        return memory[addr];
-    endfunction
+    // function data_t get_value(input addr_t addr);
+    //     return memory[addr];
+    // endfunction
 
 endclass
 
@@ -65,13 +137,29 @@ localparam INSTRUCTION_WIDTH = 32;
 localparam FUNC3_WIDTH = 3;
 localparam DATA_WIDTH = 32;
 
+
 logic rstN, startProcess,endProcess;
+
+// IRAM
+logic [INSTRUCTION_WIDTH-1:0]instructionIF,
+logic [INSTRUCTION_WIDTH-1:0] pcIF,
+
+// DRAM
+logic [DATA_WIDTH-1:0] dMOutMem,
+logic dMReadyMem,   
+logic memReadMeM, memWriteMeM, 
+logic [FUNC3_WIDTH-1:0] func3MeM,
+logic [DATA_WIDTH-1:0] aluOutMeM,
+logic [DATA_WIDTH-1:0] rs2DataMeM
+
+///////////////
+
 
 processor #(.IM_MEM_DEPTH(IM_MEM_DEPTH), .DM_MEM_DEPTH(DM_MEM_DEPTH), 
     .INSTRUCTION_WIDTH(INSTRUCTION_WIDTH), .FUNC3_WIDTH(FUNC3_WIDTH),
     .DATA_WIDTH(DATA_WIDTH)) DUT(.*);
 
-Memory #(
+DataMemory #(
     .WIDTH(32), 
     .DEPTH(DM_MEM_DEPTH), 
     .MEM_READ_DELAY(DATA_MEM_READ_DELAY), 
@@ -103,6 +191,14 @@ initial begin
     repeat(10) @(posedge clk);
     $stop;
 
+end
+
+initial begin
+    dataMemory.Read_memory(.addr(aluOutMeM), .rdEn(memReadMeM), .value(dMOutMem), .clk(clk), .mem_ready(dMReadyMem));
+end
+
+initial begin
+    dataMemory.Read_memory(.addr(aluOutMeM), .rdEn(memReadMeM), .value(dMOutMem), .clk(clk), .mem_ready(dMReadyMem));
 end
 
 endmodule: processor_tb

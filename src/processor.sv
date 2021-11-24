@@ -45,21 +45,6 @@ logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 logic takeBranch;
 logic branchCU;
 
-pc PC(
-    .rstN,
-    .clk,
-
-    .pcIn(pcIn),
-    .pcWrite(pcWrite),
-
-    .pcOut(pcIF)
-);
-
-pcAdd PC_Adder (
-    .pcOld(pcIF),
-    .pcNewFour(pcInc)
-);
-
 logic branchS;
 // PC related Modules //
 assign takeBranch = branchCU & branchS;
@@ -86,6 +71,68 @@ assign rs1ID = regName_t'(instructionID[19:15]);
 assign rs2ID = regName_t'(instructionID[24:20]);     
 assign func7ID  = instructionID[31:25];
 
+///// Control Unit /////
+logic jump, jumpReg, memReadID, memWriteID, memtoRegID, regWriteID;
+alu_sel_t aluSrc1ID,aluSrc2ID;
+aluOp_t aluOpID; //
+logic enableCU;
+
+///// Register File /////
+logic regWriteWB;
+regName_t rdWB;
+logic [DATA_WIDTH-1:0] dataInWB;
+logic [DATA_WIDTH-1:0] rs1DataID, rs2DataID;
+
+/// Branching Modules /////
+logic [INSTRUCTION_WIDTH-1:0] jumpOp1;
+logic [INSTRUCTION_WIDTH-1:0] jumpOp2;
+
+logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
+
+logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
+
+///// ID/EX Pipeline Register /////
+alu_sel_t aluSrc1EX,aluSrc2EX;
+aluOp_t aluOpEX;
+
+logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
+logic [FUNC3_WIDTH-1:0] func3EX;
+regName_t rdEX;
+regName_t rs1EX;
+regName_t rs2EX;
+logic [FUNC7_WIDTH-1:0] func7EX;
+logic [DATA_WIDTH-1:0] rs1DataEX, rs2DataEX;
+logic [INSTRUCTION_WIDTH-1:0] pcEX;
+
+///// Data Forwarding Units /////
+logic [1:0] forwardSel1, forwardSel2;
+logic [DATA_WIDTH-1:0] forwardOut1, forwardOut2;
+
+///// Alu Modules /////
+alu_operation_t aluOpSel;
+flag_t overflow, Z;
+logic [DATA_WIDTH-1:0] aluIn1, aluIn2, aluOutEx;
+
+///// Mem/WB Pipeline Register /////
+logic memtoRegWB;
+logic [DATA_WIDTH-1:0] aluOutWB;
+logic [DATA_WIDTH-1:0] dMOutWB;
+
+pc PC(
+    .rstN,
+    .clk,
+
+    .pcIn(pcIn),
+    .pcWrite(pcWrite),
+
+    .pcOut(pcIF)
+);
+
+pcAdd PC_Adder (
+    .pcOld(pcIF),
+    .pcNewFour(pcInc)
+);
+
 pipelineRegister_IF_ID IF_ID_Register(
     .clk,
     .rstN,
@@ -98,13 +145,6 @@ pipelineRegister_IF_ID IF_ID_Register(
     .pcOut(pcID),
     .instructionOut(instructionID)
 );
-
-
-///// Control Unit /////
-logic jump, jumpReg, memReadID, memWriteID, memtoRegID, regWriteID;
-alu_sel_t aluSrc1ID,aluSrc2ID;
-aluOp_t aluOpID; //
-logic enableCU;
 
 control_unit CU(
     .opCode,
@@ -125,12 +165,6 @@ control_unit CU(
 );
 
 
-///// Register File /////
-logic regWriteWB;
-regName_t rdWB;
-logic [DATA_WIDTH-1:0] dataInWB;
-logic [DATA_WIDTH-1:0] rs1DataID, rs2DataID;
-
 reg_file #(
     .DATA_WIDTH(DATA_WIDTH)
 )Reg_File(
@@ -146,14 +180,6 @@ reg_file #(
     .regA_out(rs1DataID),
     .regB_out(rs2DataID)
 );
-
-
-/// Branching Modules /////
-logic [INSTRUCTION_WIDTH-1:0] jumpOp1;
-logic [INSTRUCTION_WIDTH-1:0] jumpOp2;
-
-
-logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
 
 pcBranchType #(
     .DATA_WIDTH(DATA_WIDTH)
@@ -188,8 +214,6 @@ immediate_extend immediate_extend(
     .UJ_immediate(immJ)
 );
 
-logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
-
 ////// Hazard Unit //////
 hazard_unit Hazard_Unit(
     .clk,
@@ -206,19 +230,6 @@ hazard_unit Hazard_Unit(
     .PC_write(pcWrite),
     .ID_Ex_enable(enableCU)
 );
-
-///// ID/EX Pipeline Register /////
-alu_sel_t aluSrc1EX,aluSrc2EX;
-aluOp_t aluOpEX;
-
-logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
-logic [FUNC3_WIDTH-1:0] func3EX;
-regName_t rdEX;
-regName_t rs1EX;
-regName_t rs2EX;
-logic [FUNC7_WIDTH-1:0] func7EX;
-logic [DATA_WIDTH-1:0] rs1DataEX, rs2DataEX;
-logic [INSTRUCTION_WIDTH-1:0] pcEX;
 
 pipelineRegister_ID_EX ID_EX_Register(
     .clk,
@@ -272,10 +283,6 @@ pipelineRegister_ID_EX ID_EX_Register(
 
 );
 
-///// Data Forwarding Units /////
-logic [1:0] forwardSel1, forwardSel2;
-logic [DATA_WIDTH-1:0] forwardOut1, forwardOut2;
-
 data_forwarding #(
     .DATA_WIDTH(DATA_WIDTH)
 ) Data_Forward_Unit(
@@ -305,12 +312,6 @@ always_comb begin : DataForward2
         TWO : forwardOut2 = dataInWB;
 endcase
 end
-
-
-///// Alu Modules /////
-alu_operation_t aluOpSel;
-flag_t overflow, Z;
-logic [DATA_WIDTH-1:0] aluIn1, aluIn2, aluOutEx;
 
 alu_op ALU_OpSelect(
     .aluOp(aluOpEX),
@@ -375,12 +376,6 @@ pipelineRegister_EX_MEM EX_MEM_Register (
     .aluSrc2_EX_Out(rs2DataMeM),
     .rd_EX_Out(rdMeM)
 );
-
-
-///// Mem/WB Pipeline Register /////
-logic memtoRegWB;
-logic [DATA_WIDTH-1:0] aluOutWB;
-logic [DATA_WIDTH-1:0] dMOutWB;
 
 pipelineRegister_MEM_WB MEM_WB_Register (
     .clk,
