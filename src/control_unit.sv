@@ -5,7 +5,9 @@ module control_unit import definitions::*;(
     input logic enable,
     input logic startProcess,
     
+    output logic error,
     output logic endProcess,
+
     output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite,
     output alu_sel_t aluSrc1, aluSrc2,
     output aluOp_t aluOp
@@ -28,7 +30,6 @@ always_comb begin
          default:    opCodeEnum = ERROR;
     endcase
 end
-assign endProcess = 0;
 // opCode |jump|jumpReg|branch|memRead|memWrite|memtoReg|regWrite|aluSrc1|aluSrc2|aluOp|
 // 
 // LTYPE  | 0  |  0    |  0   |   1   |   0    |    1   |   1    |  00   |  01   | 00  | 
@@ -48,14 +49,15 @@ always_comb begin : signalGenerator
     aluSrc1 = ZERO;  //2'b00;
     aluSrc2 = ZERO; //2'b00;
     memRead = '0;
-    memWrite = '0;
     memtoReg = '0;
     regWrite = '0;
     aluOp = DEF_ADD; //2'b00;
+    error = '0;
+    endProcess = '0;
 
     if (!(enable & startProcess)) memWrite = '0;
     else begin
-        
+    memWrite = '0;   
     case (opCodeEnum)
         LTYPE : begin
             aluSrc2 = ONE; //2'b01;
@@ -66,7 +68,7 @@ always_comb begin : signalGenerator
         ITYPE : begin
             aluSrc2 = ONE; //2'b01;
             regWrite = '1;
-            aluOp = TYPE_R; //2'b11;
+            aluOp = TYPE_I; //2'b10;
         end
         AUIPC : begin
             aluSrc1 = ONE; //2'b01;
@@ -78,8 +80,8 @@ always_comb begin : signalGenerator
             memWrite = '1;
         end
         RTYPE : begin
-            regWrite = '1;
-            aluOp = TYPE_I; //2'b10;
+            regWrite = '1;      
+            aluOp = TYPE_R; //2'b11;
         end
         LUI   : begin
             aluSrc1 = ONE; //2'b01;
@@ -100,6 +102,10 @@ always_comb begin : signalGenerator
             aluSrc1 = TWO; //2'b10;
             aluSrc2 = THREE; //2'b11;
             regWrite = '1;
+        end
+        ERROR : begin 
+            error = '1;
+            endProcess = '1;
         end
         default: begin
         end 
