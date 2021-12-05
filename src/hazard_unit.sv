@@ -3,6 +3,7 @@ module hazard_unit
     input logic clk, rstN,
     input logic [4:0] IF_ID_rs1, IF_ID_rs2,
     input logic [4:0] ID_Ex_rd,
+    input logic takeBranch,
     input logic ID_Ex_MemRead,ID_Ex_MemWrite,mem_ready,
     output logic IF_ID_write, PC_write, ID_Ex_enable
 
@@ -21,7 +22,8 @@ typedef enum logic [2:0]{
 state_t current_state, next_state;
 
 // assign stall = (ID_Ex_MemRead & ((ID_Ex_rd==IF_ID_rs1) | (ID_Ex_rd == IF_ID_rs2)))?1'b1:1'b0;
-assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite )?1'b1:1'b0;
+// assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite | takeBranch)?1'b1:1'b0;
+assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite)?1'b1:1'b0;
 
 assign ID_Ex_enable = (stall == 1'b0)? 1'b1:1'b0;
 assign PC_write = (stall == 1'b0)? 1'b1:1'b0;

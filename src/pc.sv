@@ -2,6 +2,7 @@ module pc(
     input logic                 clk,
     input logic                 rstN,
     input logic     [31:0]      pcIn, 
+    input logic                 startProcess,
 
     // From hazard unit
     input logic                 pcWrite,
@@ -14,7 +15,7 @@ module pc(
             pcOut <= '0;
         end 
         else begin
-            if (pcWrite)begin
+            if (pcWrite && startProcess)begin
                 pcOut   <= pcIn;
             end
             // else begin

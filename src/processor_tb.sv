@@ -183,7 +183,7 @@ initial begin
     @(posedge clk); // startProcess the processor
     startProcess = 1'b1;
     @(posedge clk);
-    startProcess = 1'b0;
+    // startProcess = 1'b0;
 
     wait(endProcess);
     repeat(10) @(posedge clk);
