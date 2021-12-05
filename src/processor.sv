@@ -45,9 +45,12 @@ logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 logic takeBranch;
 logic branchCU;
 logic branchS;
+logic jump, jumpReg;
 
-assign takeBranch = branchCU & branchS;
+assign takeBranch = (jump || jumpReg || (branchCU & branchS));
+
 assign pcIn = (takeBranch) ? jumpAddr : pcInc;
+
 
 // PC related Modules //
 
@@ -72,7 +75,7 @@ assign func7ID  = instructionID[31:25];
 // assign imme_instruction  = instructionID[31:7];
 
 ///// Control Unit /////
-logic jump, jumpReg, memReadID, memWriteID, memtoRegID, regWriteID;
+logic memReadID, memWriteID, memtoRegID, regWriteID;
 alu_sel_t aluSrc1ID,aluSrc2ID;
 aluOp_t aluOpID; //
 logic enableCU;
@@ -125,7 +128,8 @@ pc PC(
     .pcIn(pcIn),
     .pcWrite(pcWrite),
 
-    .pcOut(pcIF)
+    .pcOut(pcIF),
+    .startProcess(startProcess)
 );
 
 pcAdd PC_Adder (
@@ -147,7 +151,6 @@ pipelineRegister_IF_ID IF_ID_Register(
 
 control_unit CU(
     .opCode,
-    .startProcess,
     .endProcess,
     
     .enable(enableCU),
@@ -224,6 +227,7 @@ hazard_unit Hazard_Unit(
     .ID_Ex_MemRead(memReadEX), 
     .ID_Ex_MemWrite(memWriteEX),
     .mem_ready(dMReadyMem),
+    .takeBranch(takeBranch),
 
     .IF_ID_write(hazardIFIDWrite),
     .PC_write(pcWrite),

@@ -80,7 +80,7 @@ class InstructionMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_W
     endfunction
 
     task automatic Read_memory(input addr_t addr, output data_t value, ref logic clk); 
-        repeat(MEM_READ_DELAY) @(posedge clk);
+        repeat(MEM_READ_DELAY) @(posedge clk); 
         addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
         value = this.memory[addr_MSB_bits];
     endtask
@@ -183,7 +183,7 @@ initial begin
     @(posedge clk); // startProcess the processor
     startProcess = 1'b1;
     @(posedge clk);
-    startProcess = 1'b0;
+    // startProcess = 1'b0;
 
     wait(endProcess);
     repeat(10) @(posedge clk);
@@ -207,7 +207,7 @@ end
 
 initial begin
     forever begin
-        @(posedge clk);
+        #(CLK_PERIOD/10);  // need to read instantaneously, but can not put #(0) in forever loop.
         insMemory.Read_memory(.addr(pcIF), .value(instructionIF), .clk(clk));
     end
 end

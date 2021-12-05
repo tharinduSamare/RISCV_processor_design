@@ -3,7 +3,6 @@
 module control_unit import definitions::*;(
     input logic [6:0] opCode, 
     input logic enable,
-    input logic startProcess,
     
     output logic error,
     output logic endProcess,
@@ -55,7 +54,7 @@ always_comb begin : signalGenerator
     error = '0;
     endProcess = '0;
 
-    if (!(enable & startProcess)) memWrite = '0;
+    if (!(enable)) memWrite = '0;
     else begin
     memWrite = '0;   
     case (opCodeEnum)
