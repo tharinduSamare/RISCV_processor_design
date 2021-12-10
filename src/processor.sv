@@ -393,6 +393,8 @@ pipelineRegister_MEM_WB MEM_WB_Register (
     .readD_Mem_In(dMOutMem),
     .aluOut_Mem_In(aluOutMeM),
     .rd_Mem_In(rdMeM),
+    .memRead_Mem_In(memReadMeM),
+    .mem_ready_Mem_In(dMReadyMem),
 
     .regWrite_Mem_Out(regWriteWB),
     .memToRegWrite_Mem_Out(memtoRegWB),
