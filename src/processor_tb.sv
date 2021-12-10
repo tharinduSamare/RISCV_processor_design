@@ -6,6 +6,7 @@ class DataMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DE
     typedef logic [ADDRESS_WIDTH-1:0] addr_t;
     logic [1:0] addr_LSB_bits;
     logic [ADDRESS_WIDTH-3:0]addr_MSB_bits;
+    logic mem_ready;
 
     localparam [2:0]
         LB  = 3'b000,
@@ -19,13 +20,14 @@ class DataMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DE
 
     function new(input string mem_init_file);
         $readmemh(mem_init_file, this.memory);
+        this.mem_ready = 1'b0;
     endfunction
 
-    task automatic Read_memory(input addr_t addr, ref logic rdEn, input logic [2:0]func3, output data_t value, ref logic clk, output logic mem_ready); 
+    task automatic Read_memory(input addr_t addr, ref logic rdEn, input logic [2:0]func3, output data_t value, ref logic clk, ref logic mem_ready); 
         repeat(MEM_READ_DELAY) @(posedge clk);
-        mem_ready = 1'b0;
-        addr_LSB_bits = addr[1:0];
-        addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
+        this.mem_ready = 1'b0;
+        this.addr_LSB_bits = addr[1:0];
+        this.addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
 
         if (rdEn) begin
             case (func3) 
@@ -37,10 +39,10 @@ class DataMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DE
                 default: $display("wrong func3 for load data");
             endcase
         end
-        mem_ready = 1'b1;
+        this.mem_ready = 1'b1;
     endtask
 
-    task automatic Write_memory(input addr_t addr, ref logic wrEn, input logic [2:0]func3, input data_t data, ref logic clk,output logic mem_ready);
+    task automatic Write_memory(input addr_t addr, ref logic wrEn, input logic [2:0]func3, input data_t data, ref logic clk,ref logic mem_ready);
         repeat(MEM_READ_DELAY) @(posedge clk);
         mem_ready = 1'b0;
         addr_LSB_bits = addr[1:0];
