@@ -5,7 +5,7 @@ module hazard_unit
     input logic [4:0] ID_Ex_rd,
     input logic takeBranch,
     input logic ID_Ex_MemRead,ID_Ex_MemWrite,mem_ready,
-    output logic IF_ID_write, PC_write, ID_Ex_enable
+    output logic IF_ID_write, PC_write, ID_Ex_enable, pcStall
 
 );
 
@@ -28,6 +28,7 @@ assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite)?1'b1:1
 assign ID_Ex_enable = (stall == 1'b0)? 1'b1:1'b0;
 assign PC_write = (stall == 1'b0)? 1'b1:1'b0;
 assign IF_ID_write = ((stall == 1'b1) | (takeBranch == 1'b1) )? 1'b0:1'b1;
+assign pcStall = (stall == 1'b1)? 1'b1:1'b0;
 
 always_ff @(posedge clk) begin
     if (~rstN)begin

@@ -36,7 +36,7 @@ initial begin
     // startProcess = 1'b0;
 
     wait(endProcess);
-    repeat(10) @(posedge clk);
+    repeat(30) @(posedge clk);
     $stop;
 
 end
