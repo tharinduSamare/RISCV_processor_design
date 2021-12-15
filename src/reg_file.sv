@@ -20,7 +20,7 @@ logic [DATA_WIDTH-1:0] data_to_A, data_to_B;
 assign regA_out = data_to_A;
 assign regB_out = data_to_B;
 
-always_ff @(posedge clk) begin : write
+always_ff @(negedge clk) begin : write  // write at the first half of the cycle **********
 	if (rstN == 0) begin
         for (int i = 0; i<32; i=i+1) begin
             if (wen_sel[i]==1)  reg_f [i] <= 32'd0;    
