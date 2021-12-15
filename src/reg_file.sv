@@ -20,7 +20,7 @@ logic [DATA_WIDTH-1:0] data_to_A, data_to_B;
 assign regA_out = data_to_A;
 assign regB_out = data_to_B;
 
-always_ff @(posedge clk) begin : write
+always_ff @(negedge clk) begin : write  // write at the first half of the cycle **********
 	if (rstN == 0) begin
         for (int i = 0; i<32; i=i+1) begin
             if (wen_sel[i]==1)  reg_f [i] <= 32'd0;    
@@ -31,8 +31,8 @@ always_ff @(posedge clk) begin : write
             if (rd == 0) reg_f [rd] <= 0; //error - can't write to zero
             else reg_f [rd] <= data_in; 
         end
-		data_to_B <= reg_f [rs2];
-		data_to_A <= reg_f [rs1];
+		// data_to_B <= reg_f [rs2];
+		// data_to_A <= reg_f [rs1];
 
         // if (rs2 == 0) data_to_B <= 0;
 		// else data_to_B <= reg_f [rs2];
@@ -41,5 +41,8 @@ always_ff @(posedge clk) begin : write
 
 	end
 end
+
+assign data_to_B = reg_f[rs2];
+assign data_to_A = reg_f[rs1];
 
 endmodule:reg_file

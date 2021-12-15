@@ -46,10 +46,11 @@ logic takeBranch;
 logic branchCU;
 logic branchS;
 logic jump, jumpReg;
+logic pcStall;
 
 assign takeBranch = (jump || jumpReg || (branchCU & branchS));
 
-assign pcIn = (takeBranch) ? jumpAddr : pcInc;
+assign pcIn = (takeBranch) ? jumpAddr : (pcStall)? pcIF : pcInc;
 
 
 // PC related Modules //
@@ -231,7 +232,8 @@ hazard_unit Hazard_Unit(
 
     .IF_ID_write(hazardIFIDWrite),
     .PC_write(pcWrite),
-    .ID_Ex_enable(enableCU)
+    .ID_Ex_enable(enableCU),
+    .pcStall(pcStall)
 );
 
 pipelineRegister_ID_EX ID_EX_Register(
@@ -393,6 +395,8 @@ pipelineRegister_MEM_WB MEM_WB_Register (
     .readD_Mem_In(dMOutMem),
     .aluOut_Mem_In(aluOutMeM),
     .rd_Mem_In(rdMeM),
+    .memRead_Mem_In(memReadMeM),
+    .mem_ready_Mem_In(dMReadyMem),
 
     .regWrite_Mem_Out(regWriteWB),
     .memToRegWrite_Mem_Out(memtoRegWB),
