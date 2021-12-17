@@ -11,7 +11,7 @@ module reg_file
     output logic [DATA_WIDTH-1:0] regA_out, regB_out 
 );
 
-logic [DATA_WIDTH-1:0] reg_f [REG_COUNT-1:0];
+logic [DATA_WIDTH-1:0] reg_f [0:REG_COUNT-1];
 
 logic [REG_COUNT-1:0] wen_sel= 32'h073fc00f; //write everything except pointers and saved registers
 
