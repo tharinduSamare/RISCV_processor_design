@@ -42,13 +42,26 @@ logic pcWrite;
 
 logic [INSTRUCTION_WIDTH-1:0] pcInc;
 logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
+logic takeBranch_0;
+logic takeBranch_1;
 logic takeBranch;
 logic branchCU;
 logic branchS;
 logic jump, jumpReg;
 logic pcStall;
 
-assign takeBranch = (jump || jumpReg || (branchCU & branchS));
+assign takeBranch_0 = (jump || jumpReg || (branchCU & branchS));
+
+always_ff @(posedge clk) begin
+    if (~rstN) begin
+        takeBranch_1 <= 1'b0;
+    end
+    else begin
+        takeBranch_1 <= takeBranch_0;
+    end
+end
+
+assign takeBranch = (takeBranch_0 == 1'b1 & takeBranch_1 == 1'b0)? 1'b1: 1'b0;
 
 assign pcIn = (takeBranch) ? jumpAddr : (pcStall)? pcIF : pcInc;
 
