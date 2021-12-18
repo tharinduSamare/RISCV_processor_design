@@ -7,8 +7,8 @@ import  definitions::*;
     // to execution stage
 
     input logic [31:0]      pcIn,
-    input alu_sel_t         aluSrc1_IDIn,
-    input alu_sel_t         aluSrc2_IDIn,
+    input alu_sel1_t         aluSrc1_IDIn,
+    input alu_sel2_t         aluSrc2_IDIn,
     input aluOp_t           aluOp_IDIn,
 
     // to memory stage
@@ -38,8 +38,8 @@ import  definitions::*;
     //pipelined outputs
     //to execution stage
     output logic [31:0]     pcOut,
-    output alu_sel_t               aluSrc1_IDOut,
-    output alu_sel_t               aluSrc2_IDOut,
+    output alu_sel1_t               aluSrc1_IDOut,
+    output alu_sel2_t               aluSrc2_IDOut,
     output aluOp_t                 aluOp_IDOut,
 
     
@@ -71,8 +71,8 @@ import  definitions::*;
             //  pipelined outputs
             //  to execution stage
             pcOut                   <= '0;
-            aluSrc1_IDOut           <=  ZERO; 
-            aluSrc2_IDOut           <=  ZERO;
+            aluSrc1_IDOut           <=  MUX_FORWARD1; 
+            aluSrc2_IDOut           <=  MUX_FORWARD2;
             aluOp_IDOut             <=  DEF_ADD;  
 
 

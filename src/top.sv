@@ -53,6 +53,7 @@ mem_controller #(
     .ready(dMReadyMem)
 );
 
+////// Processor ////////////
 processor #(
     .IM_MEM_DEPTH(IM_MEM_DEPTH),
     .DM_MEM_DEPTH(DM_MEM_DEPTH),

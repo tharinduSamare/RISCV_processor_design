@@ -8,7 +8,8 @@ module control_unit import definitions::*;(
     output logic endProcess,
 
     output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite,
-    output alu_sel_t aluSrc1, aluSrc2,
+    output alu_sel1_t aluSrc1,
+    output alu_sel2_t aluSrc2,
     output aluOp_t aluOp
      
 );
@@ -45,8 +46,8 @@ always_comb begin : signalGenerator
     jump = '0;
     jumpReg = '0;
     branch = '0;
-    aluSrc1 = ZERO;  //2'b00;
-    aluSrc2 = ZERO; //2'b00;
+    aluSrc1 = MUX_FORWARD1;  //2'b00;
+    aluSrc2 = MUX_FORWARD2; //2'b00;
     memRead = '0;
     memtoReg = '0;
     regWrite = '0;
@@ -59,23 +60,23 @@ always_comb begin : signalGenerator
     memWrite = '0;   
     case (opCodeEnum)
         LTYPE : begin
-            aluSrc2 = ONE; //2'b01;
+            aluSrc2 = MUX_ITYPE; //2'b01;
             memRead  = '1;
             memtoReg = '1;
             regWrite = '1;
         end 
         ITYPE : begin
-            aluSrc2 = ONE; //2'b01;
+            aluSrc2 = MUX_ITYPE; //2'b01;
             regWrite = '1;
             aluOp = TYPE_I; //2'b10;
         end
         AUIPC : begin
-            aluSrc1 = ONE; //2'b01;
-            aluSrc2 = THREE; //2'b11;
+            aluSrc1 = MUX_UTYPE; //2'b01;
+            aluSrc2 = MUX_PC; //2'b11;
             regWrite = '1;
         end
         STYPE : begin
-            aluSrc2 = TWO; //2'b10;
+            aluSrc2 = MUX_STYPE; //2'b10;
             memWrite = '1;
         end
         RTYPE : begin
@@ -83,7 +84,7 @@ always_comb begin : signalGenerator
             aluOp = TYPE_R; //2'b11;
         end
         LUI   : begin
-            aluSrc1 = ONE; //2'b01;
+            aluSrc1 = MUX_UTYPE; //2'b01;
             regWrite = '1;
             aluOp = PASS_S1; //2'b01;
         end
@@ -92,14 +93,14 @@ always_comb begin : signalGenerator
         end
         JALR  : begin
             jumpReg = '1;
-            aluSrc1 = TWO; //2'b10;
-            aluSrc2 = THREE; //2'b11;
+            aluSrc1 = MUX_INC; //2'b10;
+            aluSrc2 = MUX_PC; //2'b11;
             regWrite = '1;
         end
         JTYPE : begin
             jump = '1;
-            aluSrc1 = TWO; //2'b10;
-            aluSrc2 = THREE; //2'b11;
+            aluSrc1 = MUX_INC; //2'b10;
+            aluSrc2 = MUX_PC; //2'b11;
             regWrite = '1;
         end
         ERROR : begin 
