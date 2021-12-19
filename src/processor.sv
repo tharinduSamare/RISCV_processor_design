@@ -194,6 +194,11 @@ pcBranchType #(
     .read2(rs2DataID),
     .branchType(func3ID),
 
+    .rs1(rs1ID), .rs2(rs2ID),   
+    .rdEX(rdEX), .rdMeM(rdMeM),
+    .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
+    .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
+
     .branchN(branchS)
 );
 

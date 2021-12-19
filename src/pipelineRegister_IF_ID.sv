@@ -20,12 +20,12 @@ module pipelineRegister_IF_ID(
         else begin
             if (IF_flush) begin
                 pcOut               <=      '0;
-                instructionOut      <=      '0; // addi x0 x0 0
+                instructionOut      <=      {25'b0, 7'b0010011}; // addi x0 x0 0
             end
         
             else if (~harzardIF_ID_Write) begin
                 pcOut               <=      pcOut;
-                instructionOut      <=      instructionOut; // addi x0 x0 0
+                instructionOut      <=      instructionOut;
             end
             else begin
                 pcOut               <=      pcIn;
