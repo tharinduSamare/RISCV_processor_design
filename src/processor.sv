@@ -39,8 +39,6 @@ logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 
 ///// Branch, Jump wires ///////
 // top 
-logic takeBranch_0;
-logic takeBranch_1;
 logic takeBranch;
 // CU
 logic branchCU;
@@ -50,24 +48,9 @@ logic branchS;
 // Hazard
 logic pcStall;
 
-assign takeBranch_0 = (jump || jumpReg || (branchCU & branchS));
-
-always_ff @(posedge clk) begin //delayed takeBranch_0
-    if (~rstN) begin
-        takeBranch_1 <= 1'b0;
-    end
-    else begin
-        takeBranch_1 <= takeBranch_0;
-    end
-end
-
-// only make it HIGH for the initial detection of branch
-assign takeBranch = (takeBranch_0 == 1'b1 & takeBranch_1 == 1'b0)? 1'b1: 1'b0; 
+assign takeBranch = (jump || jumpReg || (branchCU & branchS));
 // if PC stall, hold the current PC address
 assign pcIn = (takeBranch) ? jumpAddr : (pcStall)? pcIF : pcInc;
-
-
-
 
 // PC related Modules //
 
@@ -162,6 +145,7 @@ pipelineRegister_IF_ID IF_ID_Register(
 
     .pcIn(pcIF),
     .instructionIn(instructionIF),
+    .IF_flush(takeBranch),
     .harzardIF_ID_Write(hazardIFIDWrite),
 
     .pcOut(pcID),
@@ -209,6 +193,11 @@ pcBranchType #(
     .read1(rs1DataID),
     .read2(rs2DataID),
     .branchType(func3ID),
+
+    .rs1(rs1ID), .rs2(rs2ID),   
+    .rdEX(rdEX), .rdMeM(rdMeM),
+    .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
+    .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
 
     .branchN(branchS)
 );
