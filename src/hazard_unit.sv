@@ -21,51 +21,22 @@ typedef enum logic [2:0]{
 
 state_t current_state, next_state;
 
-typedef enum logic [1:0]{
-    branch_idle = 2'b0,
-    branch_0 = 2'b1,
-    branch_1 = 2'd2
-} branch_state_t;
-
-branch_state_t current_branch_state, next_branch_state;
-
 // assign stall = (ID_Ex_MemRead & ((ID_Ex_rd==IF_ID_rs1) | (ID_Ex_rd == IF_ID_rs2)))?1'b1:1'b0;
 // assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite | takeBranch)?1'b1:1'b0;
 assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite)?1'b1:1'b0;
 
 assign ID_Ex_enable = (stall == 1'b0)? 1'b1:1'b0;
 assign PC_write = (stall == 1'b0)? 1'b1:1'b0;
-// assign IF_ID_write = ((stall == 1'b1) | (takeBranch == 1'b1 & (current_branch_state == branch_idle)) )? 1'b0:1'b1;
 assign IF_ID_write = ((stall == 1'b1) | (takeBranch == 1'b1) )? 1'b0:1'b1;
 assign pcStall = (stall == 1'b1)? 1'b1:1'b0;
 
 always_ff @(posedge clk) begin
     if (~rstN)begin
         current_state <= idle;
-        current_branch_state <= branch_idle;
     end
     else begin
         current_state <= next_state;
-        current_branch_state <= next_branch_state;
     end
-end
-
-always_comb begin
-    next_branch_state = current_branch_state;
-    case (current_branch_state)
-        branch_idle : begin
-            if (takeBranch) begin
-                next_branch_state = branch_0;
-            end
-        end
-        branch_0: begin
-            next_branch_state =branch_idle;
-        end
-        branch_1 : begin
-            next_branch_state = branch_idle;
-        end
-
-    endcase
 end
 
 always_comb begin
