@@ -59,20 +59,26 @@ module pcBranchType
     logic   [31:0]  read1_un;
     logic   [31:0]  read2_un;
     
-    always_comb begin
-        if (read1[31] == 1'b1) begin
-            read1_un = -read1_out;
-        end
-        else begin
-            read1_un = read1_out;
-        end
-        if (read2[31] == 1'b1) begin
-            read2_un = -read2_out;
-        end
-        else begin
-            read2_un = read2_out;
-        end
+    always_comb begin : blockName
+        read1_un = unsigned'(read1_out);
+        read2_un = unsigned'(read2_out);
     end
+
+    // always_comb begin
+    //     if (read1[31] == 1'b1) begin
+    //         read1_un = -read1_out;
+        
+    //     end
+    //     else begin
+    //         read1_un = read1_out;
+    //     end
+    //     if (read2[31] == 1'b1) begin
+    //         read2_un = -read2_out;  
+    //     end
+    //     else begin
+    //         read2_un = read2_out;
+    //     end
+    // end
 
 
     always_comb begin : check_branch

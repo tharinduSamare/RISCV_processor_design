@@ -202,6 +202,8 @@ pcBranchType #(
     .branchN(branchS)
 );
 
+//////////////////////////////
+//////////////////////////////
 assign jumpOp1 = (jumpReg) ? rs1DataID : pcID;
 always_comb begin : BranchImm
     if(jumpReg) jumpOp2 = immIID;
