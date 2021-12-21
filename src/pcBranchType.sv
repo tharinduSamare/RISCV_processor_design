@@ -9,10 +9,12 @@ module pcBranchType
     input logic signed [DATA_WIDTH - 1 : 0]   read2,
     input logic [2:0]                       branchType,
 
-    input regName_t rs1, rs2,   
-    input regName_t rdEX, rdMeM,
-    input logic signed [DATA_WIDTH-1:0] aluOutEx, aluOutMeM,
-    input logic regWriteEX, regWriteMeM,
+    // input regName_t rs1, rs2,   
+    // input regName_t rdEX, rdMeM,
+    // input logic signed [DATA_WIDTH-1:0] aluOutEx, aluOutMeM,
+    // input logic regWriteEX, regWriteMeM,
+    input logic signed [DATA_WIDTH-1:0] read1_forward_val, read2_forward_val,
+    input logic read1_forward, read2_forward,
 
     output logic                        branchN
 );
@@ -29,30 +31,47 @@ module pcBranchType
     // branch_ _;
 
     logic [31:0] read1_out, read2_out;
-    always_comb begin
 
-        // set read1 value
-        if (regWriteEX & (rdEX != zero ) & (rdEX == rs1)) begin
-            read1_out = aluOutEx;
-        end
-        else if (regWriteMeM & (rdMeM != zero) & (rdMeM == rs1)) begin
-            read1_out = aluOutMeM;
+    always_comb begin
+        if (read1_forward) begin
+            read1_out = read1_forward_val;
         end
         else begin
             read1_out = read1;
         end
-
-        // set read2 value
-        if (regWriteEX & (rdEX != zero) & (rdEX == rs2)) begin
-            read2_out = aluOutEx;
-        end
-        else if (regWriteMeM & (rdMeM != zero) & (rdMeM == rs2)) begin
-            read2_out = aluOutMeM;
+        if (read2_forward) begin
+            read2_out = read2_forward_val;
         end
         else begin
             read2_out = read2;
         end
     end
+
+
+    // always_comb begin
+
+    //     // set read1 value
+    //     if (regWriteEX & (rdEX != zero ) & (rdEX == rs1)) begin
+    //         read1_out = aluOutEx;
+    //     end
+    //     else if (regWriteMeM & (rdMeM != zero) & (rdMeM == rs1)) begin
+    //         read1_out = aluOutMeM;
+    //     end
+    //     else begin
+    //         read1_out = read1;
+    //     end
+
+    //     // set read2 value
+    //     if (regWriteEX & (rdEX != zero) & (rdEX == rs2)) begin
+    //         read2_out = aluOutEx;
+    //     end
+    //     else if (regWriteMeM & (rdMeM != zero) & (rdMeM == rs2)) begin
+    //         read2_out = aluOutMeM;
+    //     end
+    //     else begin
+    //         read2_out = read2;
+    //     end
+    // end
 
 
 

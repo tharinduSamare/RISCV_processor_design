@@ -42,13 +42,15 @@ logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
 logic takeBranch;
 // CU
 logic branchCU;
-logic jump, jumpReg;
+logic jump, jumpRegCU;
+// HU
+logic branchHU,jumpRegHU;
 // B_Type
 logic branchS;
 // Hazard
 logic pcStall;
 
-assign takeBranch = (jump || jumpReg || (branchCU & branchS));
+assign takeBranch = (jump || jumpRegHU || (branchHU & branchS));
 // if PC stall, hold the current PC address
 assign pcIn = (takeBranch) ? jumpAddr : (pcStall)? pcIF : pcInc;
 
@@ -158,7 +160,7 @@ control_unit CU(
     
     .enable(enableCU),
     .jump,
-    .jumpReg,
+    .jumpReg(jumpRegCU),
     .branch(branchCU),
     .memRead(memReadID),
     .memWrite(memWriteID),
@@ -186,6 +188,21 @@ reg_file #(
     .regB_out(rs2DataID)
 );
 
+logic [DATA_WIDTH-1:0]rs1_forward_val, rs2_forward_val;
+logic rs1_forward, rs2_forward;
+
+reg_out_forwarding_unit #(.DATA_WIDTH(DATA_WIDTH)) reg_out_forward(
+    .read1(rs1DataID),
+    .read2(rs2DataID),
+    .rs1(rs1ID), .rs2(rs2ID),   
+    .rdMeM(rdMeM),
+    .aluOutMeM(aluOutMeM),
+    .regWriteMeM(regWriteMeM),
+    
+    .read1_out(rs1_forward_val), .read2_out(rs2_forward_val),
+    .rs1_forward(rs1_forward), .rs2_forward(rs2_forward)
+);
+
 pcBranchType #(
     .DATA_WIDTH(DATA_WIDTH)
 ) BranchTypeSelection (
@@ -194,19 +211,21 @@ pcBranchType #(
     .read2(rs2DataID),
     .branchType(func3ID),
 
-    .rs1(rs1ID), .rs2(rs2ID),   
-    .rdEX(rdEX), .rdMeM(rdMeM),
-    .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
-    .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
+    // .rs1(rs1ID), .rs2(rs2ID),   
+    // .rdEX(rdEX), .rdMeM(rdMeM),
+    // .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
+    // .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
+    .read1_forward_val(rs1_forward_val), .read2_forward_val(rs2_forward_val),
+    .read1_forward(rs1_forward), .read2_forward(rs2_forward),
 
     .branchN(branchS)
 );
 
 //////////////////////////////
 //////////////////////////////
-assign jumpOp1 = (jumpReg) ? rs1DataID : pcID;
+assign jumpOp1 = (jumpRegCU) ? ((rs1_forward)? rs1_forward_val: rs1DataID): pcID;
 always_comb begin : BranchImm
-    if(jumpReg) jumpOp2 = immIID;
+    if(jumpRegCU) jumpOp2 = immIID;
     else if(jump) jumpOp2 = immJ;
     else if(branchCU) jumpOp2 = immB;
     else jumpOp2 = '0;
@@ -231,14 +250,18 @@ hazard_unit Hazard_Unit(
     .clk,
     .rstN,
 
-    .IF_ID_rs1(rs1ID),
-    .IF_ID_rs2(rs2ID),
-    .ID_Ex_rd(rdEX),
+    .rs1ID(rs1ID),
+    .rs2ID(rs2ID),
+    .rdEx(rdEX),
     .ID_Ex_MemRead(memReadEX), 
     .ID_Ex_MemWrite(memWriteEX),
     .mem_ready(dMReadyMem),
-    .takeBranch(takeBranch),
+    .regWriteEX(regWriteEX),
+    .branchCU(branchCU),
+    .jumpRegCU(jumpRegCU),
 
+    .branchHU(branchHU),
+    .jumpRegHU(jumpRegHU),
     .IF_ID_write(hazardIFIDWrite),
     .PC_write(pcWrite),
     .ID_Ex_enable(enableCU),
@@ -368,6 +391,7 @@ always_comb begin : ALUIn2Select
         MUX_ITYPE : aluIn2 = immIEX;
         MUX_STYPE : aluIn2 = immSEX;
         MUX_PC : aluIn2 = pcEX;
+        default: aluIn2 = forwardOut2;
 endcase
 end
 
