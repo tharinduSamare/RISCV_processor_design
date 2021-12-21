@@ -186,6 +186,20 @@ reg_file #(
     .regB_out(rs2DataID)
 );
 
+logic [DATA_WIDTH-1:0]rs1_forward_val, rs2_forward_val;
+logic rs1_forward, rs2_forward;
+
+reg_out_forwarding_unit #(.DATA_WIDTH(DATA_WIDTH)) reg_out_forward(
+    .read1(rs1DataID),
+    .read2(rs2DataID),
+    .rs1(rs1ID), .rs2(rs2ID),   
+    .rdEX(rdEX), .rdMeM(rdMeM),
+    .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
+    .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
+    .read1_out(rs1_forward_val), .read2_out(rs2_forward_val),
+    .rs1_forward(rs1_forward), .rs2_forward(rs2_forward)
+);
+
 pcBranchType #(
     .DATA_WIDTH(DATA_WIDTH)
 ) BranchTypeSelection (
@@ -194,17 +208,19 @@ pcBranchType #(
     .read2(rs2DataID),
     .branchType(func3ID),
 
-    .rs1(rs1ID), .rs2(rs2ID),   
-    .rdEX(rdEX), .rdMeM(rdMeM),
-    .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
-    .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
+    // .rs1(rs1ID), .rs2(rs2ID),   
+    // .rdEX(rdEX), .rdMeM(rdMeM),
+    // .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
+    // .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
+    .read1_forward_val(rs1_forward_val), .read2_forward_val(rs2_forward_val),
+    .read1_forward(rs1_forward), .read2_forward(rs2_forward),
 
     .branchN(branchS)
 );
 
 //////////////////////////////
 //////////////////////////////
-assign jumpOp1 = (jumpReg) ? rs1DataID : pcID;
+assign jumpOp1 = (jumpReg) ? ((rs1_forward)? rs1_forward_val: rs1DataID): pcID;
 always_comb begin : BranchImm
     if(jumpReg) jumpOp2 = immIID;
     else if(jump) jumpOp2 = immJ;
@@ -368,6 +384,7 @@ always_comb begin : ALUIn2Select
         MUX_ITYPE : aluIn2 = immIEX;
         MUX_STYPE : aluIn2 = immSEX;
         MUX_PC : aluIn2 = pcEX;
+        default: aluIn2 = forwardOut2;
 endcase
 end
 

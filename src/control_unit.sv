@@ -95,6 +95,8 @@ always_comb begin : signalGenerator
             jumpReg = '1;
             aluSrc1 = MUX_INC; //2'b10;
             aluSrc2 = MUX_PC; //2'b11;
+            aluSrc1 = MUX_INC; //2'b10;
+            aluSrc2 = MUX_PC; //2'b11;
             regWrite = '1;
         end
         JTYPE : begin
