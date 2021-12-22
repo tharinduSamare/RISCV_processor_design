@@ -25,6 +25,7 @@ always_ff @(negedge clk) begin : write  // write at the first half of the cycle 
         for (int i = 0; i<32; i=i+1) begin
             if (wen_sel[i]==1)  reg_f [i] <= 32'd0;    
         end
+        reg_f[2] <= 32'hff0;  //4080 th address of the data memory
 	end
 	else begin
 		if (wen) begin
