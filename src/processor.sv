@@ -198,7 +198,7 @@ reg_out_forwarding_unit #(.DATA_WIDTH(DATA_WIDTH)) reg_out_forward(
     .rdMeM(rdMeM),
     .aluOutMeM(aluOutMeM),
     .regWriteMeM(regWriteMeM),
-    
+ 
     .read1_out(rs1_forward_val), .read2_out(rs2_forward_val),
     .rs1_forward(rs1_forward), .rs2_forward(rs2_forward)
 );

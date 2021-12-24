@@ -13,7 +13,8 @@ module reg_file
 
 logic [DATA_WIDTH-1:0] reg_f [0:REG_COUNT-1];
 
-logic [REG_COUNT-1:0] wen_sel= 32'h073fc00f; //write everything except pointers and saved registers
+// logic [REG_COUNT-1:0] wen_sel= 32'h073fc00f; //write everything except pointers and saved registers
+logic [REG_COUNT-1:0] wen_sel= 32'hffffffff; //write everything except pointers and saved registers
 
 logic [DATA_WIDTH-1:0] data_to_A, data_to_B;
 
