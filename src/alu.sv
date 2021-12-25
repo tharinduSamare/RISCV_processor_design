@@ -9,7 +9,7 @@ import definitions::*;
     output flag_t overflow, Z
 );
 
-logic [DATA_WIDTH:0] result;
+logic signed [DATA_WIDTH:0] result;
 // logic [DATA_WIDTH-1:0] sub_res
 
 logic [DATA_WIDTH*2-1:0] mul_result;
