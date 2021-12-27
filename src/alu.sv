@@ -12,8 +12,13 @@ import definitions::*;
 logic signed [DATA_WIDTH:0] result;
 // logic [DATA_WIDTH-1:0] sub_res
 
-logic [DATA_WIDTH*2-1:0] mul_result;
-assign mul_result = bus_a * bus_b;
+logic signed [DATA_WIDTH*2-1:0] mul_result, mul_result_su;
+logic [DATA_WIDTH*2-1:0] mul_result_u;
+logic signed [DATA_WIDTH-1:0] bus_b_u;
+assign bus_b_u = unsigned'(bus_b);
+assign mul_result    = bus_a * bus_b;
+assign mul_result_su = bus_a * bus_b_u;
+assign mul_result_u  = unsigned'(bus_a) * unsigned'(bus_b);
 
 always_comb begin : alu_operation
     unique case (opSel)
@@ -37,8 +42,8 @@ always_comb begin : alu_operation
         //multiplication
         MUL     : result = mul_result[DATA_WIDTH:0];
         MULH    : result = mul_result[DATA_WIDTH*2-1:DATA_WIDTH];
-        MULHSU  : result = mul_result[DATA_WIDTH*2-1:DATA_WIDTH];
-        MULHU   : result = mul_result[DATA_WIDTH*2-1:DATA_WIDTH];
+        MULHSU  : result = mul_result_su[DATA_WIDTH*2-1:DATA_WIDTH];
+        MULHU   : result = mul_result_u[DATA_WIDTH*2-1:DATA_WIDTH];
         //division
         DIV     : result = bus_a / bus_b;
         DIVU    : result = unsigned'(bus_a) / unsigned'(bus_b);

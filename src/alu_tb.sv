@@ -16,11 +16,12 @@ initial begin
     end
 end
 
+
 aluOp_t aluOp;
 logic [6:0] funct7; 
 logic [2:0] funct3;
 logic [DATA_WIDTH_L-1:0] alu_out;
-flag_t overflow, Z, error_out;
+flag_t overflow, Z, error;
 alu_operation_t opSel;
 logic [DATA_WIDTH_L-1:0] bus_a, bus_b;
     
@@ -33,45 +34,67 @@ alu alu_dut (
     .Z(Z)
 );
 
-alu_op_unit op_dut (
+alu_op op_dut (
     .aluOp(aluOp),
     .funct7(funct7),
     .funct3(funct3),
     .opSel,
-    .error_out
+    .error
 );
 
-// initial begin
-//     bus_a = 32'd1293;
-//     bus_b = 32'd12;
+localparam logic [2:0]  // RISCV-32I alu operations
+    add_sub = 3'd0,
+    sll     = 3'd1,
+    slt     = 3'd2,
+    sltu    = 3'd3,
+    lxor    = 3'd4,
+    srl_sra = 3'd5,
+    lor     = 3'd6,
+    land    = 3'd7;
+localparam logic [2:0]
+    mul     = 3'd0,
+    mulh    = 3'd1,
+    mulhsu  = 3'd2,
+    mulhu   = 3'd3,
+    div     = 3'd4,
+    divu    = 3'd5,
+    rem     = 3'd6,
+    remu    = 3'd7;
 
-//     aluOp = r_type;
-//     funct7 = 7'd0;
+initial begin
+    // bus_a = 32'b1000_0111_0001_1000_1100;
+    bus_a = 32'b11111111111111111111011010100000;
+    // bus_a = 32'd134;
+    // bus_b = 32'd12;
+    bus_b = 32'b11111111111111111111111111110100;
 
-//     funct3 = add_sub;
-//     #(CLK_PERIOD*2);
-//     funct3 = slt;
-//     #(CLK_PERIOD*2);
-//     funct3 = sltu;
-//     #(CLK_PERIOD*2);
-//     funct3 = lxor;
-//     #(CLK_PERIOD*2);
-//     funct3 = lor;
-//     #(CLK_PERIOD*2);
-//     funct3 = land;
-//     #(CLK_PERIOD*2);
-//     funct3 = sll;
-//     #(CLK_PERIOD*2);
-//     funct3 = srl_sra;
-//     #(CLK_PERIOD*2);
+    aluOp = TYPE_R;
+    funct7 = 7'd1;
 
-//     funct7 = 7'd32;
-//     funct3 = add_sub;
-//     #(CLK_PERIOD*2);
-//     funct3 = srl_sra;
-//     #(CLK_PERIOD*2);
+    funct3 = add_sub;
+    #(CLK_PERIOD*2);
+    funct3 = slt;
+    #(CLK_PERIOD*2);
+    funct3 = sltu;
+    #(CLK_PERIOD*2);
+    funct3 = lxor;
+    #(CLK_PERIOD*2);
+    funct3 = lor;
+    #(CLK_PERIOD*2);
+    funct3 = land;
+    #(CLK_PERIOD*2);
+    funct3 = sll;
+    #(CLK_PERIOD*2);
+    funct3 = srl_sra;
+    #(CLK_PERIOD*2);
+
+    funct7 = 7'd32;
+    funct3 = add_sub;
+    #(CLK_PERIOD*2);
+    funct3 = srl_sra;
+    #(CLK_PERIOD*2);
      
 
 
-// end
+end
 endmodule
