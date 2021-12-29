@@ -85,7 +85,11 @@ always_comb begin : alu_op_sel
                         end
                     endcase
                 end
-
+                default: begin
+                    nextOpSel = ADD;
+                    send_error = HIGH;
+                end                
+            endcase
         end
         TYPE_R: begin
             case (funct7)  
