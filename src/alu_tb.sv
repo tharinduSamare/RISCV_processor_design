@@ -24,7 +24,7 @@ logic [DATA_WIDTH_L-1:0] alu_out;
 flag_t overflow, Z, error;
 alu_operation_t opSel;
 logic [DATA_WIDTH_L-1:0] bus_a, bus_b;
-    
+
 alu alu_dut (
     .bus_a(bus_a),
     .bus_b(bus_b),
@@ -51,7 +51,7 @@ localparam logic [2:0]  // RISCV-32I alu operations
     srl_sra = 3'd5,
     lor     = 3'd6,
     land    = 3'd7;
-localparam logic [2:0]
+localparam logic [2:0] // RISCV-32M alu operations
     mul     = 3'd0,
     mulh    = 3'd1,
     mulhsu  = 3'd2,
@@ -61,40 +61,22 @@ localparam logic [2:0]
     rem     = 3'd6,
     remu    = 3'd7;
 
+
+
 initial begin
-    // bus_a = 32'b1000_0111_0001_1000_1100;
     bus_a = 32'b11111111111111111111011010100000;
     // bus_a = 32'd134;
     // bus_b = 32'd12;
     bus_b = 32'b11111111111111111111111111110100;
 
     aluOp = TYPE_R;
+
     funct7 = 7'd1;
 
-    funct3 = add_sub;
-    #(CLK_PERIOD*2);
-    funct3 = slt;
-    #(CLK_PERIOD*2);
-    funct3 = sltu;
-    #(CLK_PERIOD*2);
-    funct3 = lxor;
-    #(CLK_PERIOD*2);
-    funct3 = lor;
-    #(CLK_PERIOD*2);
-    funct3 = land;
-    #(CLK_PERIOD*2);
-    funct3 = sll;
-    #(CLK_PERIOD*2);
-    funct3 = srl_sra;
-    #(CLK_PERIOD*2);
-
-    funct7 = 7'd32;
-    funct3 = add_sub;
-    #(CLK_PERIOD*2);
-    funct3 = srl_sra;
-    #(CLK_PERIOD*2);
-     
-
-
+    for (int i = 0; i<8; i++) begin
+        funct3 = i;
+        #(CLK_PERIOD);
+    end
+    
 end
 endmodule
