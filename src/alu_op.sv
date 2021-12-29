@@ -68,8 +68,20 @@ always_comb begin : alu_op_sel
                         lor     : nextOpSel = OR;
                         land    : nextOpSel = AND; 
                         sll     : nextOpSel = SLL;
-                        srl_sra : nextOpSel = SRL; 
-                        default : begin
+                        srl_sra : nenextOpSel = ADD;
+                        slt     : nextOpSel = SLT;
+                        lxor    : nextOpSel = XOR;
+                        lor     : nextOpSel = OR;
+                        land    : nextOpSel = AND; 
+                        sll     : nextOpSel = SLL;
+                        srl_sra : nextOpSxtOpSel = SRL; 
+                        default : beginnextOpSel = ADD;
+                        slt     : nextOpSel = SLT;
+                        lxor    : nextOpSel = XOR;
+                        lor     : nextOpSel = OR;
+                        land    : nextOpSel = AND; 
+                        sll     : nextOpSel = SLL;
+                        srl_sra : nextOpS
                             nextOpSel = ADD;
                             send_error = HIGH;
                         end
