@@ -50,7 +50,7 @@ logic branchS;
 // Hazard
 logic pcStall;
 
-assign takeBranch = (jump || jumpRegHU || (branchHU & branchS));
+assign takeBranch = (jump | jumpRegHU | (branchHU & branchS));
 // if PC stall, hold the current PC address
 assign pcIn = (takeBranch) ? jumpAddr : (pcStall)? pcIF : pcInc;
 

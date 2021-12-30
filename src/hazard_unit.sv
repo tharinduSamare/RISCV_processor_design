@@ -23,11 +23,9 @@ typedef enum logic [2:0]{
 
 state_t current_state, next_state;
 
-// assign mem_op_stall = (ID_Ex_MemRead & ((rdEx==rs1ID) | (rdEx == rs2ID)))?1'b1:1'b0;
-// assign mem_op_stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite | takeBranch)?1'b1:1'b0;
 assign mem_op_stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite)?1'b1:1'b0;
-assign branch_stall = (regWriteEX & branchCU & rdEx!=0 & ((rs1ID == rdEx)|(rs2ID == rdEx)))? 1'b1:1'b0;
-assign jumpreg_stall = (regWriteEX & jumpRegCU  & rdEx!=0 & (rs1ID == rdEx))? 1'b1:1'b0;
+assign branch_stall = (branchCU & regWriteEX &  rdEx!=0 & ((rs1ID == rdEx)|(rs2ID == rdEx)))? 1'b1:1'b0;
+assign jumpreg_stall = (jumpRegCU  & regWriteEX &  rdEx!=0 & (rs1ID == rdEx))? 1'b1:1'b0;
 
 assign stall = (mem_op_stall | branch_stall | jumpreg_stall)? 1'b1:1'b0;
 

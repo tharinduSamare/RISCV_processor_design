@@ -137,7 +137,7 @@ end
 
 always_ff @( posedge clk ) begin 
     if (process_done)
-        $writememh("C:\\Xilinx\\SoC_project\\src\\data_mem_final.txt", memory);
+        $writememh("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_final.txt", memory);
 end
 
 always_ff @(posedge clk) begin
