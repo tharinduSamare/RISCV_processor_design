@@ -59,16 +59,36 @@ always_comb begin : alu_op_sel
     send_error = LOW;
     case (aluOp)
         TYPE_I: begin
-            case (funct3)
-                add_sub : nextOpSel = ADD;
-                slt     : nextOpSel = SLT;
-                lxor    : nextOpSel = XOR;
-                lor     : nextOpSel = OR;
-                land    : nextOpSel = AND;  
-                default : begin
+            case (funct7)  
+                type_0 : begin // RISCV32I alu operations
+                    case (funct3)
+                        add_sub : nextOpSel = ADD;
+                        slt     : nextOpSel = SLT;
+                        lxor    : nextOpSel = XOR;
+                        lor     : nextOpSel = OR;
+                        land    : nextOpSel = AND; 
+                        sll     : nextOpSel = SLL;
+                        srl_sra : nextOpSel = SRL; 
+                        default : begin
+                            nextOpSel = ADD;
+                            send_error = HIGH;
+                        end
+                    endcase
+                end
+                type_32 : begin
+                    case (funct3) // RISCV32I alu operations
+                        // add_sub :nextOpSel = SUB;
+                        srl_sra : nextOpSel = SRA;
+						default : begin
+                            nextOpSel = ADD;
+                            send_error = HIGH;
+                        end
+                    endcase
+                end
+                default: begin
                     nextOpSel = ADD;
                     send_error = HIGH;
-                end
+                end                
             endcase
         end
         TYPE_R: begin

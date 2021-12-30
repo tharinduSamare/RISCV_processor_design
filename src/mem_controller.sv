@@ -9,6 +9,8 @@ module mem_controller
     input logic [2:0]func3_in,
     input logic [ADDRESS_WIDTH-1:0]address,
     input logic [DATA_WIDTH-1:0]data_in,
+    input logic process_done,
+
     output logic [DATA_WIDTH-1:0]data_out,
     output logic ready
 );
@@ -50,7 +52,7 @@ typedef enum logic[3:0] {
 // func3_t ffff ;
 // assing fffff = func3_t'(func3_in);
 
-func3_t func3, func3_reg, func3_next; 
+func3_t func3, func3_reg, func3_next; //map func3_in into funct type func3
 always_comb begin
     if (read_En) begin
         case (func3_in)
@@ -131,6 +133,11 @@ always_ff @(posedge clk) begin
     else if (current_read_en) begin
         mem_data_out <= memory[address_reg];
     end
+end
+
+always_ff @( posedge clk ) begin 
+    if (process_done)
+        $writememh("C:\\Xilinx\\SoC_project\\src\\data_mem_final.txt", memory);
 end
 
 always_ff @(posedge clk) begin

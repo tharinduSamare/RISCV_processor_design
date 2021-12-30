@@ -5,9 +5,9 @@ module hazard_unit import definitions::*;
     input regName_t rdEx,
     input logic branchCU,jumpRegCU,
     input logic ID_Ex_MemRead,ID_Ex_MemWrite,mem_ready,regWriteEX,
+
     output logic IF_ID_write, PC_write, ID_Ex_enable, pcStall, 
     output logic branchHU,jumpRegHU
-
 );
 
 logic mem_op_stall,branch_stall, jumpreg_stall;
@@ -26,14 +26,13 @@ state_t current_state, next_state;
 // assign mem_op_stall = (ID_Ex_MemRead & ((rdEx==rs1ID) | (rdEx == rs2ID)))?1'b1:1'b0;
 // assign mem_op_stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite | takeBranch)?1'b1:1'b0;
 assign mem_op_stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite)?1'b1:1'b0;
-assign branch_stall = (regWriteEX & ((rs1ID == rdEx)|(rs2ID == rdEx)))? 1'b1:1'b0;
-assign jumpreg_stall = (regWriteEX & (rs1ID == rdEx))? 1'b1:1'b0;
+assign branch_stall = (regWriteEX & branchCU & rdEx!=0 & ((rs1ID == rdEx)|(rs2ID == rdEx)))? 1'b1:1'b0;
+assign jumpreg_stall = (regWriteEX & jumpRegCU  & rdEx!=0 & (rs1ID == rdEx))? 1'b1:1'b0;
 
 assign stall = (mem_op_stall | branch_stall | jumpreg_stall)? 1'b1:1'b0;
 
 assign branchHU = (~branch_stall & branchCU)? 1'b1:1'b0;
 assign jumpRegHU = (~jumpreg_stall & jumpRegCU)? 1'b1:1'b0;
-
 
 assign ID_Ex_enable = (stall)? 1'b0:1'b1;
 assign PC_write = (stall)? 1'b0:1'b1;

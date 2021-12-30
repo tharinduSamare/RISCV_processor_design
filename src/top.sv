@@ -1,5 +1,5 @@
 module top #(
-    parameter IM_MEM_DEPTH = 256,
+    parameter IM_MEM_DEPTH = 512,
     parameter DM_MEM_DEPTH = 4096
 )(
     input logic clk, rstN, startProcess,
@@ -48,6 +48,7 @@ mem_controller #(
     .func3_in(func3MeM),
     .address(aluOutMeM),
     .data_in(rs2DataMeM),
+    .process_done(endProcess),
 
     .data_out(dMOutMem),
     .ready(dMReadyMem)
