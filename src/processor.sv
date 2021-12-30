@@ -158,7 +158,7 @@ pipelineRegister_IF_ID IF_ID_Register(
 control_unit CU(
     .opCode,
     .endProcess,
-    
+//    .error(error),
     .enable(enableCU),
     .jump,
     .jumpReg(jumpRegCU),
