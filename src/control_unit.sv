@@ -1,12 +1,13 @@
 // `include "definitions.sv"
 
 module control_unit import definitions::*;(
-    input logic [6:0] opCode, 
-    input logic enable, 
+    input logic [6:0] opCode, //only the opcode of the instruction
+    input logic enable, //command from the hazard unit
     
     output logic error,
-    output logic endProcess,
+    output logic endProcess, //if an instruction which isn't defined in the risc-v recieves the process is terminated
 
+    // control signals
     output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite,
     output alu_sel1_t aluSrc1,
     output alu_sel2_t aluSrc2,
