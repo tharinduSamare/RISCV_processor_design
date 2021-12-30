@@ -43,7 +43,7 @@ module pipelineRegister_IF_ID(
             */
                 idle: begin
                     if (startProcess) begin
-                        current_state <= waiting;
+                        current_state <= working;
                         counter <= counter + 1'b1;
                     end
                     else begin
