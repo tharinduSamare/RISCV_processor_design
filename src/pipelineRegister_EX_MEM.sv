@@ -3,33 +3,51 @@ import  definitions::*;
 (
     input logic             clk,
     input logic             rstN,
-    // from control unit
-    // to memory stage
+
+    // ========================== //
+    //          Input             //
+    // ========================== //
+    /* 
+        from control unit
+        to memory stage
+    */
     input logic             memWrite_EX_IN,
     input logic             memRead_EX_IN,
     
-    // to writeback stage
+    /* 
+        to writeback stage
+    */
     input logic             regWrite_EX_IN,
     input logic             memToRegWrite_EX_IN,
 
-    // other signals to mem stage
+    /*
+        other signals to mem stage
+    */
     input logic [2 : 0]     func3_EX_IN,
     input logic [31 : 0]    aluOut_EX_IN,
 
     input logic [31 : 0]    aluSrc2_EX_IN,
     input regName_t         rd_EX_IN,
 
-
-    // from control unit
-    // to memory stage
+    // ========================== //
+    //          Output            //
+    // ========================== //
+    /* 
+        from control unit
+        to memory stage
+    */
     output logic             memWrite_EX_Out,
     output logic             memRead_EX_Out,
     
-    // to writeback stage
+    /* 
+        to writeback stage
+    */
     output logic             regWrite_EX_Out,
     output logic             memToRegWrite_EX_Out,
 
-    // other signals to mem stage
+    /*
+        other signals to mem stage
+    */
     output logic [2 : 0]     func3_EX_Out,
     output logic [31 : 0]    aluOut_EX_Out,
 

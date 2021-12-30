@@ -1,26 +1,37 @@
 module pipelineRegister_ID_EX
 import  definitions::*;
 (  
+    // ========================== //
+    //           Input            //
+    // ========================== //
     input logic             clk,
     input logic             rstN,
+    
     // from control unit
-    // to execution stage
-
+    /*
+        to execution stage
+    */
     input logic [31:0]      pcIn,
     input alu_sel1_t         aluSrc1_IDIn,
     input alu_sel2_t         aluSrc2_IDIn,
     input aluOp_t           aluOp_IDIn,
 
-    // to memory stage
+    /* 
+        to memory stage 
+    */
     input logic             memWrite_IDIn,
     input logic             memRead_IDIn,
     
-    // to writeback stage
+    /* 
+        to writeback stage
+    */
     input logic             regWrite_IDIn,
     input logic             memToRegWrite_IDIn,
 
 
-    // other signals to exe stage
+    /* 
+        other signals to exe stage
+    */
     input logic [6 : 0]     func7_IDIn,
     input logic [2 : 0]     func3_IDIn,
     input logic [31 : 0]    read1_IDIn,
@@ -34,24 +45,35 @@ import  definitions::*;
     input regName_t         rs1_IDIn,
     input regName_t         rs2_IDIn,
 
-    
-    //pipelined outputs
-    //to execution stage
+    // ========================== //
+    //          Output            //
+    // ========================== //
+
+    //pipelined outputs from control unit
+    /*
+        to execution stage
+    */
     output logic [31:0]     pcOut,
     output alu_sel1_t               aluSrc1_IDOut,
     output alu_sel2_t               aluSrc2_IDOut,
     output aluOp_t                 aluOp_IDOut,
 
     
-    // to memory stage
+    /* 
+        to memory stage 
+    */
     output logic             memWrite_IDOut,
     output logic             memRead_IDOut,
     
-    // to writeback stage
+    /* 
+        to writeback stage
+    */
     output logic             regWrite_IDOut,
     output logic             memToRegWrite_IDOut,
 
-    // other signals to exe stage
+    /* 
+        other signals to exe stage
+    */
     output logic [6 : 0]    func7_IDOut,
     output logic [2 : 0]    func3_IDOut,
     output logic [31 : 0]   read1_IDOut,
@@ -74,8 +96,6 @@ import  definitions::*;
             aluSrc1_IDOut           <=  MUX_FORWARD1; 
             aluSrc2_IDOut           <=  MUX_FORWARD2;
             aluOp_IDOut             <=  DEF_ADD;  
-
-
             
             // to memory stage
             memWrite_IDOut          <=  '0;
@@ -107,7 +127,6 @@ import  definitions::*;
             aluSrc2_IDOut           <=  aluSrc2_IDIn;
             aluOp_IDOut             <=  aluOp_IDIn;
 
-            
             // to memory stage
             memWrite_IDOut          <=  memWrite_IDIn;
             memRead_IDOut           <=  memRead_IDIn;
