@@ -66,12 +66,12 @@ localparam logic [2:0] // RISCV-32M alu operations
 initial begin
     bus_a = 32'b11111111111111111111011010100000;
     // bus_a = 32'd134;
-    // bus_b = 32'd12;
-    bus_b = 32'b11111111111111111111111111110100;
+    bus_b = 32'd12;
+    // bus_b = 32'b11111111111111111111111111110100;
 
     aluOp = TYPE_R;
 
-    funct7 = 7'd1;
+    funct7 = 7'd0;
 
     for (int i = 0; i<8; i++) begin
         funct3 = i;
