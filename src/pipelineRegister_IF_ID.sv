@@ -107,7 +107,7 @@ module pipelineRegister_IF_ID(
                 Else read the instruction from the memory
                 for the current pc
             */
-            else begin
+            else if (current_state == working) begin
                 pcOut               <=      pcIn;
                 instructionOut      <=      instructionIn;
                 end
