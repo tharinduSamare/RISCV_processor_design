@@ -121,7 +121,9 @@ logic [DATA_WIDTH-1:0]memory[0:MEMORY_DEPTH-1];
 initial begin
     // $readmemh("C:\\Xilinx\\SoC_project\\src\\data_mem_init.txt", memory);
     //$readmemh("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_init.txt", memory);
-	 $readmemh("C:\\Users\\Ravindu\\Documents\\Github\\SoC_project\\src\\ins_mem_init.txt", memory);
+	//  $readmemh("C:\\Users\\Ravindu\\Documents\\Github\\SoC_project\\src\\ins_mem_init.txt", memory);
+    $readmemh("F:\\ads-bus\\SoC_project\\src\\ins_mem_init.txt",memory);
+
 end
 
 always_ff @(posedge clk) begin
