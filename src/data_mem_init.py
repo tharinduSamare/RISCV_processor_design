@@ -1,8 +1,8 @@
 import random
 
-depth = 256
+depth = 512
 width = 32
-fill_depth = 100
+fill_depth = 0
 
 numbers = '0123456789abcdef012345678'
 

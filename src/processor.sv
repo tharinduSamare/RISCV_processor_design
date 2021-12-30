@@ -147,8 +147,9 @@ pipelineRegister_IF_ID IF_ID_Register(
 
     .pcIn(pcIF),
     .instructionIn(instructionIF),
-    .IF_flush(takeBranch),
+
     .harzardIF_ID_Write(hazardIFIDWrite),
+    .IF_flush(takeBranch),
 
     .pcOut(pcID),
     .instructionOut(instructionID)
@@ -194,6 +195,7 @@ logic rs1_forward, rs2_forward;
 reg_out_forwarding_unit #(.DATA_WIDTH(DATA_WIDTH)) reg_out_forward(
     .read1(rs1DataID),
     .read2(rs2DataID),
+
     .rs1(rs1ID), .rs2(rs2ID),   
     .rdMeM(rdMeM),
     .aluOutMeM(aluOutMeM),
@@ -234,8 +236,6 @@ assign jumpAddr = jumpOp1 + jumpOp2;
 
 
 ///// Extender Module /////
-
-
 immediate_extend immediate_extend(
     .instruction(instructionID[31:7]),
     .I_immediate(immIID),
@@ -265,7 +265,7 @@ hazard_unit Hazard_Unit(
     .IF_ID_write(hazardIFIDWrite),
     .PC_write(pcWrite),
     .ID_Ex_enable(enableCU),
-    .pcStall(pcStall)
+    .pcStall(pcStall) 
 );
 
 pipelineRegister_ID_EX ID_EX_Register(
