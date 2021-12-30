@@ -41,12 +41,31 @@ typedef enum logic [4:0] {
     x[1:31] = 5'd1
 } regName_t;   
 
-typedef enum bit [1:0] { 
-    ZERO,
-    ONE,
-    TWO,
-    THREE
-} alu_sel_t;
+// typedef enum bit [1:0] { 
+//     ZERO,
+//     ONE,
+//     TWO,
+//     THREE
+// } alu_sel_t;
+
+typedef enum logic [1:0] { 
+    MUX_FORWARD1,
+    MUX_UTYPE,
+    MUX_INC
+} alu_sel1_t;
+
+typedef enum logic [1:0] { 
+    MUX_FORWARD2,
+    MUX_ITYPE,
+    MUX_STYPE,
+    MUX_PC
+} alu_sel2_t;
+
+typedef enum logic [1:0] { 
+    MUX_REG,
+    MUX_MEM,
+    MUX_WB
+} forward_mux_t;
 
 typedef enum logic { LOW, HIGH } flag_t;
 

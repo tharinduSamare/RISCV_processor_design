@@ -1,14 +1,16 @@
-module hazard_unit
+module hazard_unit import definitions::*;
 (
     input logic clk, rstN,
-    input logic [4:0] IF_ID_rs1, IF_ID_rs2,
-    input logic [4:0] ID_Ex_rd,
-    input logic takeBranch,
-    input logic ID_Ex_MemRead,ID_Ex_MemWrite,mem_ready,
-    output logic IF_ID_write, PC_write, ID_Ex_enable
+    input regName_t rs1ID, rs2ID,
+    input regName_t rdEx,
+    input logic branchCU,jumpRegCU,
+    input logic ID_Ex_MemRead,ID_Ex_MemWrite,mem_ready,regWriteEX,
+    output logic IF_ID_write, PC_write, ID_Ex_enable, pcStall, 
+    output logic branchHU,jumpRegHU
 
 );
 
+logic mem_op_stall,branch_stall, jumpreg_stall;
 logic stall;
 
 typedef enum logic [2:0]{
@@ -21,13 +23,22 @@ typedef enum logic [2:0]{
 
 state_t current_state, next_state;
 
-// assign stall = (ID_Ex_MemRead & ((ID_Ex_rd==IF_ID_rs1) | (ID_Ex_rd == IF_ID_rs2)))?1'b1:1'b0;
-// assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite | takeBranch)?1'b1:1'b0;
-assign stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite)?1'b1:1'b0;
+// assign mem_op_stall = (ID_Ex_MemRead & ((rdEx==rs1ID) | (rdEx == rs2ID)))?1'b1:1'b0;
+// assign mem_op_stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite | takeBranch)?1'b1:1'b0;
+assign mem_op_stall = ((current_state != idle) | ID_Ex_MemRead | ID_Ex_MemWrite)?1'b1:1'b0;
+assign branch_stall = (regWriteEX & ((rs1ID == rdEx)|(rs2ID == rdEx)))? 1'b1:1'b0;
+assign jumpreg_stall = (regWriteEX & (rs1ID == rdEx))? 1'b1:1'b0;
 
-assign ID_Ex_enable = (stall == 1'b0)? 1'b1:1'b0;
-assign PC_write = (stall == 1'b0)? 1'b1:1'b0;
-assign IF_ID_write = (stall == 1'b0)? 1'b1:1'b0;
+assign stall = (mem_op_stall | branch_stall | jumpreg_stall)? 1'b1:1'b0;
+
+assign branchHU = (~branch_stall & branchCU)? 1'b1:1'b0;
+assign jumpRegHU = (~jumpreg_stall & jumpRegCU)? 1'b1:1'b0;
+
+
+assign ID_Ex_enable = (stall)? 1'b0:1'b1;
+assign PC_write = (stall)? 1'b0:1'b1;
+assign IF_ID_write = (stall)? 1'b0:1'b1;
+assign pcStall = (stall)? 1'b1:1'b0;
 
 always_ff @(posedge clk) begin
     if (~rstN)begin

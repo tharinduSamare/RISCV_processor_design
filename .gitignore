@@ -1,4 +1,5 @@
 projects/*
+altera/*
 *.bak
 *.bat
 !projects/RISC_V/RISC_V.xpr

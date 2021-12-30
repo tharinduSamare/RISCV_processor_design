@@ -9,11 +9,11 @@ module processor import definitions::*; #(
     input logic clk, rstN, startProcess, 
     output logic endProcess,
 
-    // IRAM
+    // connections between Fetch stage and IRAM
     input logic [INSTRUCTION_WIDTH-1:0]instructionIF,
     output logic [INSTRUCTION_WIDTH-1:0] pcIF,
 
-    // DRAM
+    // connections between Mem stage and DRAM 
     input logic [DATA_WIDTH-1:0] dMOutMem,
     input logic dMReadyMem,   
     output logic memReadMeM, memWriteMeM, 
@@ -21,11 +21,6 @@ module processor import definitions::*; #(
     output logic [DATA_WIDTH-1:0] aluOutMeM,
     output logic [DATA_WIDTH-1:0] rs2DataMeM
 );
-
-// localparam ZERO = 2'b00;
-// localparam ONE = 2'b01;
-// localparam TWO = 2'b10;
-// localparam THREE = 2'b11;
 
 localparam REG_COUNT = 32;
 localparam REG_SIZE = $clog2(REG_COUNT);
@@ -39,18 +34,25 @@ regName_t rdMeM;
 ///// PC related Wires /////   
 logic [INSTRUCTION_WIDTH-1:0] pcIn; 
 logic pcWrite;
-
 logic [INSTRUCTION_WIDTH-1:0] pcInc;
 logic [INSTRUCTION_WIDTH-1:0] jumpAddr;
+
+///// Branch, Jump wires ///////
+// top 
 logic takeBranch;
+// CU
 logic branchCU;
+logic jump, jumpRegCU;
+// HU
+logic branchHU,jumpRegHU;
+// B_Type
 logic branchS;
-logic jump, jumpReg;
+// Hazard
+logic pcStall;
 
-assign takeBranch = (jump || jumpReg || (branchCU & branchS));
-
-assign pcIn = (takeBranch) ? jumpAddr : pcInc;
-
+assign takeBranch = (jump || jumpRegHU || (branchHU & branchS));
+// if PC stall, hold the current PC address
+assign pcIn = (takeBranch) ? jumpAddr : (pcStall)? pcIF : pcInc;
 
 // PC related Modules //
 
@@ -76,7 +78,8 @@ assign func7ID  = instructionID[31:25];
 
 ///// Control Unit /////
 logic memReadID, memWriteID, memtoRegID, regWriteID;
-alu_sel_t aluSrc1ID,aluSrc2ID;
+alu_sel1_t aluSrc1ID;
+alu_sel2_t aluSrc2ID;
 aluOp_t aluOpID; //
 logic enableCU;
 
@@ -95,7 +98,8 @@ logic signed [INSTRUCTION_WIDTH-1:0] immIID, immJ, immB, immSID, immUID;
 logic memReadEX, memWriteEX, memtoRegEX, regWriteEX;
 
 ///// ID/EX Pipeline Register /////
-alu_sel_t aluSrc1EX,aluSrc2EX;
+alu_sel1_t aluSrc1EX;
+alu_sel2_t aluSrc2EX;
 aluOp_t aluOpEX;
 
 logic [INSTRUCTION_WIDTH-1:0] immIEX, immSEX, immUEX;
@@ -108,7 +112,7 @@ logic [DATA_WIDTH-1:0] rs1DataEX, rs2DataEX;
 logic [INSTRUCTION_WIDTH-1:0] pcEX;
 
 ///// Data Forwarding Units /////
-logic [1:0] forwardSel1, forwardSel2;
+forward_mux_t forwardSel1, forwardSel2;
 logic [DATA_WIDTH-1:0] forwardOut1, forwardOut2;
 
 ///// Alu Modules /////
@@ -143,6 +147,7 @@ pipelineRegister_IF_ID IF_ID_Register(
 
     .pcIn(pcIF),
     .instructionIn(instructionIF),
+    .IF_flush(takeBranch),
     .harzardIF_ID_Write(hazardIFIDWrite),
 
     .pcOut(pcID),
@@ -155,7 +160,7 @@ control_unit CU(
     
     .enable(enableCU),
     .jump,
-    .jumpReg,
+    .jumpReg(jumpRegCU),
     .branch(branchCU),
     .memRead(memReadID),
     .memWrite(memWriteID),
@@ -183,6 +188,21 @@ reg_file #(
     .regB_out(rs2DataID)
 );
 
+logic [DATA_WIDTH-1:0]rs1_forward_val, rs2_forward_val;
+logic rs1_forward, rs2_forward;
+
+reg_out_forwarding_unit #(.DATA_WIDTH(DATA_WIDTH)) reg_out_forward(
+    .read1(rs1DataID),
+    .read2(rs2DataID),
+    .rs1(rs1ID), .rs2(rs2ID),   
+    .rdMeM(rdMeM),
+    .aluOutMeM(aluOutMeM),
+    .regWriteMeM(regWriteMeM),
+    
+    .read1_out(rs1_forward_val), .read2_out(rs2_forward_val),
+    .rs1_forward(rs1_forward), .rs2_forward(rs2_forward)
+);
+
 pcBranchType #(
     .DATA_WIDTH(DATA_WIDTH)
 ) BranchTypeSelection (
@@ -191,12 +211,21 @@ pcBranchType #(
     .read2(rs2DataID),
     .branchType(func3ID),
 
+    // .rs1(rs1ID), .rs2(rs2ID),   
+    // .rdEX(rdEX), .rdMeM(rdMeM),
+    // .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
+    // .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
+    .read1_forward_val(rs1_forward_val), .read2_forward_val(rs2_forward_val),
+    .read1_forward(rs1_forward), .read2_forward(rs2_forward),
+
     .branchN(branchS)
 );
 
-assign jumpOp1 = (jumpReg) ? rs1DataID : pcID;
+//////////////////////////////
+//////////////////////////////
+assign jumpOp1 = (jumpRegCU) ? ((rs1_forward)? rs1_forward_val: rs1DataID): pcID;
 always_comb begin : BranchImm
-    if(jumpReg) jumpOp2 = immIID;
+    if(jumpRegCU) jumpOp2 = immIID;
     else if(jump) jumpOp2 = immJ;
     else if(branchCU) jumpOp2 = immB;
     else jumpOp2 = '0;
@@ -221,17 +250,22 @@ hazard_unit Hazard_Unit(
     .clk,
     .rstN,
 
-    .IF_ID_rs1(rs1ID),
-    .IF_ID_rs2(rs2ID),
-    .ID_Ex_rd(rdEX),
+    .rs1ID(rs1ID),
+    .rs2ID(rs2ID),
+    .rdEx(rdEX),
     .ID_Ex_MemRead(memReadEX), 
     .ID_Ex_MemWrite(memWriteEX),
     .mem_ready(dMReadyMem),
-    .takeBranch(takeBranch),
+    .regWriteEX(regWriteEX),
+    .branchCU(branchCU),
+    .jumpRegCU(jumpRegCU),
 
+    .branchHU(branchHU),
+    .jumpRegHU(jumpRegHU),
     .IF_ID_write(hazardIFIDWrite),
     .PC_write(pcWrite),
-    .ID_Ex_enable(enableCU)
+    .ID_Ex_enable(enableCU),
+    .pcStall(pcStall)
 );
 
 pipelineRegister_ID_EX ID_EX_Register(
@@ -302,18 +336,18 @@ data_forwarding #(
 
 always_comb begin : DataForward1
      case (forwardSel1) 
-        ZERO : forwardOut1 = rs1DataEX;
-        ONE : forwardOut1 = aluOutMeM;
-        TWO : forwardOut1 = dataInWB;
+        MUX_REG : forwardOut1 = rs1DataEX;
+        MUX_MEM : forwardOut1 = aluOutMeM;
+        MUX_WB : forwardOut1 = dataInWB;
 	  default : forwardOut1 = rs1DataEX;
 endcase
 end
 
 always_comb begin : DataForward2
      case (forwardSel2) 
-        ZERO : forwardOut2 = rs2DataEX;
-        ONE : forwardOut2 = aluOutMeM;
-        TWO : forwardOut2 = dataInWB;
+        MUX_REG : forwardOut2 = rs2DataEX;
+        MUX_MEM : forwardOut2 = aluOutMeM;
+        MUX_WB : forwardOut2 = dataInWB;
 		  default : forwardOut2 = rs2DataEX;
 endcase
 end
@@ -344,19 +378,20 @@ alu #(
 
 always_comb begin : ALUIn1Select
     case (aluSrc1EX) 
-        ZERO : aluIn1 = forwardOut1;
-        ONE : aluIn1 = immUEX;
-        TWO : aluIn1 = 32'd4;
+        MUX_FORWARD1 : aluIn1 = forwardOut1;
+        MUX_UTYPE : aluIn1 = immUEX;
+        MUX_INC : aluIn1 = 32'd4;
 		  default : aluIn1 = forwardOut1;
 endcase  
 end
 
 always_comb begin : ALUIn2Select
     unique case (aluSrc2EX) 
-        ZERO : aluIn2 = forwardOut2;
-        ONE : aluIn2 = immIEX;
-        TWO : aluIn2 = immSEX;
-        THREE : aluIn2 = pcEX;
+        MUX_FORWARD2 : aluIn2 = forwardOut2;
+        MUX_ITYPE : aluIn2 = immIEX;
+        MUX_STYPE : aluIn2 = immSEX;
+        MUX_PC : aluIn2 = pcEX;
+        default: aluIn2 = forwardOut2;
 endcase
 end
 
@@ -393,6 +428,8 @@ pipelineRegister_MEM_WB MEM_WB_Register (
     .readD_Mem_In(dMOutMem),
     .aluOut_Mem_In(aluOutMeM),
     .rd_Mem_In(rdMeM),
+    .memRead_Mem_In(memReadMeM),
+    .mem_ready_Mem_In(dMReadyMem),
 
     .regWrite_Mem_Out(regWriteWB),
     .memToRegWrite_Mem_Out(memtoRegWB),
