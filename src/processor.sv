@@ -147,7 +147,7 @@ pipelineRegister_IF_ID IF_ID_Register(
 
     .pcIn(pcIF),
     .instructionIn(instructionIF),
-
+    .startProcess(startProcess),
     .harzardIF_ID_Write(hazardIFIDWrite),
     .IF_flush(takeBranch),
 
