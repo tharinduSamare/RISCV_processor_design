@@ -1,5 +1,4 @@
 module alu_op 
-// import  alu_definitions::*,
 import  definitions::*;   
 (
     input  aluOp_t aluOp,
