@@ -4,8 +4,10 @@
 
 ## Setup
 
-1. Add path to src/ins_mem_init.txt file to line 122 of src/mem_controller.sv
-2. Run Quartus Project project/soc
+1. Inlude all the src/ files to the project
+2. Add the absolute path of src/ins_mem_init.txt file to src/ins_memory.sv
+3. Add the absolute path of src/data_mem_init.txt file to src/data_memory.sv
+4. Compile and Run the Project
 
 <!-- ### Run a compiled code
 1. Generate assembly code (use an online compiler)
