@@ -4,9 +4,9 @@
 
 ## Setup
 
-1. Inlude all the src/ files to the project
-2. Add the absolute path of src/ins_mem_init.txt file to src/ins_memory.sv
-3. Add the absolute path of src/data_mem_init.txt file to src/data_memory.sv
+1. Inlude all the [src/](src) files to the project
+2. Add the absolute path of src/ins_mem_init.txt file to [ins_memory.sv](src/ins_memory.sv)
+3. Add the absolute path of src/data_mem_init.txt file to [data_memory.sv](src/data_memory.sv)
 4. Compile and Run the Project
 
 <!-- ### Run a compiled code
@@ -26,11 +26,15 @@
 - Each folder consists of 3 files. These include;
   - The assembly code.
   - The generated machine code (instructions) for the respective assembly code.
-  - The expected instructions in the instruction memory for that particular application. (\_instruction_memory.txt)
+  - The expected instructions in the instruction memory for that particular application. (\*\*\*instruction_memory.txt)
 - To test any of these applications, you can either;
 
-  - Replace the all _instructions_ in the ins_mem_init.txt which is available in **src** folder with the instructions found in the *\_instruction*memory.txt\* file mentioned above,
-  - Change the relevant 1st n instructions of the ins_mem_init.txt relative to the instructions available in the \_machine_code.txt
+  - Replace the all _instructions_ in the [ins_mem_init.txt](../src/ins_mem_init.txt) which is available in **src** folder with the instructions found in the \**\*\*instruction*memory.txt file mentioned above,
+  - Change the relevant _1st n_ instructions of the [ins_mem_init.txt](../src/ins_mem_init.txt) relative to the instructions available in the \*\*\*machine_code.txt.
+
+- The result of these applications can be checked by;
+
+  - Looking at the 1st location of the data memory [(data_mem_final)](../src/data_mem_final.txt), after the process is over.
 
 - For futher testing of the aforementioned test cases follow the instuction mentioned in [Testing Document](testing/Testing.md)
 

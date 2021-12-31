@@ -97,4 +97,4 @@ If you need to check custom program;
   - Replace the immediate value on line 1 in [Fibonacci_Recursive_assembly_code](Fibonacci_Recursive/Fibonacci_Recursive_assembly_code.txt) assembly code file.
   - Copy the assembly code into [test.asm](test.asm) file.
   - Run [A-to-M.cpp](A-to-M.cpp) file.
-  - Copy the machine codes generated in [MCode.mc](MCode.mc) file and paste the relevant lines of [ins_mem_init.txt](../src/ins_mem_init.txt) file
+  - Copy the machine codes generated in [MCode.mc](MCode.mc) file and paste the relevant lines of [ins_mem_init.txt](../src/ins_mem_init.txt) file.
