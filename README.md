@@ -18,8 +18,10 @@ This is a RISC-V 32I processor which also supports the M extension.
    `D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_init.txt` (line 21)
 4. Add the absolute path of src/data_mem_final.txt file to [data_memory.sv](src/data_memory.sv)
    `D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_final.txt` (line 37)
-5. Compile and Run the Project
-6. For the simulation run the [top_tb.sv](src/top_tb.sv)
+5. Add the absolute path of src/reg_file_final.txt file to [reg_file.sv](src/reg_file.sv)
+   `D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_final.txt` (line 37)
+6. Compile and Run the Project
+7. For the simulation run the [top_tb.sv](src/top_tb.sv)
 
 <!-- ### Run a compiled code
 1. Generate assembly code (use an online compiler)
