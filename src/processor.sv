@@ -136,6 +136,26 @@ assign rs2ID = regName_t'(instructionID[24:20]);
 assign func7ID  = instructionID[31:25];
 
 
+/// Branching /////
+/*  
+    Select the pc to be used for the next instruction
+    depending on the following conditions:
+    - pcSelect = 1
+        If branch or jump is to be taken
+    - pcStall = 1
+        if it is required to stall the pipeline
+    else
+        pcOut = pc + 4
+*/
+// jump opcode 1 and jump opcode 2 selection
+assign jumpOp1ID = (jumpRegCU) ? ((rs1ForwardID)? rs1ForwardValID: rs1DataID): pcID;
+// jump address
+assign jumpAddrIF = jumpOp1ID + jumpOp2ID;
+//// select the address to set the input of the next PC value
+assign takeBranchIF = (jumpCU | jumpRegHU | (branchHU & branchSID));
+// if PC stall, hold the current PC address
+assign pcIn = (takeBranchIF) ? jumpAddrIF : (pcStallHU)? pcIF : pcIncIF;
+
 // PC related Modules //
 pc PC(
     .rstN,
@@ -169,22 +189,13 @@ pipelineRegister_IF_ID IF_ID_Register(
 );
 
 
-/// Branching /////
-// jump opcode 1 and jump opcode 2 selection
-assign jumpOp1ID = (jumpRegCU) ? ((rs1ForwardID)? rs1ForwardValID: rs1DataID): pcID;
 always_comb begin : BranchImm
     if(jumpRegCU) jumpOp2ID = immIID;
     else if(jumpCU) jumpOp2ID = immJID;
     else if(branchCU) jumpOp2ID = immBID;
     else jumpOp2ID = '0;
 end
-// jump address
-assign jumpAddrIF = jumpOp1ID + jumpOp2ID;
 
-//// select the address to set the input of the next PC value
-assign takeBranchIF = (jumpCU | jumpRegHU | (branchHU & branchSID));
-// if PC stall, hold the current PC address
-assign pcIn = (takeBranchIF) ? jumpAddrIF : (pcStallHU)? pcIF : pcIncIF;
 
 
 ///// control unit //////
