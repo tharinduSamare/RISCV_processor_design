@@ -17,8 +17,8 @@ logic [DATA_WIDTH-1:0]memory[0:MEMORY_DEPTH-1];
 
 // memory initialization
 initial begin
-    $readmemh("C:\\Xilinx\\SoC_project\\src\\data_mem_init.txt", memory);
-    // $readmemh("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_init.txt", memory);
+//    $readmemh("C:\\Xilinx\\SoC_project\\src\\data_mem_init.txt", memory);
+    $readmemh("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_init.txt", memory);
 	//  $readmemh("C:\\Users\\Ravindu\\Documents\\Github\\SoC_project\\src\\ins_mem_init.txt", memory);
 end
 
@@ -34,8 +34,8 @@ end
 // write the final memory content to a text file
 always_ff @( posedge clk ) begin 
     if (process_done)
-        // $writememh("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_final.txt", memory);
-        $writememh("C:\\Xilinx\\SoC_project\\src\\data_mem_final.txt", memory);
+        $writememh("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_final.txt", memory);
+        // $writememh("C:\\Xilinx\\SoC_project\\src\\data_mem_final.txt", memory);
 end
 
 endmodule :data_memory

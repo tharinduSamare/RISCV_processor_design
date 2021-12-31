@@ -10,6 +10,7 @@ module reg_file
     input  logic clk, rstN, wen, 
     input  regName_t rs1, rs2, rd,                  //Get register address to read/write
     input  logic [DATA_WIDTH-1:0] data_in,          //Get write data
+    input logic process_done,                       // To save register file values after the process finish
     output logic [DATA_WIDTH-1:0] regA_out, regB_out//Output read data
 );
 
@@ -46,5 +47,11 @@ end
 //Assign read data to output
 assign data_to_B = reg_f[rs2];
 assign data_to_A = reg_f[rs1];
+
+// write the final register file content to a text file
+always_ff @( posedge clk ) begin 
+    if (process_done)
+        $writememh("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\reg_file_final.txt", reg_f);
+end
 
 endmodule:reg_file
