@@ -27,15 +27,15 @@ initial begin
     startProcess = 1'b0;
 
     @(posedge clk);
-    rstN = 1'b1;
+    rstN = 1'b1; //initial reset
 
     @(posedge clk);
-    startProcess = 1'b1;
+    startProcess = 1'b1; //start processor
 
     @(posedge clk);
     startProcess = 1'b0;
 
-    wait(endProcess);
+    wait(endProcess); //wait until the process get done
     repeat(10) @(posedge clk);
     $stop;
 
