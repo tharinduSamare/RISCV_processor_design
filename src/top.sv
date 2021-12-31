@@ -1,3 +1,4 @@
+/* the top module of the entire pipeline processor*/
 module top #(
     parameter IM_MEM_DEPTH = 512,
     parameter DM_MEM_DEPTH = 4096

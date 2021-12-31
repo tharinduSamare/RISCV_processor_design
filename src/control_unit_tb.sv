@@ -49,20 +49,20 @@ initial begin
 
     #(CLK_PERIOD);
     enable <= '1;
-    // opCode <= 7'b1100011; //branch
+    //branch
     opCodeEnum <= BTYPE;
 
     #(CLK_PERIOD);
-    // opCode <= 7'b1101111; //J type
+    //J type
     opCodeEnum <= JTYPE;
 
     #(CLK_PERIOD);
-    // opCode <= 7'b0010011; //I type
+    //I type
     opCodeEnum <= ITYPE;
     #(CLK_PERIOD);
     opCodeEnum <= ITYPE;
     #(CLK_PERIOD);
-    opCodeEnum <= ITYPE;
+    opCodeEnum <= AUIPC;
     #(CLK_PERIOD);
     opCodeEnum <= ITYPE;
     #(CLK_PERIOD);   
