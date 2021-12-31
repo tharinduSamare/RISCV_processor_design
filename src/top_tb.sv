@@ -14,7 +14,7 @@ initial begin
     end
 end
 
-localparam IM_MEM_DEPTH = 256;
+localparam IM_MEM_DEPTH = 512;
 localparam DM_MEM_DEPTH = 4096;
 
 logic rstN, startProcess, endProcess;

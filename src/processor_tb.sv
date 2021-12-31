@@ -163,13 +163,13 @@ DataMemory #(
     .WIDTH(32), 
     .DEPTH(DM_MEM_DEPTH), 
     .MEM_READ_DELAY(DATA_MEM_READ_DELAY), 
-    .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_init.txt")
+    .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("F:\\ads-bus\\SoC_project\\src\\ins_mem_init.txt")
     );
 InstructionMemory #(
     .WIDTH(32), 
     .DEPTH(IM_MEM_DEPTH), 
     .MEM_READ_DELAY(INS_MEM_READ_DELAY), 
-    .MEM_WRITE_DELAY(INS_MEM_WRITE_DELAY)) insMemory= new(.mem_init_file("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\ins_mem_init.txt")
+    .MEM_WRITE_DELAY(INS_MEM_WRITE_DELAY)) insMemory= new(.mem_init_file("F:\\ads-bus\\SoC_project\\src\\ins_mem_init.txt")
     );
 
 // dataMemory = new(.mem_init_file("dataMem.txt"));

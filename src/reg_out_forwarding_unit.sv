@@ -20,7 +20,7 @@ module reg_out_forwarding_unit
 
         // set read1 value
         if (regWriteMeM & (rdMeM != zero) & (rdMeM == rs1)) begin
-            read1_out = aluOutMeM;
+            read1_out = aluOutMeM; //prev result
             rs1_forward = 1'b1;
         end
         else begin

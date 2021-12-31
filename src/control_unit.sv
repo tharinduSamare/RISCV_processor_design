@@ -1,12 +1,13 @@
 // `include "definitions.sv"
 
 module control_unit import definitions::*;(
-    input logic [6:0] opCode, 
-    input logic enable,
+    input logic [6:0] opCode, //only the opcode of the instruction
+    input logic enable, //command from the hazard unit
     
     output logic error,
-    output logic endProcess,
+    output logic endProcess, //if an instruction which isn't defined in the risc-v recieves the process is terminated
 
+    // control signals
     output logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite,
     output alu_sel1_t aluSrc1,
     output alu_sel2_t aluSrc2,
@@ -32,20 +33,29 @@ always_comb begin
 end
 // opCode |jump|jumpReg|branch|memRead|memWrite|memtoReg|regWrite|aluSrc1|aluSrc2|aluOp|
 // 
-// LTYPE  | 0  |  0    |  0   |   1   |   0    |    1   |   1    |  00   |  01   | 00  | 
-// ITYPE  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  01   | 11  |
-// AUIPC  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  01   |  11   | 00  |
+// LTYPE  | 0  |  0    |  0   |   1   |   0    |    1   |   1    |  00   |  01   | 00  |
+// rd <- mem(32'(rs1+imm_i)) 
+// ITYPE  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  01   | 10  |
+// rd <- rs1 + imm_i
+// AUIPC  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  01   |  11   | 00  | 
+// rd <- imm_u + pc
 // STYPE  | 0  |  0    |  0   |   0   |   1    |    0   |   0    |  00   |  10   | 00  |
-// RTYPE  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  00   | 10  |
+// mem(rs1+imm_s) <- rs2[31:0]
+// RTYPE  | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  00   |  00   | 11  |
+// rd <- rs1 + rs2
 // LUI    | 0  |  0    |  0   |   0   |   0    |    0   |   1    |  01   |  00   | 01  |
+// rd <- imm u
 // BTYPE  | 0  |  0    |  1   |   0   |   0    |    0   |   0    |  00   |  00   | 00  | 
+// pc <- pc + ((rs1==rs2) ? imm_b : 4)
 // JALR   | 0  |  1    |  0   |   0   |   0    |    0   |   1    |  10   |  11   | 00  |
+// rd <- 4 + pc, pc <- (rs1+imm_i)&~1 
 // JTYPE  | 1  |  0    |  0   |   0   |   0    |    0   |   1    |  10   |  11   | 00  |
+// rd <- 4 + pc, pc <- pc+imm_j
 
 always_comb begin : signalGenerator
-    jump = '0;
-    jumpReg = '0;
-    branch = '0;
+    // jump = '0;
+    // jumpReg = '0;
+    // branch = '0;
     aluSrc1 = MUX_FORWARD1;  //2'b00;
     aluSrc2 = MUX_FORWARD2; //2'b00;
     memRead = '0;
@@ -89,18 +99,16 @@ always_comb begin : signalGenerator
             aluOp = PASS_S1; //2'b01;
         end
         BTYPE : begin
-            branch = '1;
+            // branch = '1;
         end
         JALR  : begin
-            jumpReg = '1;
-            aluSrc1 = MUX_INC; //2'b10;
-            aluSrc2 = MUX_PC; //2'b11;
+            // jumpReg = '1;
             aluSrc1 = MUX_INC; //2'b10;
             aluSrc2 = MUX_PC; //2'b11;
             regWrite = '1;
         end
         JTYPE : begin
-            jump = '1;
+            // jump = '1;
             aluSrc1 = MUX_INC; //2'b10;
             aluSrc2 = MUX_PC; //2'b11;
             regWrite = '1;
@@ -113,5 +121,25 @@ always_comb begin : signalGenerator
         end 
     endcase
     end
+end
+
+always_comb begin
+    jump = '0;
+    jumpReg = '0;
+    branch = '0;
+
+    case (opCodeEnum)
+        BTYPE : begin
+            branch = '1;
+        end
+        JALR  : begin
+            jumpReg = '1;
+        end
+        JTYPE : begin
+            jump = '1;
+        end
+        default: begin
+        end 
+    endcase
 end
 endmodule : control_unit
