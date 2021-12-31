@@ -36,6 +36,6 @@
 
   - Looking at the 1st location of the data memory [(data_mem_final)](../src/data_mem_final.txt), after the process is over.
 
-- For futher testing of the aforementioned test cases follow the instuction mentioned in [Testing Document](testing/Testing.md)
+- For futher testing of the aforementioned test cases follow the instuction mentioned in [Testing Document](testing/Readme.md)
 
 ## Verification
