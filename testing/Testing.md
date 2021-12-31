@@ -1,4 +1,4 @@
-# Steps to follow to Generate instructions to test processor
+# Steps to follow to Generate instructions to test the processor
 
 If you need to check custom program;
 
