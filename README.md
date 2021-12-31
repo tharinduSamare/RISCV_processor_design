@@ -13,9 +13,12 @@ This is a RISCV 32I processor which also supports the M extension.
 ## Setup
 
 1. Inlude all the [src/](src) files to the project
-2. Add the absolute path of src/ins_mem_init.txt file to [ins_memory.sv](src/ins_memory.sv)
+2. Add the absolute path of src/ins_mem_init.txt file to [ins_memory.sv](src/ins_memory.sv) `D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\ins_mem_init.txt` (line 23)
 3. Add the absolute path of src/data_mem_init.txt file to [data_memory.sv](src/data_memory.sv)
-4. Compile and Run the Project
+   `D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_init.txt` (line 21)
+4. Add the absolute path of src/data_mem_final.txt file to [data_memory.sv](src/data_memory.sv)
+   `D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_final.txt` (line 37)
+5. Compile and Run the Project
 
 <!-- ### Run a compiled code
 1. Generate assembly code (use an online compiler)
