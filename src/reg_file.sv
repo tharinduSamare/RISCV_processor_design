@@ -13,7 +13,8 @@ module reg_file
 
 logic [DATA_WIDTH-1:0] reg_f [0:REG_COUNT-1];
 
-logic [REG_COUNT-1:0] wen_sel= 32'h073fc00f; //write everything except pointers and saved registers
+// logic [REG_COUNT-1:0] wen_sel= 32'h073fc00f; //write everything except pointers and saved registers
+logic [REG_COUNT-1:0] wen_sel= 32'hffffffff; //write everything except pointers and saved registers
 
 logic [DATA_WIDTH-1:0] data_to_A, data_to_B;
 
@@ -25,6 +26,7 @@ always_ff @(negedge clk) begin : write  // write at the first half of the cycle 
         for (int i = 0; i<32; i=i+1) begin
             if (wen_sel[i]==1)  reg_f [i] <= 32'd0;    
         end
+        reg_f[2] <= 32'hff0;  //4080 th address of the data memory, stack pointer
 	end
 	else begin
 		if (wen) begin

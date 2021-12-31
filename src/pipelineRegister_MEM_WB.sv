@@ -1,8 +1,12 @@
 module pipelineRegister_MEM_WB 
 import  definitions::*;
 ( 
+    // ========================== //
+    //           Input            //
+    // ========================== //
     input logic             clk,
     input logic             rstN,
+    
     // from control unit
     // to writeback stage
     input logic             regWrite_Mem_In,
@@ -15,6 +19,10 @@ import  definitions::*;
 
     input logic memRead_Mem_In,
     input logic mem_ready_Mem_In,
+
+    // ========================== //
+    //          Output            //
+    // ========================== //
     
     // from control unit
     // to writeback stage

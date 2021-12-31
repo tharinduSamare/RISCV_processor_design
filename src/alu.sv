@@ -3,47 +3,58 @@ import definitions::*;
 #(
     parameter DATA_WIDTH = 32
 )(
-    input  logic [DATA_WIDTH-1:0] bus_a, bus_b,
+    input  logic signed [DATA_WIDTH-1:0] bus_a, bus_b,
     input  alu_operation_t  opSel, 
-    output logic [DATA_WIDTH-1:0] out,
+    output logic signed [DATA_WIDTH-1:0] out,
     output flag_t overflow, Z
 );
 
-alu_operation_t curOpSel;
-assign curOpSel = opSel;
-
-logic [DATA_WIDTH:0] result;
+logic signed [DATA_WIDTH:0] result;//{high bit, databits}
 // logic [DATA_WIDTH-1:0] sub_res
-logic comp;
 
-assign comp = (bus_a < bus_b) ? 1'b1: 1'b0;
+logic signed [DATA_WIDTH*2-1:0] mul_result, mul_result_su;
+logic [DATA_WIDTH*2-1:0] mul_result_u;
+logic signed [DATA_WIDTH-1:0] bus_b_u;
+assign bus_b_u = unsigned'(bus_b);
+assign mul_result    = bus_a * bus_b;
+assign mul_result_su = bus_a * bus_b_u;
+assign mul_result_u  = unsigned'(bus_a) * unsigned'(bus_b);
 
 always_comb begin : alu_operation
-    case (curOpSel)
+    unique case (opSel)
         //Arithmetic Operations
-        ADD : result <= bus_a + bus_b;
-        SUB : result <= bus_a - bus_b;
+        ADD : result = bus_a + bus_b;
+        SUB : result = bus_a - bus_b;
         //Comparison Operations
-        SLTU: result <= (bus_a < bus_b) ? 32'd0 : 32'd1;
-        SLT : begin
-            if (bus_a[DATA_WIDTH-1] == bus_b[DATA_WIDTH-1])  result <= (bus_a < bus_b) ? 32'd0 : 32'd1;
-            else result <= (comp) ? 32'd0 : 32'd1;
-        end
+        SLTU: result = (unsigned'(bus_a) < unsigned'(bus_b)) ? 32'd1 : 32'd0;
+        SLT : result = (bus_a < bus_b)? 32'd1:32'd0;
         //Shift Operations
-        SLL : result <= bus_a <<   bus_b;
-        SRL : result <= bus_a >>   bus_b;
-        SRA : result <= bus_a >>>  bus_b;
+        SLL : result = bus_a <<   unsigned'(bus_b[4:0]);
+        SRL : result = bus_a >>   unsigned'(bus_b[4:0]);
+        SRA : result = bus_a >>>  unsigned'(bus_b[4:0]);
         //Logical Operations
-        AND : result <= bus_a & bus_b; 
-        OR  : result <= bus_a | bus_b;
-        XOR : result <= bus_a ^ bus_b;
+        AND : result = bus_a & bus_b; 
+        OR  : result = bus_a | bus_b;
+        XOR : result = bus_a ^ bus_b;
         //LUI
-        FWD : result <= bus_a;   
-        default : result <= bus_a + bus_b;  
+        FWD : result = bus_a;   
+
+        //multiplication
+        MUL     : result = mul_result[DATA_WIDTH:0];
+        MULH    : result = mul_result[DATA_WIDTH*2-1:DATA_WIDTH];
+        MULHSU  : result = mul_result_su[DATA_WIDTH*2-1:DATA_WIDTH];
+        MULHU   : result = mul_result_u[DATA_WIDTH*2-1:DATA_WIDTH];
+        //division
+        DIV     : result = bus_a / bus_b;
+        DIVU    : result = unsigned'(bus_a) / unsigned'(bus_b);
+        REM     : result = bus_a % bus_b;
+        REMU    : result = unsigned'(bus_a) % unsigned'(bus_b);
+
+        default : result = bus_a + bus_b;  
     endcase
 end
 
 assign out = result[DATA_WIDTH-1:0];
-assign overflow = (result[DATA_WIDTH] && curOpSel == ADD) ? HIGH : LOW;
+assign overflow = (result[DATA_WIDTH] && opSel == ADD) ? HIGH : LOW;
 assign Z = (result[DATA_WIDTH-1:0]==0) ? HIGH : LOW;
 endmodule: alu
