@@ -170,7 +170,7 @@ pipelineRegister_IF_ID IF_ID_Register(
 
 ///// control unit //////
 control_unit CU(
-    .opCodeID,
+    .opCode(opCodeID),
     .enable(enableCUHU),
 
     .endProcess,
