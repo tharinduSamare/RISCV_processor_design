@@ -1,6 +1,12 @@
-# SoC_Project
+# RISCV32I 5 Stage Pipelined Processor,
 
-## Simulation
+## Datapath of the Processor
+
+![Datapath](Datapath.png)
+
+## Architecture
+
+![Architecture](Architecture.png)
 
 ## Setup
 
@@ -38,4 +44,4 @@
 
 - For futher testing of the aforementioned test cases follow the instuction mentioned in [Testing Document](testing/Readme.md)
 
-## Verification
+<!-- ## Verification -->
