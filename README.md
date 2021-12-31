@@ -39,7 +39,7 @@ This is a RISC-V 32I processor which also supports the M extension.
   - The assembly code.
   - The generated machine code (instructions) for the respective assembly code.
   - The expected instructions in the instruction memory for that particular application. (\*\*\*instruction_memory.txt)
-- To test any of these applications, you can either;
+- To test any of these programs, you can either;
 
   - Replace the all _instructions_ in the [ins_mem_init.txt](../src/ins_mem_init.txt) which is available in **src** folder with the instructions found in the \**\*\*instruction*memory.txt file mentioned above,
   - Change the relevant _1st n_ instructions of the [ins_mem_init.txt](../src/ins_mem_init.txt) relative to the instructions available in the \*\*\*machine_code.txt.
