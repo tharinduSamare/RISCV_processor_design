@@ -20,4 +20,7 @@ The main components and their function are briefly described stagewise below.
 6. ALU Op : This unit uses the instruction (funct7 and funct3) components and CU input
 7. ALU : Carries out Riscv32-I and M extension alu operations
 8. Data Memory 
-9. 
+9. Hazard Unit : Stalls the pipeline when:
+    - Waiting for output from data memory
+    - Branching occurs
+    - Instruction jump occurs
