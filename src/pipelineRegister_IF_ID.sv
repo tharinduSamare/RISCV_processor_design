@@ -65,7 +65,7 @@ module pipelineRegister_IF_ID(
                     end
                     else begin
                         current_state <= waiting;
-                        counter <= counter + 1;
+                        counter <= counter + 1'b1;
                     end
                 end
 
