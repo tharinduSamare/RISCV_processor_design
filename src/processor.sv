@@ -198,6 +198,7 @@ reg_file #(
     .rs2(rs2ID),
     .rd(rdWB),
     .data_in(dataInWB),
+    .process_done(endProcess),
 
     .regA_out(rs1DataID),
     .regB_out(rs2DataID)
