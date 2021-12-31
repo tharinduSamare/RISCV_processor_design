@@ -168,6 +168,25 @@ pipelineRegister_IF_ID IF_ID_Register(
     .instructionOut(instructionID)
 );
 
+
+/// Branching /////
+// jump opcode 1 and jump opcode 2 selection
+assign jumpOp1ID = (jumpRegCU) ? ((rs1ForwardID)? rs1ForwardValID: rs1DataID): pcID;
+always_comb begin : BranchImm
+    if(jumpRegCU) jumpOp2ID = immIID;
+    else if(jumpCU) jumpOp2ID = immJID;
+    else if(branchCU) jumpOp2ID = immBID;
+    else jumpOp2ID = '0;
+end
+// jump address
+assign jumpAddrIF = jumpOp1ID + jumpOp2ID;
+
+//// select the address to set the input of the next PC value
+assign takeBranchIF = (jumpCU | jumpRegHU | (branchHU & branchSID));
+// if PC stall, hold the current PC address
+assign pcIn = (takeBranchIF) ? jumpAddrIF : (pcStallHU)? pcIF : pcIncIF;
+
+
 ///// control unit //////
 control_unit CU(
     .opCode(opCodeID),
@@ -198,6 +217,7 @@ reg_file #(
     .rs2(rs2ID),
     .rd(rdWB),
     .data_in(dataInWB),
+    .process_done(endProcess),
 
     .regA_out(rs1DataID),
     .regB_out(rs2DataID)
@@ -231,19 +251,6 @@ pcBranchType #(
 
     .branchN(branchSID)
 );
-
-/// Branching Modules /////
-// jump opcode 1 and jump opcode 2 selection
-assign jumpOp1ID = (jumpRegCU) ? ((rs1ForwardID)? rs1ForwardValID: rs1DataID): pcID;
-always_comb begin : BranchImm
-    if(jumpRegCU) jumpOp2ID = immIID;
-    else if(jumpCU) jumpOp2ID = immJID;
-    else if(branchCU) jumpOp2ID = immBID;
-    else jumpOp2ID = '0;
-end
-
-// jump address
-assign jumpAddrIF = jumpOp1ID + jumpOp2ID;
 
 ///// Immediate Extender Module /////
 immediate_extend immediate_extend(
@@ -279,10 +286,6 @@ hazard_unit Hazard_Unit(
     .pcStall(pcStallHU) 
 );
 
-//// select the address to set the input of the next PC value
-assign takeBranchIF = (jumpCU | jumpRegHU | (branchHU & branchSID));
-// if PC stall, hold the current PC address
-assign pcIn = (takeBranchIF) ? jumpAddrIF : (pcStallHU)? pcIF : pcIncIF;
 
 ///// ID/EX Pipeline Register /////
 pipelineRegister_ID_EX ID_EX_Register(
