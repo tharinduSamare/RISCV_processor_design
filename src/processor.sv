@@ -213,10 +213,6 @@ pcBranchType #(
     .read2(rs2DataID),
     .branchType(func3ID),
 
-    // .rs1(rs1ID), .rs2(rs2ID),   
-    // .rdEX(rdEX), .rdMeM(rdMeM),
-    // .aluOutEx(aluOutEx), .aluOutMeM(aluOutMeM),
-    // .regWriteEX(regWriteEX), .regWriteMeM(regWriteMeM),
     .read1_forward_val(rs1_forward_val), .read2_forward_val(rs2_forward_val),
     .read1_forward(rs1_forward), .read2_forward(rs2_forward),
 
