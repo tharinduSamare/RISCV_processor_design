@@ -1,6 +1,6 @@
-# RISCV-32I 5 Stage Pipelined Processor
+# RISC-V 32I 5 Stage Pipelined Processor
 
-This is a RISCV 32I processor which also supports the M extension.
+This is a RISC-V 32I processor which also supports the M extension.
 
 ## Datapath of the Processor
 
