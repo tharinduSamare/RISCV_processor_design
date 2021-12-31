@@ -18,7 +18,7 @@
 
 - To test the processor we have supplied with 4 applications which are available in the testing folder.
   - [Factorial Iterative](testing/Factorial_iterative)
-  - [Factorial Recursive](testing/Factorial_iterative)
+  - [Factorial Recursive](testing/Factorial_Recursive)
   - [Fibonacci Recursive](testing/Fibonacci_Recursive)
   - [Fibonacci Iterative](testing/Finonacci_iterative)
 - Each folder consists of 3 files. These include;
