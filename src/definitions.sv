@@ -1,5 +1,6 @@
 package definitions;
 
+//Instruction type to identify from Instruction [6:0] Opcode
 typedef enum logic [6:0] { 
     LTYPE = 7'b0000011,
     ITYPE = 7'b0010011,
@@ -13,6 +14,7 @@ typedef enum logic [6:0] {
     ERROR
 } opCode_t;
 
+//ALU_Op unit instruction types
 typedef enum logic [1:0] { 
     DEF_ADD,
     PASS_S1,
@@ -22,6 +24,12 @@ typedef enum logic [1:0] {
     
 parameter REG_COUNT = 32;
 parameter REG_SIZE = $clog2(REG_COUNT);
+
+//32 Register names
+typedef enum logic [4:0] {
+    zero = 5'd0,            //x0 is zero and it holds zero
+    x[1:31] = 5'd1
+} regName_t;   
 
 // typedef enum logic [4:0] { 
 //         zero = 5'd0,    //hard-wired zero
@@ -36,24 +44,15 @@ parameter REG_SIZE = $clog2(REG_COUNT);
 //         t[3:6] = 5'd28  //Temporaries (cont.)
 //  } regName_t;
 
-typedef enum logic [4:0] {
-    zero = 5'd0,
-    x[1:31] = 5'd1
-} regName_t;   
 
-// typedef enum bit [1:0] { 
-//     ZERO,
-//     ONE,
-//     TWO,
-//     THREE
-// } alu_sel_t;
-
+//Mux select for ALU bus A
 typedef enum logic [1:0] { 
     MUX_FORWARD1,
     MUX_UTYPE,
     MUX_INC
 } alu_sel1_t;
 
+//Mux select for ALU bus B
 typedef enum logic [1:0] { 
     MUX_FORWARD2,
     MUX_ITYPE,
@@ -61,14 +60,17 @@ typedef enum logic [1:0] {
     MUX_PC
 } alu_sel2_t;
 
+//Mux select for Data forwarding unit
 typedef enum logic [1:0] { 
     MUX_REG,
     MUX_MEM,
     MUX_WB
 } forward_mux_t;
 
+//Flag outputs
 typedef enum logic { LOW, HIGH } flag_t;
 
+//ALU operations
 typedef enum logic [4:0] { 
     ADD, SUB,
     SLT, SLTU,
