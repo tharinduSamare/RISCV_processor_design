@@ -1,3 +1,7 @@
+/*
+This module is implemented in the EXECUTE stage
+This module carries out arithmetic/logical operations
+*/
 module alu 
 import definitions::*;
 #(
@@ -15,7 +19,7 @@ logic signed [DATA_WIDTH*2-1:0] mul_result, mul_result_su;
 logic [DATA_WIDTH*2-1:0] mul_result_u;
 logic signed [DATA_WIDTH-1:0] bus_b_u;
 
-//Multiplication results
+//Get multiplication results
 assign bus_b_u = unsigned'(bus_b);      //Unsigned bus_b 
 assign mul_result    = bus_a * bus_b;   //Multiply signed 
 assign mul_result_su = bus_a * bus_b_u; //Multiply signed-unsigned
@@ -37,7 +41,7 @@ always_comb begin : alu_operation
         AND : result = bus_a & bus_b; 
         OR  : result = bus_a | bus_b;
         XOR : result = bus_a ^ bus_b;
-        //LUI instruction - Load Upper Immediate - ALU just forwards
+        //LUI instruction - Load Upper Immediate - ALU forwards
         FWD : result = bus_a;   
 
         //Multiplication
