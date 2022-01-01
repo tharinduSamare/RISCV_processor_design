@@ -1,10 +1,10 @@
 # Factorial Recursive
 
-- The relevant assembly code for this program is provided in [Factorial_Recursive_assembly_code](Factorial_Recursive/Factorial_Recursive_assembly_code.txt) text file.
+- The relevant assembly code for this program is provided in [Factorial_Recursive_assembly_code](Factorial_Recursive_assembly_code.txt) text file.
 
-- The machine code generated for this assembly code is avaiable in the in the [Factorial_Recursive_machine_code](Factorial_Recursive/Factorial_Recursive_machine_code.txt) text file.
+- The machine code generated for this assembly code is avaiable in the in the [Factorial_Recursive_machine_code](Factorial_Recursive_machine_code.txt) text file.
 
-- The expected instruction memory for this program is shown in [Factorial_Recursive_instruction_memory](Factorial_Recursive/Factorial_Recursive_instruction_memory.txt) text file.
+- The expected instruction memory for this program is shown in [Factorial_Recursive_instruction_memory](Factorial_Recursive_instruction_memory.txt) text file.
 
 - The result of the factorial can be checked by;
 
