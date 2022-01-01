@@ -7,7 +7,7 @@
 
 - The expected instruction memory for this program is shown in [Factorial_Recursive_instruction_memory](Factorial_Recursive_instruction_memory.txt) text file. Copy all the content and replace the content in [ins_mem_init.txt](../../src/ins_mem_init.txt) file.
 
-- Run [top_tb.sv](../../testbench/top_tb.sv).
+- Simulate [top_tb.sv](../../testbench/top_tb.sv).
 
 - The result of the factorial can be checked by;
 
