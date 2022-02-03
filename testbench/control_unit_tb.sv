@@ -9,7 +9,8 @@ logic enable, startProcess, endProcess, error;
 
 logic jump, jumpReg, branch, memRead, memWrite, memtoReg, regWrite;
 
-alu_sel_t aluSrc1, aluSrc2;
+alu_sel1_t aluSrc1; 
+alu_sel2_t aluSrc2;
 aluOp_t aluOp;
 
 control_unit dut(.*);
