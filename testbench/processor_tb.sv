@@ -20,16 +20,18 @@ class DataMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DE
 
     function new(input string mem_init_file);
         $readmemh(mem_init_file, this.memory);
-        this.mem_ready = 1'b0;
+        this.mem_ready = 1'b1;
     endfunction
 
-    task automatic Read_memory(input addr_t addr, ref logic rdEn, input logic [2:0]func3, output data_t value, ref logic clk, ref logic mem_ready); 
-        repeat(MEM_READ_DELAY) @(posedge clk);
-        this.mem_ready = 1'b0;
-        this.addr_LSB_bits = addr[1:0];
-        this.addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
+    task automatic Read_memory(input addr_t addr, ref logic rdEn, input logic [2:0]func3, output data_t value, ref logic clk, ref logic mem_ready_out); 
+        mem_ready_out = this.mem_ready;
+        if (rdEn & this.mem_ready) begin
+            this.mem_ready = 1'b0;
+            mem_ready_out = this.mem_ready;
+            repeat(MEM_READ_DELAY) @(posedge clk);
+            this.addr_LSB_bits = addr[1:0];
+            this.addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
 
-        if (rdEn) begin
             case (func3) 
                 LB : value = WIDTH'(signed'(this.memory[addr_MSB_bits][addr_LSB_bits*8 +:8]));
                 LH : value = WIDTH'(signed'(this.memory[addr_MSB_bits][addr_LSB_bits[1]*16 +:16]));
@@ -38,24 +40,28 @@ class DataMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_WRITE_DE
                 LHU: value = WIDTH'(this.memory[addr_MSB_bits][addr_LSB_bits[1]*16 +:16]);
                 default: $display("wrong func3 for load data");
             endcase
+            this.mem_ready = 1'b1;
+            mem_ready_out = this.mem_ready;
         end
-        this.mem_ready = 1'b1;
     endtask
 
-    task automatic Write_memory(input addr_t addr, ref logic wrEn, input logic [2:0]func3, input data_t data, ref logic clk,ref logic mem_ready);
-        repeat(MEM_READ_DELAY) @(posedge clk);
-        mem_ready = 1'b0;
-        addr_LSB_bits = addr[1:0];
-        addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
-        if (wrEn) begin
+    task automatic Write_memory(input addr_t addr, ref logic wrEn, input logic [2:0]func3, input data_t data, ref logic clk,ref logic mem_ready_out);
+        mem_ready_out = this.mem_ready;
+        if (wrEn & this.mem_ready) begin
+            this.mem_ready = 1'b0;
+            mem_ready_out = this.mem_ready;
+            repeat(MEM_READ_DELAY) @(posedge clk);
+            addr_LSB_bits = addr[1:0];
+            addr_MSB_bits = addr[ADDRESS_WIDTH-1:2];
             case (func3) 
                 SB : this.memory[addr_MSB_bits] = WIDTH'(signed'(data[7:0]));
                 SH : this.memory[addr_MSB_bits] = WIDTH'(signed'(data[WIDTH/2-1:0]));
                 SW : this.memory[addr_MSB_bits] = data;
                 default: $display("wrong func3 for store data");
             endcase
+            this.mem_ready = 1'b1;
+            mem_ready_out = this.mem_ready;
         end
-        mem_ready = 1'b1;
     endtask
 
     // function void display_RAM();
@@ -79,6 +85,7 @@ class InstructionMemory #(parameter WIDTH=32, DEPTH=256, MEM_READ_DELAY=0, MEM_W
 
     function new(input string mem_init_file);
         $readmemh(mem_init_file, this.memory);
+
     endfunction
 
     task automatic Read_memory(input addr_t addr, output data_t value, ref logic clk); 
@@ -163,13 +170,13 @@ DataMemory #(
     .WIDTH(32), 
     .DEPTH(DM_MEM_DEPTH), 
     .MEM_READ_DELAY(DATA_MEM_READ_DELAY), 
-    .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("F:\\ads-bus\\SoC_project\\src\\ins_mem_init.txt")
+    .MEM_WRITE_DELAY(DATA_MEM_WRITE_DELAY)) dataMemory =new(.mem_init_file("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\data_mem_init.txt")
     );
 InstructionMemory #(
     .WIDTH(32), 
     .DEPTH(IM_MEM_DEPTH), 
     .MEM_READ_DELAY(INS_MEM_READ_DELAY), 
-    .MEM_WRITE_DELAY(INS_MEM_WRITE_DELAY)) insMemory= new(.mem_init_file("F:\\ads-bus\\SoC_project\\src\\ins_mem_init.txt")
+    .MEM_WRITE_DELAY(INS_MEM_WRITE_DELAY)) insMemory= new(.mem_init_file("D:\\ACA\\SEM7_TRONIC_ACA\\17 - Advance Digital Systems\\2020\\assignment_2\\SoC_project\\src\\ins_mem_init.txt")
     );
 
 // dataMemory = new(.mem_init_file("dataMem.txt"));
@@ -196,14 +203,14 @@ end
 initial begin
     forever begin
         @(posedge clk);
-        dataMemory.Read_memory(.addr(aluOutMeM), .rdEn(memReadMeM), .func3(func3MeM), .value(dMOutMem), .clk(clk), .mem_ready(dMReadyMem_r));
+        dataMemory.Read_memory(.addr(aluOutMeM), .rdEn(memReadMeM), .func3(func3MeM), .value(dMOutMem), .clk(clk), .mem_ready_out(dMReadyMem_r));
     end
 end
 
 initial begin
     forever begin
         @(posedge clk);
-        dataMemory.Write_memory(.addr(aluOutMeM), .wrEn(memWriteMeM), .func3(func3MeM), .data(rs2DataMeM), .clk(clk), .mem_ready(dMReadyMem_w));
+        dataMemory.Write_memory(.addr(aluOutMeM), .wrEn(memWriteMeM), .func3(func3MeM), .data(rs2DataMeM), .clk(clk), .mem_ready_out(dMReadyMem_w));
     end
 end
 
