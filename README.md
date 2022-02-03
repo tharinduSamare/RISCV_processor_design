@@ -4,11 +4,11 @@ This is a RISC-V 32I processor which also supports the M extension.
 
 ## Datapath of the Processor
 
-![Datapath](Datapath.png)
+![Datapath](Datapath_1.png)
 
 ## Architecture
 
-![Architecture](Architecture.png)
+![Architecture](Architecture_1.png)
 
 ## Setup
 
